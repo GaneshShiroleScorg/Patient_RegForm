@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 import static com.scorg.forms.activities.PersonalInfoActivity.FORMS;
 
-public class FormsActivity extends AppCompatActivity {
+public class FormsActivity extends AppCompatActivity implements FormFragment.ButtonClickListener {
 
     private static final String TAG = "Form";
     private TabLayout mMainTabLayout;
@@ -118,4 +118,20 @@ public class FormsActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void backClick(int formNumber) {
+        if (formNumber > 0)
+            mMainTabLayout.getTabAt(formNumber - 1).select();
+    }
+
+    @Override
+    public void nextClick(int formNumber) {
+        if (formNumber < (mMainTabLayout.getTabCount() - 1))
+        mMainTabLayout.getTabAt(formNumber + 1).select();
+    }
+
+    @Override
+    public void submitClick(int formNumber) {
+
+    }
 }

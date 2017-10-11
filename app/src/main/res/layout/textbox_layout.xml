@@ -31,6 +31,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="@dimen/field_text_size"
+            android:overScrollMode="always"
+            android:scrollbarStyle="insideInset"
+            android:scrollbars="vertical"
             android:inputType="text"
             tools:text="Ganesh Shirole" />
 

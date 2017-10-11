@@ -8,7 +8,6 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.text.method.ScrollingMovementMethod;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -327,10 +326,8 @@ public class PageFragment extends Fragment {
                         dropDown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                             @Override
                             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
                                 // set latest value
                                 field.setValue(dataList.get(position));
-
                             }
 
                             @Override
@@ -347,8 +344,18 @@ public class PageFragment extends Fragment {
             formContainerLayout.addView(sectionContainer);
         }
 
-        CommonMethods.hideKeyboard(getContext());
-
         return rootView;
+    }
+
+    public void backClick() {
+        Page page1 = page;
+    }
+
+    public void nextClick() {
+        Page page1 = page;
+    }
+
+    public void submitClick() {
+        Page page1 = page;
     }
 }

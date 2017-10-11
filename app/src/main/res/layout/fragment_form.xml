@@ -14,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/appbar_padding_top"
+        app:elevation="0dp"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.design.widget.TabLayout
@@ -36,7 +37,7 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <android.support.v4.view.ViewPager
+        <com.scorg.forms.customui.CustomViewPager
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -50,7 +51,7 @@
             android:padding="@dimen/view_margin">
 
             <Button
-                android:id="@+id/preButton"
+                android:id="@+id/backButton"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -59,7 +60,7 @@
                 android:layout_toLeftOf="@+id/nextButton"
                 android:layout_toStartOf="@+id/nextButton"
                 android:padding="@dimen/view_margin"
-                android:text="@string/previous"
+                android:text="@string/back"
                 android:textSize="@dimen/button_text_size" />
 
             <Button

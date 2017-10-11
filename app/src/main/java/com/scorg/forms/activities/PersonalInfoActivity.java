@@ -18,7 +18,7 @@ import com.scorg.forms.util.Valid;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class PersonalInfoActivity extends AppCompatActivity {
+public class PersonalInfoActivity extends AppCompatActivity implements FormFragment.ButtonClickListener{
 
     public static final String FORMS = "pages";
 
@@ -56,6 +56,7 @@ public class PersonalInfoActivity extends AppCompatActivity {
         String json;
         try {
             InputStream is = getAssets().open("registration_form_actual.json");
+//            InputStream is = getAssets().open("registration_form.json");
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);
@@ -66,6 +67,21 @@ public class PersonalInfoActivity extends AppCompatActivity {
             return null;
         }
         return json;
+
+    }
+
+    @Override
+    public void backClick(int formNumber) {
+
+    }
+
+    @Override
+    public void nextClick(int formNumber) {
+
+    }
+
+    @Override
+    public void submitClick(int formNumber) {
 
     }
 }

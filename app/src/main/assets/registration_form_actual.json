@@ -18,7 +18,7 @@
               {
                 "name": "Last Name",
                 "type": "textbox",
-                "isMandatory": false,
+                "isMandatory": true,
                 "length": 15,
                 "inputType": "name"
               },

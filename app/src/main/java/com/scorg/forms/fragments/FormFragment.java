@@ -1,25 +1,25 @@
 package com.scorg.forms.fragments;
 
 
+import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.scorg.forms.R;
-import com.scorg.forms.models.Form;
+import com.scorg.forms.customui.CustomViewPager;
 import com.scorg.forms.models.Page;
+import com.scorg.forms.util.CommonMethods;
 
-import java.util.ArrayList;
 import java.util.ArrayList;
 
 public class FormFragment extends Fragment {
@@ -35,8 +35,10 @@ public class FormFragment extends Fragment {
     private int formNumber;
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
-    private ViewPager mViewPager;
+    private CustomViewPager mViewPager;
     private TabLayout mTabLayout;
+
+    ButtonClickListener mListener;
 
     public FormFragment() {
         // Required empty public constructor
@@ -69,7 +71,7 @@ public class FormFragment extends Fragment {
 
         // Set up the ViewPager with the sections adapter.
         mTabLayout = (TabLayout) roolView.findViewById(R.id.tabs);
-        mViewPager = (ViewPager) roolView.findViewById(R.id.container);
+        mViewPager = (CustomViewPager) roolView.findViewById(R.id.container);
         mTabLayout.setId(formNumber + 1000);
         mViewPager.setId(formNumber + 2000);
         setupViewPager(pages);
@@ -80,10 +82,48 @@ public class FormFragment extends Fragment {
             mTabLayout.setTabMode(TabLayout.MODE_FIXED);
         }
 
+        // Buttons
+
+        Button backButton = roolView.findViewById(R.id.backButton);
+        Button nextButton = roolView.findViewById(R.id.nextButton);
+        Button submitButton = roolView.findViewById(R.id.submitButton);
+
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if ((mTabLayout.getTabCount() - 1) == mTabLayout.getSelectedTabPosition()) {
+                    mListener.nextClick(formNumber);
+                } else {
+                    mTabLayout.getTabAt(mTabLayout.getSelectedTabPosition() + 1).select();
+                }
+            }
+        });
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (0 == mTabLayout.getSelectedTabPosition()) {
+                    mListener.backClick(formNumber);
+                } else {
+                    mTabLayout.getTabAt(mTabLayout.getSelectedTabPosition() - 1).select();
+                }
+            }
+        });
+
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.submitClick(formNumber);
+            }
+        });
+
         return roolView;
     }
 
     private void setupViewPager(ArrayList<Page> pages) {
+
+        // Set View Pager Paging Disable.
+        mViewPager.setPagingEnabled(false);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -117,6 +157,9 @@ public class FormFragment extends Fragment {
             public void onTabSelected(TabLayout.Tab tab) {
                 TextView indicatorText = tab.getCustomView().findViewById(R.id.indicatorText);
                 selectTab(indicatorText, true);
+
+                // hide keyboard
+                CommonMethods.hideKeyboard(getContext());
             }
 
             @Override
@@ -178,4 +221,31 @@ public class FormFragment extends Fragment {
             return pages.get(position).getPageName();
         }
     }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof ButtonClickListener) {
+            mListener = (ButtonClickListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement ButtonClickListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    // Listener
+    public interface ButtonClickListener {
+        void backClick(int formNumber);
+
+        void nextClick(int formNumber);
+
+        void submitClick(int formNumber);
+    }
+
 }
