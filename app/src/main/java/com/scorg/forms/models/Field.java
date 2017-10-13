@@ -7,9 +7,8 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
-import java.util.ArrayList;
 
-public class Field implements Parcelable {
+public class Field implements Parcelable, Cloneable {
 
     @SerializedName("name")
     @Expose
@@ -35,6 +34,9 @@ public class Field implements Parcelable {
     @SerializedName("dataList")
     @Expose
     private ArrayList<String> dataList = new ArrayList<String>();
+    @SerializedName("moreField")
+    @Expose
+    private ArrayList<Field> textBoxGroup = new ArrayList<Field>();
     @SerializedName("dataTable")
     @Expose
     private String dataTable = "";
@@ -64,6 +66,7 @@ public class Field implements Parcelable {
         this.inputType = ((String) in.readValue((String.class.getClassLoader())));
         in.readList(this.dataList, (java.lang.String.class.getClassLoader()));
         this.dataTable = ((String) in.readValue((String.class.getClassLoader())));
+        in.readList(this.textBoxGroup, (Field.class.getClassLoader()));
     }
 
     public Field() {
@@ -141,6 +144,14 @@ public class Field implements Parcelable {
         this.dataTable = dataTable;
     }
 
+    public ArrayList<Field> getTextBoxGroup() {
+        return textBoxGroup;
+    }
+
+    public void setTextBoxGroup(ArrayList<Field> textBoxGroup) {
+        this.textBoxGroup = textBoxGroup;
+    }
+
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(name);
         dest.writeValue(type);
@@ -151,10 +162,15 @@ public class Field implements Parcelable {
         dest.writeValue(inputType);
         dest.writeList(dataList);
         dest.writeValue(dataTable);
+        dest.writeList(textBoxGroup);
     }
 
     public int describeContents() {
         return 0;
+    }
+
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 
 }

@@ -5,21 +5,23 @@ import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.scorg.forms.R;
-
 import java.lang.reflect.Field;
 import java.util.Calendar;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by ganeshshirole on 9/10/17.
  */
 
 public class CommonMethods {
+
+    private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
     public static int getAge(int year, int month, int day) {
 
@@ -79,6 +81,25 @@ public class CommonMethods {
             drawables[1].setColorFilter(color, PorterDuff.Mode.SRC_IN);
             fCursorDrawable.set(editor, drawables);
         } catch (Throwable ignored) {
+        }
+    }
+
+    /**
+     * Generate a value suitable for use in {#setId(int)}.
+     * This value will not collide with ID values generated at build time by aapt for R.id.
+     *
+     * @return a generated ID value
+     */
+    public static int generateViewId() {
+        for (; ; ) {
+            final int result = sNextGeneratedId.get();
+            // aapt-generated IDs have the high byte nonzero; clamp to the range under that.
+            int newValue = result + 1;
+            if (newValue > 0x00FFFFFF) newValue = 1; // Roll over to 1, not 0.
+            if (sNextGeneratedId.compareAndSet(result, newValue)) {
+                Log.d("GENERATED_ID:", " " + result);
+                return result;
+            }
         }
     }
 }

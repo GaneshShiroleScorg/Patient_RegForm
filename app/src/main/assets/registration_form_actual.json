@@ -570,30 +570,45 @@
               "sectionName": "Section 1",
               "fields": [
                 {
+                  "type": "textboxgroup",
                   "name": "Any major operation",
-                  "type": "textbox",
                   "isMandatory": false,
-                  "length": 15,
-                  "inputType": "name"
+                  "inputType": "name",
+                  "dataList": [
+                    "Heart",
+                    "Hand",
+                    "Legs",
+                    "nose"
+                  ],
+                  "value": "Heart",
+                  "moreField": [
+                    {
+                      "name": "Approximate Date",
+                      "type": "textbox",
+                      "length": 15,
+                      "inputType": "date"
+                    }
+                  ]
                 },
                 {
-                  "name": "Approximate Date",
-                  "type": "textbox",
-                  "length": 15,
-                  "inputType": "date"
-                },
-                {
+                  "type": "textboxgroup",
                   "name": "Any major illness",
-                  "type": "textbox",
                   "isMandatory": false,
-                  "length": 15,
-                  "inputType": "name"
-                },
-                {
-                  "name": "Approximate Date",
-                  "type": "textbox",
-                  "length": 15,
-                  "inputType": "date"
+                  "inputType": "name",
+                  "dataList": [
+                    "Maleria",
+                    "tifoid",
+                    "Dengu"
+                  ],
+                  "value": "Maleria",
+                  "moreField": [
+                    {
+                      "name": "Approximate Date",
+                      "type": "textbox",
+                      "length": 15,
+                      "inputType": "date"
+                    }
+                  ]
                 },
                 {
                   "name": "Allergies",

@@ -129,7 +129,7 @@ public class FormFragment extends Fragment {
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(formNumber, getChildFragmentManager(), pages);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mTabLayout.setupWithViewPager(mViewPager);
+//        mTabLayout.setupWithViewPager(mViewPager);
 
         for (int position = 0; position < pages.size(); position++) {
             View tabView = getActivity().getLayoutInflater().inflate(R.layout.custom_tab, null);
@@ -149,7 +149,8 @@ public class FormFragment extends Fragment {
                 rightView.setVisibility(View.INVISIBLE);
             else rightView.setVisibility(View.VISIBLE);
 
-            mTabLayout.getTabAt(position).setCustomView(tabView);
+            TabLayout.Tab customTab = mTabLayout.newTab().setCustomView(tabView);
+            mTabLayout.addTab(customTab);
         }
 
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -157,6 +158,7 @@ public class FormFragment extends Fragment {
             public void onTabSelected(TabLayout.Tab tab) {
                 TextView indicatorText = tab.getCustomView().findViewById(R.id.indicatorText);
                 selectTab(indicatorText, true);
+                mViewPager.setCurrentItem(tab.getPosition(), true);
 
                 // hide keyboard
                 CommonMethods.hideKeyboard(getContext());
@@ -166,6 +168,8 @@ public class FormFragment extends Fragment {
             public void onTabUnselected(TabLayout.Tab tab) {
                 TextView indicatorText = tab.getCustomView().findViewById(R.id.indicatorText);
                 selectTab(indicatorText, false);
+
+                Page page = ((PageFragment)mSectionsPagerAdapter.getItem(tab.getPosition())).getPage();
             }
 
             @Override
@@ -179,10 +183,12 @@ public class FormFragment extends Fragment {
         if (isSelected) {
             params.height = getResources().getDimensionPixelSize(R.dimen.badge_selected_size);
             params.width = getResources().getDimensionPixelSize(R.dimen.badge_selected_size);
+            indicatorText.setBackgroundResource(R.drawable.unfilled_selected_badge);
             indicatorText.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimension(R.dimen.badge_selected_text_size));
         } else {
             params.height = getResources().getDimensionPixelSize(R.dimen.badge_normal_size);
             params.width = getResources().getDimensionPixelSize(R.dimen.badge_normal_size);
+            indicatorText.setBackgroundResource(R.drawable.unfilled_badge);
             indicatorText.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimension(R.dimen.badge_normal_text_size));
         }
     }
@@ -242,9 +248,7 @@ public class FormFragment extends Fragment {
     // Listener
     public interface ButtonClickListener {
         void backClick(int formNumber);
-
         void nextClick(int formNumber);
-
         void submitClick(int formNumber);
     }
 
