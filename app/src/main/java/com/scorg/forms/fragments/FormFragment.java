@@ -2,17 +2,18 @@ package com.scorg.forms.fragments;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.RelativeLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.scorg.forms.R;
@@ -136,14 +137,17 @@ public class FormFragment extends Fragment {
             TextView indicatorText = tabView.findViewById(R.id.indicatorText);
             TextView leftView = tabView.findViewById(R.id.leftView);
             TextView rightView = tabView.findViewById(R.id.rightView);
+            TextView titleTextView = tabView.findViewById(R.id.titleTextView);
+
+            titleTextView.setText(pages.get(position).getPageName());
 
             indicatorText.setText(String.valueOf(position + 1));
             if (position == 0) {
-                selectTab(indicatorText, true);
+                selectTab(tabView, true);
                 leftView.setVisibility(View.INVISIBLE);
             } else {
                 leftView.setVisibility(View.VISIBLE);
-                selectTab(indicatorText, false);
+                selectTab(tabView, false);
             }
             if (pages.size() == (position + 1))
                 rightView.setVisibility(View.INVISIBLE);
@@ -156,8 +160,8 @@ public class FormFragment extends Fragment {
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                TextView indicatorText = tab.getCustomView().findViewById(R.id.indicatorText);
-                selectTab(indicatorText, true);
+//                TextView indicatorText = tab.getCustomView().findViewById(R.id.indicatorText);
+                selectTab(tab.getCustomView(), true);
                 mViewPager.setCurrentItem(tab.getPosition(), true);
 
                 // hide keyboard
@@ -166,9 +170,8 @@ public class FormFragment extends Fragment {
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                TextView indicatorText = tab.getCustomView().findViewById(R.id.indicatorText);
-                selectTab(indicatorText, false);
-
+//                TextView indicatorText = tab.getCustomView().findViewById(R.id.indicatorText);
+                selectTab(tab.getCustomView(), false);
                 Page page = ((PageFragment)mSectionsPagerAdapter.getItem(tab.getPosition())).getPage();
             }
 
@@ -178,18 +181,35 @@ public class FormFragment extends Fragment {
         });
     }
 
-    private void selectTab(TextView indicatorText, boolean isSelected) {
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) indicatorText.getLayoutParams();
+    private void selectTab(View tabView, boolean isSelected) {
+
+        LinearLayout tabBackground = tabView.findViewById(R.id.tabBackground);
+        TextView indicatorText = tabView.findViewById(R.id.indicatorText);
+        TextView titleTextView = tabView.findViewById(R.id.titleTextView);
+        ImageView downArrow = tabView.findViewById(R.id.downArrow);
+
+//        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) indicatorText.getLayoutParams();
         if (isSelected) {
-            params.height = getResources().getDimensionPixelSize(R.dimen.badge_selected_size);
-            params.width = getResources().getDimensionPixelSize(R.dimen.badge_selected_size);
-            indicatorText.setBackgroundResource(R.drawable.unfilled_selected_badge);
-            indicatorText.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimension(R.dimen.badge_selected_text_size));
+//            params.height = getResources().getDimensionPixelSize(R.dimen.badge_selected_size);
+//            params.width = getResources().getDimensionPixelSize(R.dimen.badge_selected_size);
+//            indicatorText.setBackgroundResource(R.drawable.unfilled_selected_badge);
+//            indicatorText.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimension(R.dimen.badge_selected_text_size));
+
+            tabBackground.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            indicatorText.setTextColor(getResources().getColor(R.color.colorPrimary));
+            titleTextView.setTextColor(getResources().getColor(android.R.color.white));
+            downArrow.setImageResource(R.drawable.down_arrow);
+
         } else {
-            params.height = getResources().getDimensionPixelSize(R.dimen.badge_normal_size);
-            params.width = getResources().getDimensionPixelSize(R.dimen.badge_normal_size);
-            indicatorText.setBackgroundResource(R.drawable.unfilled_badge);
-            indicatorText.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimension(R.dimen.badge_normal_text_size));
+//            params.height = getResources().getDimensionPixelSize(R.dimen.badge_normal_size);
+//            params.width = getResources().getDimensionPixelSize(R.dimen.badge_normal_size);
+//            indicatorText.setBackgroundResource(R.drawable.unfilled_badge);
+//            indicatorText.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimension(R.dimen.badge_normal_text_size));
+
+            tabBackground.setBackgroundColor(getResources().getColor(R.color.tab_unfilled_color));
+            indicatorText.setTextColor(getResources().getColor(android.R.color.black));
+            titleTextView.setTextColor(getResources().getColor(android.R.color.black));
+            downArrow.setImageDrawable(null);
         }
     }
 

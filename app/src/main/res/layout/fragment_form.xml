@@ -5,7 +5,7 @@
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="@color/tab_unfilled_color"
     android:fitsSystemWindows="true"
     tools:context="com.scorg.forms.fragments.FormFragment">
 
@@ -20,12 +20,12 @@
         <android.support.design.widget.TabLayout
             android:id="@+id/tabs"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="@android:color/white"
+            android:layout_height="180dp"
+            android:background="@drawable/tab_layout_background"
             app:tabGravity="center"
             app:tabIndicatorColor="@android:color/transparent"
-            app:tabMaxWidth="160dp"
-            app:tabMinWidth="80dp"
+            app:tabMaxWidth="580dp"
+            app:tabMinWidth="160dp"
             app:tabMode="fixed"
             app:tabPaddingEnd="0dp"
             app:tabPaddingStart="0dp" />
@@ -50,7 +50,7 @@
             android:layout_alignParentBottom="true"
             android:padding="@dimen/view_margin">
 
-            <Button
+            <com.scorg.forms.customui.CustomButton
                 android:id="@+id/backButton"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="wrap_content"
@@ -63,7 +63,7 @@
                 android:text="@string/back"
                 android:textSize="@dimen/button_text_size" />
 
-            <Button
+            <com.scorg.forms.customui.CustomButton
                 android:id="@+id/nextButton"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="wrap_content"
@@ -76,7 +76,7 @@
                 android:text="@string/next"
                 android:textSize="@dimen/button_text_size" />
 
-            <Button
+            <com.scorg.forms.customui.CustomButton
                 android:id="@+id/submitButton"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="wrap_content"

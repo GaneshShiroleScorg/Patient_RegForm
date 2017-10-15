@@ -1,41 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/leftView"
+    <!--Used com.scorg.forms.customui.CustomTextView here because View doesn't have maxWidth and minWidth property-->
+    <LinearLayout
+        android:id="@+id/tabBackground"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/indicatorText"
-        android:layout_toStartOf="@+id/indicatorText"
+        android:layout_height="154dp"
         android:background="@color/colorPrimary"
-        android:maxWidth="100dp"
-        android:minWidth="30dp"/>
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/view_margin"
+        android:paddingTop="@dimen/view_margin">
 
-    <TextView
-        android:id="@+id/indicatorText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:background="@drawable/unfilled_badge"
-        android:gravity="center"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/badge_normal_text_size"
-        android:textStyle="bold"
-        tools:text="1" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/view_margin">
 
-    <TextView
-        android:id="@+id/rightView"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/indicatorText"
-        android:layout_toRightOf="@+id/indicatorText"
-        android:background="@color/colorPrimary"
-        android:maxWidth="100dp"
-        android:minWidth="30dp" />
+            <TextView
+                android:id="@+id/leftView"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/indicatorText"
+                android:layout_toStartOf="@+id/indicatorText"
+                android:background="@android:color/white"
+                android:maxWidth="300dp"
+                android:minWidth="100dp" />
 
-</RelativeLayout>
+            <com.scorg.forms.customui.CustomTextView
+                android:id="@+id/indicatorText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:background="@drawable/unfilled_badge"
+                android:gravity="center"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/badge_normal_text_size"
+                app:customFont="@string/roboto_medium"
+                tools:text="1" />
+
+            <!--Used com.scorg.forms.customui.CustomTextView here because View doesn't have maxWidth and minWidth property-->
+
+            <TextView
+                android:id="@+id/rightView"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/indicatorText"
+                android:layout_toRightOf="@+id/indicatorText"
+                android:background="@android:color/white"
+                android:maxWidth="300dp"
+                android:minWidth="100dp" />
+
+        </RelativeLayout>
+
+        <com.scorg.forms.customui.CustomTextView
+            android:id="@+id/titleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:padding="@dimen/view_margin"
+            android:textColor="@android:color/white"
+            app:customFont="@string/roboto_medium"
+            tools:text="Personal\nInformation" />
+
+    </LinearLayout>
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/downArrow"
+        android:layout_width="32dp"
+        android:layout_height="@dimen/tab_arrow_height"
+        android:tint="@color/colorPrimary"
+        android:scaleType="fitXY"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/down_arrow" />
+
+</LinearLayout>

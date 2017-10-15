@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="@color/tab_unfilled_color"
     tools:context="com.scorg.forms.activities.PersonalInfoActivity">
 
     <RelativeLayout
@@ -16,7 +16,8 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="60dp"
-            android:layout_centerHorizontal="true">
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true">
 
             <EditText
                 android:id="@+id/mobileText"
@@ -39,7 +40,9 @@
                 android:layout_toEndOf="@+id/mobileText"
                 android:layout_toRightOf="@+id/mobileText"
                 android:padding="@dimen/dp5"
-                app:srcCompat="@drawable/ic_navigate_next_24dp" />
+                android:layout_marginEnd="@dimen/view_margin"
+                app:srcCompat="@drawable/ic_navigate_next_24dp"
+                android:layout_marginRight="@dimen/view_margin" />
 
         </RelativeLayout>
 
@@ -50,10 +53,11 @@
         android:layout_width="match_parent"
         android:layout_height="6dp"
         android:layout_below="@+id/headerLayout"
-        android:background="@android:color/white"
+        android:background="@color/tab_unfilled_color"
         app:srcCompat="@drawable/toolbarshadow" />
 
     <FrameLayout
+        android:layout_margin="@dimen/view_margin"
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

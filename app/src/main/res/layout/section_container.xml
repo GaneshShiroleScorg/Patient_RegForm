@@ -3,16 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <TextView
+    <com.scorg.forms.customui.CustomTextView
         android:id="@+id/sectionTitleView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/view_margin"
         android:paddingBottom="@dimen/view_margin"
         android:textSize="@dimen/section_title_text_size"
-        android:textStyle="bold"
+        app:customFont="@string/roboto_medium"
         tools:text="Section 1" />
 
     <LinearLayout

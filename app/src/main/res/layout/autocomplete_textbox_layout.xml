@@ -9,7 +9,7 @@
     android:paddingTop="@dimen/dp10"
     android:orientation="horizontal">
 
-    <TextView
+    <com.scorg.forms.customui.CustomTextView
         android:id="@+id/labelView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
         android:layout_gravity="center_vertical"
         android:layout_weight="1">
 
-        <AutoCompleteTextView
+        <com.scorg.forms.customui.CustomAutoCompleteEditText
             android:id="@+id/editText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,8 +44,8 @@
             android:id="@+id/plusButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_add_black_24dp"
-            android:padding="@dimen/dp5"
+            app:srcCompat="@drawable/ic_add"
+            android:padding="@dimen/dp10"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true" />

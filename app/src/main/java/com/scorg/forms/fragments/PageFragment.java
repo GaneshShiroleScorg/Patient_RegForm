@@ -10,7 +10,6 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -409,7 +408,7 @@ public class PageFragment extends Fragment {
 
                 final ArrayList<String> dataList = field.getDataList();
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(dropDown.getContext(), R.layout.spinner_item, dataList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(dropDown.getContext(), R.layout.dropdown_item, dataList);
                 dropDown.setAdapter(adapter);
 
                 // set pre value

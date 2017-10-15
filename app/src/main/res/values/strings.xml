@@ -17,4 +17,11 @@
     <string name="enter_email">Enter email address.</string>
     <string name="err_invalid_email">Enter valid email.</string>
     <string name="years">Years</string>
+
+    <string name="roboto_black">roboto_black.ttf</string>
+    <string name="roboto_bold">roboto_bold.ttf</string>
+    <string name="roboto_light">roboto_light.ttf</string>
+    <string name="roboto_medium">roboto_medium.ttf</string>
+    <string name="roboto_regular">roboto_regular.ttf</string>
+    <string name="roboto_thin">roboto_thin.ttf</string>
 </resources>

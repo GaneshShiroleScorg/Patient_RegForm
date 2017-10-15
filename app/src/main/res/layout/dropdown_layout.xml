@@ -8,7 +8,7 @@
     android:paddingBottom="@dimen/dp10"
     android:paddingTop="@dimen/dp10">
 
-    <TextView
+    <com.scorg.forms.customui.CustomTextView
         android:id="@+id/labelView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -25,13 +25,14 @@
         android:layout_weight="1"
         android:orientation="horizontal">
 
-        <Spinner
+        <com.scorg.forms.customui.CustomSpinner
             android:id="@+id/dropDown"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:orientation="horizontal"
+            android:clipToPadding="false"
             android:textSize="@dimen/field_text_size" />
 
         <View

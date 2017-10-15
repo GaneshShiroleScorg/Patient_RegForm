@@ -8,7 +8,7 @@
     android:paddingBottom="@dimen/dp10"
     android:paddingTop="@dimen/dp10">
 
-    <TextView
+    <com.scorg.forms.customui.CustomTextView
         android:id="@+id/labelView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
