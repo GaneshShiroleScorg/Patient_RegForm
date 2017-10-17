@@ -11,6 +11,9 @@ import java.util.ArrayList;
 
 public class Form implements Parcelable {
 
+    @SerializedName("formIcon")
+    @Expose
+    private String formIcon;
     @SerializedName("formName")
     @Expose
     private String formName;
@@ -34,11 +37,20 @@ public class Form implements Parcelable {
     };
 
     protected Form(Parcel in) {
+        this.formIcon = ((String) in.readValue((String.class.getClassLoader())));
         this.formName = ((String) in.readValue((String.class.getClassLoader())));
         in.readList(this.pages, (Page.class.getClassLoader()));
     }
 
     public Form() {
+    }
+
+    public String getFormIcon() {
+        return formIcon;
+    }
+
+    public void setFormIcon(String formIcon) {
+        this.formIcon = formIcon;
     }
 
     public String getFormName() {
@@ -58,6 +70,7 @@ public class Form implements Parcelable {
     }
 
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue(formIcon);
         dest.writeValue(formName);
         dest.writeList(pages);
     }

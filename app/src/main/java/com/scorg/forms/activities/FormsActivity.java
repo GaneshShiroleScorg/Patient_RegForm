@@ -1,91 +1,72 @@
 package com.scorg.forms.activities;
 
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.scorg.forms.R;
 import com.scorg.forms.fragments.FormFragment;
 import com.scorg.forms.models.Form;
 
-import java.util.ArrayList;
-
-import static com.scorg.forms.activities.PersonalInfoActivity.FORMS;
-
 public class FormsActivity extends AppCompatActivity implements FormFragment.ButtonClickListener {
 
     private static final String TAG = "Form";
-    private TabLayout mMainTabLayout;
-    private FragmentManager fragmentManager;
 
+    public static final String FORM = "form";
+    public static final String FORM_INDEX = "form_index";
+
+    @SuppressWarnings("CheckResult")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forms);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        Form form = getIntent().getParcelableExtra(FORM);
+        int formIndex = getIntent().getIntExtra(FORM_INDEX, 0);
 
-        fragmentManager = getSupportFragmentManager();
+        FormFragment formFragment = FormFragment.newInstance(formIndex, form.getPages(), form.getFormName(), true);
+        addFormFragment(formFragment, form.getFormName(), formIndex);
 
-        ArrayList<Form> forms = getIntent().getParcelableArrayListExtra(FORMS);
+        TextView titleTextView = findViewById(R.id.titleTextView);
+        titleTextView.setText(form.getFormName());
+        ImageView logo = findViewById(R.id.logo);
 
-        mMainTabLayout = (TabLayout) findViewById(R.id.tabsMain);
-        setupMainTab(forms);
-    }
+        int iconSize = getResources().getDimensionPixelSize(R.dimen.icon_size);
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions.dontAnimate();
+        requestOptions.override(iconSize, iconSize);
+        requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
+        requestOptions.skipMemoryCache(true);
+        requestOptions.error(R.drawable.ic_assignment);
+        requestOptions.placeholder(R.drawable.ic_assignment);
 
-    private void setupMainTab(final ArrayList<Form> forms) {
+        Glide.with(FormsActivity.this)
+                .load(form.getFormIcon())
+                .apply(requestOptions)
+                .into(logo);
 
-        for (int position = 0; position < forms.size(); position++) {
-            mMainTabLayout.addTab(mMainTabLayout.newTab().setText(forms.get(position).getFormName()));
-        }
+        ImageView backButton = findViewById(R.id.backButton);
 
-        if (mMainTabLayout.getTabCount() > 5){
-            mMainTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-        }else {
-            mMainTabLayout.setTabMode(TabLayout.MODE_FIXED);
-        }
-
-        Fragment formFragment = FormFragment.newInstance(0, forms.get(0).getPages(), forms.get(0).getFormName());
-        addFormFragment(formFragment, forms.get(0).getFormName(), 0);
-
-        mMainTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        backButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                Fragment formFragment = fragmentManager.findFragmentByTag((String) tab.getText() + tab.getPosition());
-                if (formFragment != null) {
-                    transaction.replace(R.id.containerMain, formFragment);
-                    transaction.commit();
-                    Log.d(TAG, "Reloaded " + forms.get(tab.getPosition()).getFormName() + " fragment");
-                } else {
-                    formFragment = FormFragment.newInstance(tab.getPosition(), forms.get(tab.getPosition()).getPages(), forms.get(tab.getPosition()).getFormName());
-                    addFormFragment(formFragment, forms.get(tab.getPosition()).getFormName(), tab.getPosition());
-                }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
+            public void onClick(View v) {
+                onBackPressed();
             }
         });
+
     }
 
     private void addFormFragment(Fragment formFragment, String formName, int position) {
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(R.id.containerMain, formFragment, formName + position);
-        transaction.addToBackStack(formName + position);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.container, formFragment, formName + position);
         transaction.commit();
         Log.d(TAG, "Added " + formName + " fragment");
     }
@@ -95,43 +76,24 @@ public class FormsActivity extends AppCompatActivity implements FormFragment.But
         finish();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_forms, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
 
     @Override
     public void backClick(int formNumber) {
-        if (formNumber > 0)
-            mMainTabLayout.getTabAt(formNumber - 1).select();
+
     }
 
     @Override
     public void nextClick(int formNumber) {
-        if (formNumber < (mMainTabLayout.getTabCount() - 1))
-        mMainTabLayout.getTabAt(formNumber + 1).select();
+
     }
 
     @Override
     public void submitClick(int formNumber) {
+
+    }
+
+    @Override
+    public void editClick(int formNumber) {
 
     }
 }

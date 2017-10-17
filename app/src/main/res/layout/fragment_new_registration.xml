@@ -1,0 +1,38 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/tab_unfilled_color"
+    tools:context="com.scorg.forms.fragments.NewRegistrationFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_margin="@dimen/view_margin"
+        android:background="@android:color/white"
+        android:layout_gravity="center"
+        android:gravity="center">
+
+        <com.scorg.forms.customui.CustomTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/new_registration"
+            android:textSize="22sp"
+            android:gravity="center"
+            app:customFont="@string/roboto_medium" />
+
+        <com.scorg.forms.customui.CustomTextView
+            android:id="@+id/newRegistration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/click_here"
+            android:textSize="18sp"
+            android:padding="@dimen/dp10"
+            android:gravity="center"
+            app:customFont="@string/roboto_medium" />
+
+    </LinearLayout>
+
+</FrameLayout>

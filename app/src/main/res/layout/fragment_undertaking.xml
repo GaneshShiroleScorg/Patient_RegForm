@@ -1,0 +1,99 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    tools:context="com.scorg.forms.fragments.UndertakingFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/title_background">
+
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_margin="@dimen/view_margin"
+                app:srcCompat="@drawable/ic_logo" />
+
+        </RelativeLayout>
+
+        <com.scorg.forms.customui.CustomTextView
+            android:id="@+id/titleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="@dimen/dp12"
+            android:textAllCaps="true"
+            android:textSize="@dimen/button_text_size"
+            android:textColor="@color/title_background"
+            app:customFont="@string/roboto_medium"
+            tools:text="@string/undertaking" />
+
+        <com.scorg.forms.customui.CustomTextView
+            android:id="@+id/dateTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:textSize="@dimen/button_text_size"
+            android:padding="@dimen/view_margin"
+            android:text="Date: 12/10/2017"
+            app:customFont="@string/roboto_medium" />
+
+        <com.scorg.forms.customui.CustomTextView
+            android:id="@+id/contentTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/view_margin"
+            android:layout_marginBottom="@dimen/view_margin"
+            android:textSize="@dimen/button_text_size"
+            android:lineSpacingExtra="@dimen/dp5"
+            android:padding="@dimen/view_margin" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_margin="@dimen/view_margin"
+            android:background="@drawable/profile_photo_back">
+
+            <com.github.gcacace.signaturepad.views.SignaturePad
+                android:id="@+id/signature_pad"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/view_margin"
+                app:penColor="@android:color/black"
+                app:penMaxWidth="2.5dp"
+                app:penMinWidth=".5dp" />
+
+            <com.scorg.forms.customui.CustomButton
+                android:id="@+id/clearButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:background="@android:color/transparent"
+                android:text="@string/clear" />
+
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/submitButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/button_selector"
+            android:text="@string/submit"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+</ScrollView>

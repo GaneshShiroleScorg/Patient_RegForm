@@ -1,9 +1,11 @@
 package com.scorg.forms.fragments;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.content.res.AppCompatResources;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -27,6 +29,9 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.philliphsu.bottomsheetpickers.date.DatePickerDialog;
 import com.scorg.forms.R;
 import com.scorg.forms.customui.FlowLayout;
@@ -38,12 +43,16 @@ import com.scorg.forms.util.CommonMethods;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import static com.scorg.forms.fragments.FormFragment.FORM_NUMBER;
+import static com.scorg.forms.fragments.FormFragment.IS_EDITABLE;
+
 /**
  * A placeholder fragment containing a simple view.
  */
 public class PageFragment extends Fragment {
 
     private DatePickerDialog datePickerDialog;
+    private boolean isEditable = true;
 
     interface TYPE {
         String TEXTBOX = "textbox";
@@ -80,11 +89,12 @@ public class PageFragment extends Fragment {
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static PageFragment newInstance(int formNumber, int pageNumber, Page page) {
+    public static PageFragment newInstance(int formNumber, int pageNumber, Page page, boolean isEditable) {
         PageFragment fragment = new PageFragment();
         Bundle args = new Bundle();
-        args.putInt(FormFragment.FORM_NUMBER, formNumber);
+        args.putInt(FORM_NUMBER, formNumber);
         args.putInt(PAGE_NUMBER, pageNumber);
+        args.putBoolean(IS_EDITABLE, isEditable);
         args.putParcelable(PAGE, page);
         fragment.setArguments(args);
         return fragment;
@@ -96,49 +106,82 @@ public class PageFragment extends Fragment {
         if (getArguments() != null) {
             page = getArguments().getParcelable(PAGE);
             pageNumber = getArguments().getInt(PAGE_NUMBER);
-            formNumber = getArguments().getInt(PAGE_NUMBER);
+            formNumber = getArguments().getInt(FORM_NUMBER);
+            isEditable = getArguments().getBoolean(IS_EDITABLE);
         }
     }
 
+    @SuppressWarnings("CheckResult")
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_pages, container, false);
 
-        TextView formNumberTextView = rootView.findViewById(R.id.titleView);
-        LinearLayout formContainerLayout = rootView.findViewById(R.id.formContainer);
+        TextView titleTextView = rootView.findViewById(R.id.titleView);
+        LinearLayout sectionsContainer = rootView.findViewById(R.id.sectionsContainer);
 
-        formNumberTextView.setText(page.getPageName());
+        titleTextView.setText(page.getPageName());
 
         for (int sectionIndex = 0; sectionIndex < page.getSection().size(); sectionIndex++) {
-            final View sectionContainer = inflater.inflate(R.layout.section_container, formContainerLayout, false);
-            final ArrayList<Field> fields = page.getSection().get(sectionIndex).getFields();
+            View sectionLayout = inflater.inflate(R.layout.section_layout, sectionsContainer, false);
 
-            TextView sectionTitle = sectionContainer.findViewById(R.id.sectionTitleView);
+            LinearLayout profilePhotoLayout = sectionLayout.findViewById(R.id.profilePhotoLayout);
+            ImageView profilePhoto = sectionLayout.findViewById(R.id.profilePhoto);
+            TextView editButton = sectionLayout.findViewById(R.id.editButton);
+
+            editButton.setEnabled(isEditable);
+
+            Drawable leftDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_edit);
+            editButton.setCompoundDrawablesWithIntrinsicBounds(leftDrawable, null, null, null);
+
+            if (page.getSection().get(sectionIndex).getProfilePhoto() == null) {
+                profilePhotoLayout.setVisibility(View.GONE);
+            } else {
+                profilePhotoLayout.setVisibility(View.VISIBLE);
+
+                RequestOptions requestOptions = new RequestOptions();
+                requestOptions.dontAnimate();
+                requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
+                requestOptions.skipMemoryCache(true);
+                requestOptions.error(R.drawable.ic_camera);
+                requestOptions.placeholder(R.drawable.ic_camera);
+
+                Glide.with(getContext())
+                        .load(page.getSection().get(sectionIndex).getProfilePhoto())
+                        .into(profilePhoto);
+            }
+
+            View fieldsContainer = sectionLayout.findViewById(R.id.fieldsContainer);
+
+            ArrayList<Field> fields = page.getSection().get(sectionIndex).getFields();
+
+            TextView sectionTitle = sectionLayout.findViewById(R.id.sectionTitleView);
             sectionTitle.setText(page.getSection().get(sectionIndex).getSectionName());
 
             for (int fieldsIndex = 0; fieldsIndex < fields.size(); fieldsIndex++) {
                 final Field field = fields.get(fieldsIndex);
-                addField(sectionContainer, sectionIndex, fields, field, fieldsIndex, inflater, -1);
+                addField(fieldsContainer, sectionIndex, fields, field, fieldsIndex, inflater, -1);
             }
 
-            formContainerLayout.addView(sectionContainer);
+            sectionsContainer.addView(sectionLayout);
         }
 
         return rootView;
     }
 
-    private void addField(final View sectionContainer, final int sectionIndex, final ArrayList<Field> fields, final Field field, final int fieldsIndex, final LayoutInflater inflater, int indexToAddView) {
+    private void addField(final View fieldsContainer, final int sectionIndex, final ArrayList<Field> fields, final Field field, final int fieldsIndex, final LayoutInflater inflater, int indexToAddView) {
         switch (field.getType()) {
 
             case TYPE.TEXTBOXGROUP: {
                 // Added Extended Layout
-                final View fieldLayout = inflater.inflate(R.layout.autocomplete_textbox_layout, (LinearLayout) sectionContainer, false);
+                final View fieldLayout = inflater.inflate(R.layout.autocomplete_textbox_layout, (LinearLayout) fieldsContainer, false);
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
                 labelView.setText(field.getName());
 
                 final AutoCompleteTextView textBox = fieldLayout.findViewById(R.id.editText);
                 textBox.setId(CommonMethods.generateViewId());
+
+                textBox.setEnabled(isEditable);
 
                 // set pre value
                 textBox.setText(field.getValue());
@@ -152,16 +195,16 @@ public class PageFragment extends Fragment {
                 // Add Parent First
 
                 if (indexToAddView != -1)
-                    ((LinearLayout) sectionContainer).addView(fieldLayout, indexToAddView);
-                else ((LinearLayout) sectionContainer).addView(fieldLayout);
+                    ((LinearLayout) fieldsContainer).addView(fieldLayout, indexToAddView);
+                else ((LinearLayout) fieldsContainer).addView(fieldLayout);
 
                 ArrayList<Field> moreFields = field.getTextBoxGroup();
 
                 for (int moreFieldIndex = 0; moreFieldIndex < moreFields.size(); moreFieldIndex++) {
                     if (indexToAddView != -1)
-                        addField(sectionContainer, sectionIndex, fields, moreFields.get(moreFieldIndex), fieldsIndex, inflater, indexToAddView + moreFieldIndex + 1);
+                        addField(fieldsContainer, sectionIndex, fields, moreFields.get(moreFieldIndex), fieldsIndex, inflater, indexToAddView + moreFieldIndex + 1);
                     else
-                        addField(sectionContainer, sectionIndex, fields, moreFields.get(moreFieldIndex), fieldsIndex, inflater, -1);
+                        addField(fieldsContainer, sectionIndex, fields, moreFields.get(moreFieldIndex), fieldsIndex, inflater, -1);
                 }
 
                 textBox.addTextChangedListener(new TextWatcher() {
@@ -182,6 +225,7 @@ public class PageFragment extends Fragment {
                 });
 
                 ImageView plusButton = fieldLayout.findViewById(R.id.plusButton);
+                plusButton.setEnabled(isEditable);
 
                 plusButton.setVisibility(View.VISIBLE);
                 plusButton.setOnClickListener(new View.OnClickListener() {
@@ -202,7 +246,7 @@ public class PageFragment extends Fragment {
 
                             fieldGroupNew.setTextBoxGroup(clonedMoreFields);
 
-                            addField(sectionContainer, sectionIndex, fields, fieldGroupNew, fieldsIndex, inflater, ((LinearLayout) fieldLayout.getParent()).indexOfChild(fieldLayout) + 1 + fieldGroupNew.getTextBoxGroup().size());
+                            addField(fieldsContainer, sectionIndex, fields, fieldGroupNew, fieldsIndex, inflater, ((LinearLayout) fieldLayout.getParent()).indexOfChild(fieldLayout) + 1 + fieldGroupNew.getTextBoxGroup().size());
                         } catch (CloneNotSupportedException e) {
                             e.printStackTrace();
                         }
@@ -213,7 +257,7 @@ public class PageFragment extends Fragment {
             }
 
             case TYPE.TEXTBOX: {
-                View fieldLayout = inflater.inflate(R.layout.textbox_layout, (LinearLayout) sectionContainer, false);
+                View fieldLayout = inflater.inflate(R.layout.textbox_layout, (LinearLayout) fieldsContainer, false);
 
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
 
@@ -223,6 +267,8 @@ public class PageFragment extends Fragment {
                 RelativeLayout.LayoutParams textBoxParams = (RelativeLayout.LayoutParams) textBox.getLayoutParams();
 
                 textBox.setId(CommonMethods.generateViewId());
+
+                textBox.setEnabled(isEditable);
 
                 // set pre value
                 textBox.setText(field.getValue());
@@ -314,13 +360,13 @@ public class PageFragment extends Fragment {
                 });
 
                 if (indexToAddView != -1)
-                    ((LinearLayout) sectionContainer).addView(fieldLayout, indexToAddView);
-                else ((LinearLayout) sectionContainer).addView(fieldLayout);
+                    ((LinearLayout) fieldsContainer).addView(fieldLayout, indexToAddView);
+                else ((LinearLayout) fieldsContainer).addView(fieldLayout);
                 break;
             }
 
             case TYPE.RADIOBUTTON: {
-                View fieldLayout = inflater.inflate(R.layout.radiobutton_layout, (LinearLayout) sectionContainer, false);
+                View fieldLayout = inflater.inflate(R.layout.radiobutton_layout, (LinearLayout) fieldsContainer, false);
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
                 labelView.setText(field.getName());
 
@@ -333,6 +379,8 @@ public class PageFragment extends Fragment {
                     RadioButton radioButton = (RadioButton) inflater.inflate(R.layout.radiobutton, radioGroup, false);
                     radioButton.setId(CommonMethods.generateViewId());
                     radioButton.setText(data);
+
+                    radioButton.setEnabled(isEditable);
 
                     // set pre value
                     if (field.getValue().equals(radioButton.getText().toString()))
@@ -349,12 +397,12 @@ public class PageFragment extends Fragment {
                 });
 
                 if (indexToAddView != -1)
-                    ((LinearLayout) sectionContainer).addView(fieldLayout, indexToAddView);
-                else ((LinearLayout) sectionContainer).addView(fieldLayout);
+                    ((LinearLayout) fieldsContainer).addView(fieldLayout, indexToAddView);
+                else ((LinearLayout) fieldsContainer).addView(fieldLayout);
                 break;
             }
             case TYPE.CHECKBOX: {
-                View fieldLayout = inflater.inflate(R.layout.checkbox_layout, (LinearLayout) sectionContainer, false);
+                View fieldLayout = inflater.inflate(R.layout.checkbox_layout, (LinearLayout) fieldsContainer, false);
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
                 labelView.setText(field.getName());
 
@@ -367,6 +415,8 @@ public class PageFragment extends Fragment {
                 for (int dataIndex = 0; dataIndex < dataList.size(); dataIndex++) {
                     String data = dataList.get(dataIndex);
                     final CheckBox checkBox = (CheckBox) inflater.inflate(R.layout.checkbox, checkBoxGroup, false);
+
+                    checkBox.setEnabled(isEditable);
 
                     // set pre value
                     for (String value : values)
@@ -392,13 +442,13 @@ public class PageFragment extends Fragment {
                 }
 
                 if (indexToAddView != -1)
-                    ((LinearLayout) sectionContainer).addView(fieldLayout, indexToAddView);
-                else ((LinearLayout) sectionContainer).addView(fieldLayout);
+                    ((LinearLayout) fieldsContainer).addView(fieldLayout, indexToAddView);
+                else ((LinearLayout) fieldsContainer).addView(fieldLayout);
 
                 break;
             }
             case TYPE.DROPDOWN: {
-                View fieldLayout = inflater.inflate(R.layout.dropdown_layout, (LinearLayout) sectionContainer, false);
+                View fieldLayout = inflater.inflate(R.layout.dropdown_layout, (LinearLayout) fieldsContainer, false);
 
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
                 labelView.setText(field.getName());
@@ -410,6 +460,8 @@ public class PageFragment extends Fragment {
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(dropDown.getContext(), R.layout.dropdown_item, dataList);
                 dropDown.setAdapter(adapter);
+
+                dropDown.setEnabled(isEditable);
 
                 // set pre value
                 dropDown.setSelection(dataList.indexOf(field.getValue()));
@@ -427,8 +479,8 @@ public class PageFragment extends Fragment {
                 });
 
                 if (indexToAddView != -1)
-                    ((LinearLayout) sectionContainer).addView(fieldLayout, indexToAddView);
-                else ((LinearLayout) sectionContainer).addView(fieldLayout);
+                    ((LinearLayout) fieldsContainer).addView(fieldLayout, indexToAddView);
+                else ((LinearLayout) fieldsContainer).addView(fieldLayout);
                 break;
             }
         }

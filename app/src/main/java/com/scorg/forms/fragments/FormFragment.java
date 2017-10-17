@@ -2,12 +2,13 @@ package com.scorg.forms.fragments;
 
 
 import android.content.Context;
-import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v7.content.res.AppCompatResources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +17,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.scorg.forms.R;
 import com.scorg.forms.customui.CustomViewPager;
+import com.scorg.forms.models.Field;
 import com.scorg.forms.models.Page;
+import com.scorg.forms.models.Section;
 import com.scorg.forms.util.CommonMethods;
 
 import java.util.ArrayList;
@@ -30,26 +36,32 @@ public class FormFragment extends Fragment {
     private static final String TAG = "Form";
     private static final String PAGES = "pages";
     private static final String FORM_NAME = "form_name";
+    public static final String IS_EDITABLE = "is_editable";
 
     ArrayList<Page> pages;
     private String formName;
     private int formNumber;
+    private boolean isEditable = true;
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private CustomViewPager mViewPager;
     private TabLayout mTabLayout;
 
     ButtonClickListener mListener;
+    private Button preButton;
+    private Button nextButton;
+    private Button submitEditButton;
 
     public FormFragment() {
         // Required empty public constructor
     }
 
-    public static FormFragment newInstance(int formNumber, ArrayList<Page> pages, String formName) {
+    public static FormFragment newInstance(int formNumber, ArrayList<Page> pages, String formName, boolean isEditable) {
         FormFragment fragment = new FormFragment();
         Bundle args = new Bundle();
         args.putParcelableArrayList(PAGES, pages);
         args.putInt(FORM_NUMBER, formNumber);
+        args.putBoolean(IS_EDITABLE, isEditable);
         args.putString(FORM_NAME, formName);
         fragment.setArguments(args);
         return fragment;
@@ -59,6 +71,7 @@ public class FormFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+            isEditable = getArguments().getBoolean(IS_EDITABLE);
             pages = getArguments().getParcelableArrayList(PAGES);
             formNumber = getArguments().getInt(FORM_NUMBER);
         }
@@ -69,6 +82,22 @@ public class FormFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View roolView = inflater.inflate(R.layout.fragment_form, container, false);
+
+        // Buttons
+
+        preButton = (Button) roolView.findViewById(R.id.backButton);
+        nextButton = (Button) roolView.findViewById(R.id.nextButton);
+        submitEditButton = (Button) roolView.findViewById(R.id.submitEditButton);
+
+        Drawable leftDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_edit);
+
+        if (isEditable) {
+            submitEditButton.setText(getResources().getString(R.string.submit));
+            submitEditButton.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+        } else {
+            submitEditButton.setText(getResources().getString(R.string.edit));
+            submitEditButton.setCompoundDrawablesWithIntrinsicBounds(leftDrawable, null, null, null);
+        }
 
         // Set up the ViewPager with the sections adapter.
         mTabLayout = (TabLayout) roolView.findViewById(R.id.tabs);
@@ -83,12 +112,6 @@ public class FormFragment extends Fragment {
             mTabLayout.setTabMode(TabLayout.MODE_FIXED);
         }
 
-        // Buttons
-
-        Button backButton = roolView.findViewById(R.id.backButton);
-        Button nextButton = roolView.findViewById(R.id.nextButton);
-        Button submitButton = roolView.findViewById(R.id.submitButton);
-
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,7 +123,7 @@ public class FormFragment extends Fragment {
             }
         });
 
-        backButton.setOnClickListener(new View.OnClickListener() {
+        preButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (0 == mTabLayout.getSelectedTabPosition()) {
@@ -111,37 +134,54 @@ public class FormFragment extends Fragment {
             }
         });
 
-        submitButton.setOnClickListener(new View.OnClickListener() {
+        submitEditButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (isEditable)
                 mListener.submitClick(formNumber);
+                else mListener.editClick(formNumber);
             }
         });
 
         return roolView;
     }
 
-    private void setupViewPager(ArrayList<Page> pages) {
+    @SuppressWarnings("CheckResult")
+    private void setupViewPager(final ArrayList<Page> pages) {
 
         // Set View Pager Paging Disable.
         mViewPager.setPagingEnabled(false);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(formNumber, getChildFragmentManager(), pages);
+        mSectionsPagerAdapter = new SectionsPagerAdapter(formNumber, isEditable, getChildFragmentManager(), pages);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-//        mTabLayout.setupWithViewPager(mViewPager);
 
         for (int position = 0; position < pages.size(); position++) {
             View tabView = getActivity().getLayoutInflater().inflate(R.layout.custom_tab, null);
-            TextView indicatorText = tabView.findViewById(R.id.indicatorText);
+
+            ImageView indicatorIcon = tabView.findViewById(R.id.indicatorIcon);
+
             TextView leftView = tabView.findViewById(R.id.leftView);
             TextView rightView = tabView.findViewById(R.id.rightView);
             TextView titleTextView = tabView.findViewById(R.id.titleTextView);
 
+            int iconSize = getResources().getDimensionPixelSize(R.dimen.page_icon_size);
+            RequestOptions requestOptions = new RequestOptions();
+            requestOptions.dontAnimate();
+            requestOptions.override(iconSize, iconSize);
+            requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
+            requestOptions.skipMemoryCache(true);
+            requestOptions.error(R.drawable.ic_assignment_black);
+            requestOptions.placeholder(R.drawable.ic_assignment_black);
+
+            Glide.with(getContext())
+                    .load(pages.get(position).getPageIcon())
+                    .apply(requestOptions)
+                    .into(indicatorIcon);
+
             titleTextView.setText(pages.get(position).getPageName());
 
-            indicatorText.setText(String.valueOf(position + 1));
             if (position == 0) {
                 selectTab(tabView, true);
                 leftView.setVisibility(View.INVISIBLE);
@@ -157,22 +197,33 @@ public class FormFragment extends Fragment {
             mTabLayout.addTab(customTab);
         }
 
+        handleButtons(0);
+
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-//                TextView indicatorText = tab.getCustomView().findViewById(R.id.indicatorText);
                 selectTab(tab.getCustomView(), true);
                 mViewPager.setCurrentItem(tab.getPosition(), true);
-
+                handleButtons(tab.getPosition());
                 // hide keyboard
                 CommonMethods.hideKeyboard(getContext());
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-//                TextView indicatorText = tab.getCustomView().findViewById(R.id.indicatorText);
+                Page page = pages.get(tab.getPosition());
+
+                for (int sectionIndex = 0; sectionIndex < page.getSection().size(); sectionIndex++) {
+                    Section section = page.getSection().get(sectionIndex);
+
+                    for (int fieldsIndex = 0; fieldsIndex < section.getFields().size(); fieldsIndex++) {
+                        Field field = section.getFields().get(fieldsIndex);
+                        fieldValidation(field);
+                    }
+
+                }
+
                 selectTab(tab.getCustomView(), false);
-                Page page = ((PageFragment)mSectionsPagerAdapter.getItem(tab.getPosition())).getPage();
             }
 
             @Override
@@ -181,34 +232,31 @@ public class FormFragment extends Fragment {
         });
     }
 
+    private void handleButtons(int position) {
+        if (position == 0)
+            preButton.setEnabled(false);
+        else preButton.setEnabled(true);
+
+        if ((position + 1) == mTabLayout.getTabCount())
+            nextButton.setEnabled(false);
+        else nextButton.setEnabled(true);
+    }
+
     private void selectTab(View tabView, boolean isSelected) {
 
         LinearLayout tabBackground = tabView.findViewById(R.id.tabBackground);
-        TextView indicatorText = tabView.findViewById(R.id.indicatorText);
+
         TextView titleTextView = tabView.findViewById(R.id.titleTextView);
         ImageView downArrow = tabView.findViewById(R.id.downArrow);
 
-//        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) indicatorText.getLayoutParams();
         if (isSelected) {
-//            params.height = getResources().getDimensionPixelSize(R.dimen.badge_selected_size);
-//            params.width = getResources().getDimensionPixelSize(R.dimen.badge_selected_size);
-//            indicatorText.setBackgroundResource(R.drawable.unfilled_selected_badge);
-//            indicatorText.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimension(R.dimen.badge_selected_text_size));
-
-            tabBackground.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-            indicatorText.setTextColor(getResources().getColor(R.color.colorPrimary));
+            tabBackground.setBackgroundColor(getResources().getColor(R.color.form_background));
             titleTextView.setTextColor(getResources().getColor(android.R.color.white));
             downArrow.setImageResource(R.drawable.down_arrow);
 
         } else {
-//            params.height = getResources().getDimensionPixelSize(R.dimen.badge_normal_size);
-//            params.width = getResources().getDimensionPixelSize(R.dimen.badge_normal_size);
-//            indicatorText.setBackgroundResource(R.drawable.unfilled_badge);
-//            indicatorText.setTextSize(TypedValue.COMPLEX_UNIT_SP, getResources().getDimension(R.dimen.badge_normal_text_size));
-
             tabBackground.setBackgroundColor(getResources().getColor(R.color.tab_unfilled_color));
-            indicatorText.setTextColor(getResources().getColor(android.R.color.black));
-            titleTextView.setTextColor(getResources().getColor(android.R.color.black));
+            titleTextView.setTextColor(getResources().getColor(R.color.text_color));
             downArrow.setImageDrawable(null);
         }
     }
@@ -222,19 +270,23 @@ public class FormFragment extends Fragment {
 
     private class SectionsPagerAdapter extends FragmentPagerAdapter {
         private final ArrayList<Page> pages;
+        private boolean isEditable = true;
         private int formNumber;
 
-        public SectionsPagerAdapter(int formNumber, FragmentManager fm, ArrayList<Page> pages) {
+        public SectionsPagerAdapter(int formNumber, boolean isEditable, FragmentManager fm, ArrayList<Page> pages) {
             super(fm);
             this.pages = pages;
             this.formNumber = formNumber;
+            this.isEditable = isEditable;
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PageFragment.newInstance(formNumber, position, pages.get(position));
+            if (isEditable)
+                return PageFragment.newInstance(formNumber, position, pages.get(position), isEditable);
+            else return ProfilePageFragment.newInstance(formNumber, position, pages.get(position));
         }
 
         @Override
@@ -270,6 +322,69 @@ public class FormFragment extends Fragment {
         void backClick(int formNumber);
         void nextClick(int formNumber);
         void submitClick(int formNumber);
+
+        void editClick(int formNumber);
+    }
+
+    private void fieldValidation(Field field) {
+        switch (field.getType()) {
+
+            case PageFragment.TYPE.TEXTBOXGROUP: {
+
+                ArrayList<Field> moreFields = field.getTextBoxGroup();
+
+                for (int moreFieldIndex = 0; moreFieldIndex < moreFields.size(); moreFieldIndex++) {
+                    Field moreField = moreFields.get(moreFieldIndex);
+
+                }
+
+                break;
+            }
+
+            case PageFragment.TYPE.TEXTBOX: {
+
+                switch (field.getInputType()) {
+                    case PageFragment.INPUT_TYPE.EMAIL:
+
+                        break;
+                    case PageFragment.INPUT_TYPE.DATE:
+
+
+                        break;
+                    case PageFragment.INPUT_TYPE.MOBILE:
+
+                        break;
+                    case PageFragment.INPUT_TYPE.NAME:
+
+                        break;
+                    case PageFragment.INPUT_TYPE.PIN_CODE:
+
+                        break;
+                    case PageFragment.INPUT_TYPE.TEXTBOX_BIG:
+
+                        break;
+                    case PageFragment.INPUT_TYPE.NUMBER:
+
+                        break;
+                }
+
+                break;
+            }
+
+            case PageFragment.TYPE.RADIOBUTTON: {
+
+                break;
+            }
+            case PageFragment.TYPE.CHECKBOX: {
+
+                break;
+            }
+            case PageFragment.TYPE.DROPDOWN: {
+
+                break;
+            }
+        }
+
     }
 
 }

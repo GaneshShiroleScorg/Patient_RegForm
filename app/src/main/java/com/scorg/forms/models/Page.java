@@ -11,6 +11,9 @@ import java.util.ArrayList;
 
 public class Page implements Parcelable {
 
+    @SerializedName("pageIcon")
+    @Expose
+    private String pageIcon;
     @SerializedName("pageName")
     @Expose
     private String pageName;
@@ -34,11 +37,20 @@ public class Page implements Parcelable {
     };
 
     protected Page(Parcel in) {
+        this.pageIcon = ((String) in.readValue((String.class.getClassLoader())));
         this.pageName = ((String) in.readValue((String.class.getClassLoader())));
         in.readList(this.section, (Section.class.getClassLoader()));
     }
 
     public Page() {
+    }
+
+    public String getPageIcon() {
+        return pageIcon;
+    }
+
+    public void setPageIcon(String pageIcon) {
+        this.pageIcon = pageIcon;
     }
 
     public String getPageName() {
@@ -58,6 +70,7 @@ public class Page implements Parcelable {
     }
 
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue(pageIcon);
         dest.writeValue(pageName);
         dest.writeList(section);
     }

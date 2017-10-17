@@ -11,6 +11,9 @@ import java.util.ArrayList;
 
 public class Section implements Parcelable {
 
+    @SerializedName("profilePhoto")
+    @Expose
+    private String profilePhoto;
     @SerializedName("sectionName")
     @Expose
     private String sectionName;
@@ -34,11 +37,20 @@ public class Section implements Parcelable {
     };
 
     protected Section(Parcel in) {
+        this.profilePhoto = ((String) in.readValue((String.class.getClassLoader())));
         this.sectionName = ((String) in.readValue((String.class.getClassLoader())));
         in.readList(this.fields, (Field.class.getClassLoader()));
     }
 
     public Section() {
+    }
+
+    public String getProfilePhoto() {
+        return profilePhoto;
+    }
+
+    public void setProfilePhoto(String profilePhoto) {
+        this.profilePhoto = profilePhoto;
     }
 
     public String getSectionName() {
@@ -58,6 +70,7 @@ public class Section implements Parcelable {
     }
 
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue(profilePhoto);
         dest.writeValue(sectionName);
         dest.writeList(fields);
     }

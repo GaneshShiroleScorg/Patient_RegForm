@@ -3,9 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:paddingBottom="@dimen/dp10"
-    android:paddingTop="@dimen/dp10">
+    android:orientation="horizontal">
 
     <com.scorg.forms.customui.CustomTextView
         android:id="@+id/labelView"
@@ -15,30 +13,27 @@
         android:layout_marginEnd="@dimen/view_margin"
         android:layout_marginRight="@dimen/view_margin"
         android:layout_weight="0.6"
+        android:padding="@dimen/dp12"
         android:textSize="@dimen/field_text_size"
         tools:text="Name" />
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="horizontal">
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1">
 
-        <com.scorg.forms.customui.CustomSpinner
-            android:id="@+id/dropDown"
-            android:layout_width="0dp"
+        <com.scorg.forms.customui.CustomTextView
+            android:id="@+id/labelValueText"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:clipToPadding="false"
-            android:textSize="@dimen/field_text_size" />
+            android:textSize="@dimen/field_text_size"
+            android:overScrollMode="always"
+            android:scrollbarStyle="insideInset"
+            android:scrollbars="vertical"
+            android:padding="@dimen/dp12"
+            tools:text="Ganesh Shirole" />
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-    </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>

@@ -2,10 +2,12 @@
   "personalInfo": {
     "pages": [
       {
+        "pageIcon": "http://www.iconsdb.com/icons/preview/black/pages-1-xxl.png",
         "pageName": "Personal Information",
         "section": [
           {
             "sectionName": "Section 1",
+            "profilePhoto": "http://www.xsjjys.com/data/out/96/WHDQ-512397052.jpg",
             "fields": [
               {
                 "name": "First Name",
@@ -29,7 +31,8 @@
                   "Male",
                   "Female",
                   "Transgender"
-                ]
+                ],
+                "value": "Male"
               }
             ]
           },
@@ -40,16 +43,17 @@
                 "name": "Address Line 1",
                 "type": "textbox",
                 "isMandatory": true,
-                "length": 30,
-                "value": "Sandeep",
-                "inputType": "name"
+                "length": 50,
+                "value": "Sudarshan Nagar Road No.4, Pimple Saudagar Road, Near Sudarshan Chowk",
+                "inputType": "textboxbig"
               },
               {
                 "name": "Address Line 2",
                 "type": "textbox",
                 "isMandatory": false,
-                "length": 30,
-                "inputType": "name"
+                "length": 50,
+                "inputType": "textboxbig",
+                "value": "Pimple Gurav"
               },
               {
                 "name": "City",
@@ -69,13 +73,15 @@
                 "type": "textbox",
                 "isMandatory": true,
                 "length": 6,
-                "inputType": "pincode"
+                "inputType": "pincode",
+                "value": "411061"
               }
             ]
           }
         ]
       },
       {
+        "pageIcon": "http://www.iconsdb.com/icons/preview/black/pages-1-xxl.png",
         "pageName": "Preliminary Information",
         "section": [
           {
@@ -89,7 +95,8 @@
                   "Single",
                   "Divorcee",
                   "Widower"
-                ]
+                ],
+                "value": "Married"
               },
               {
                 "name": "Occupation",
@@ -99,6 +106,10 @@
                   "Service",
                   "Business",
                   "Home Maker"
+                ],
+                "values": [
+                  "Student",
+                  "Service"
                 ]
               },
               {
@@ -140,9 +151,11 @@
   },
   "forms": [
     {
+      "formIcon": "http://www.iconsdb.com/icons/preview/white/pages-1-xxl.png",
       "formName": "Aptitude",
       "pages": [
         {
+          "pageIcon": "http://www.iconsdb.com/icons/preview/black/pages-1-xxl.png",
           "pageName": "Page 1",
           "section": [
             {
@@ -315,6 +328,7 @@
           ]
         },
         {
+          "pageIcon": "http://www.iconsdb.com/icons/preview/black/pages-1-xxl.png",
           "pageName": "Page 2",
           "section": [
             {
@@ -388,9 +402,11 @@
       ]
     },
     {
+      "formIcon": "http://www.iconsdb.com/icons/preview/white/pages-1-xxl.png",
       "formName": "Personality",
       "pages": [
         {
+          "pageIcon": "http://www.iconsdb.com/icons/preview/black/pages-1-xxl.png",
           "pageName": "Page 1 ",
           "section": [
             {
@@ -561,9 +577,11 @@
       ]
     },
     {
+      "formIcon": "http://www.iconsdb.com/icons/preview/white/pages-1-xxl.png",
       "formName": "Medical",
       "pages": [
         {
+          "pageIcon": "http://www.iconsdb.com/icons/preview/black/pages-1-xxl.png",
           "pageName": "Page 1",
           "section": [
             {
