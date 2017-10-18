@@ -7,11 +7,9 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -20,6 +18,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.gson.Gson;
 import com.scorg.forms.R;
+import com.scorg.forms.customui.CustomProgressDialog;
 import com.scorg.forms.fragments.FormFragment;
 import com.scorg.forms.fragments.NewRegistrationFragment;
 import com.scorg.forms.fragments.UndertakingFragment;
@@ -30,6 +29,8 @@ import com.scorg.forms.util.Valid;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.scorg.forms.activities.FormsActivity.FORM;
 import static com.scorg.forms.activities.FormsActivity.FORM_INDEX;
@@ -37,7 +38,14 @@ import static com.scorg.forms.activities.FormsActivity.FORM_INDEX;
 public class PersonalInfoActivity extends AppCompatActivity implements FormFragment.ButtonClickListener, NewRegistrationFragment.OnRegistrationListener {
 
     private FormsModel formsModel;
+    private FormsModel newFormsModel;
     private RelativeLayout bottomTabLayout;
+
+    // show
+
+    private CustomProgressDialog customProgressDialog;
+    private Timer timer = new Timer();
+    private TabLayout formTabLayout;
 
     @SuppressWarnings("CheckResult")
     @Override
@@ -45,44 +53,36 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_info);
 
-        ImageView getInfoButton = (ImageView) findViewById(R.id.getInfoButton);
-        final EditText mobileText = (EditText) findViewById(R.id.mobileText);
+        if(!getResources().getBoolean(R.bool.isTab)) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(getResources().getString(R.string.tablet_message))
+                    .setCancelable(false)
+                    .setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            finish();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+
+        customProgressDialog = new CustomProgressDialog(PersonalInfoActivity.this);
+        customProgressDialog.setCancelable(false);
 
         bottomTabLayout = (RelativeLayout) findViewById(R.id.bottomTabLayout);
 
 //        CommonMethods.setEditTextLineColor(mobileText, getResources().getColor(android.R.color.white));
 
         Gson gson = new Gson();
-        formsModel = gson.fromJson(loadJSONFromAsset(), FormsModel.class);
+        formsModel = gson.fromJson(loadJSONFromAsset("registration_form_actual.json"), FormsModel.class);
+        newFormsModel = gson.fromJson(loadJSONFromAsset("new_registration_form_actual.json"), FormsModel.class);
 
         addRegisterFragment();
-
-        getInfoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Valid.validateMobileNo(mobileText.getText().toString(), PersonalInfoActivity.this)) {
-                    addProfileFragment(false);
-                    bottomTabLayout.setVisibility(View.VISIBLE);
-                }
-
-            }
-        });
-
-        mobileText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_GO) {
-                    addProfileFragment(false);
-                    bottomTabLayout.setVisibility(View.VISIBLE);
-
-                }
-                return false;
-            }
-        });
+//        addUndertakingFragment();
 
         // Form Tab
 
-        TabLayout formTabLayout = findViewById(R.id.formTabLayout);
+        formTabLayout = findViewById(R.id.formTabLayout);
 
         int iconSize = getResources().getDimensionPixelSize(R.dimen.icon_size);
         RequestOptions requestOptions = new RequestOptions();
@@ -159,8 +159,19 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         CommonMethods.hideKeyboard(PersonalInfoActivity.this);
     }
 
-    private void addProfileFragment(boolean isEditable) {
-        FormFragment formFragment = FormFragment.newInstance(20, formsModel.getPersonalInfo().getPages(), getResources().getString(R.string.personal_info), isEditable);
+    private void addUndertakingFragment() {
+
+        UndertakingFragment undertakingFragment = UndertakingFragment.newInstance();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.container, undertakingFragment, getResources().getString(R.string.new_registration));
+        transaction.commit();
+
+        CommonMethods.hideKeyboard(PersonalInfoActivity.this);
+    }
+
+    private void addProfileFragment(boolean isEditable, boolean isNew) {
+
+        FormFragment formFragment = FormFragment.newInstance(20, isNew ? newFormsModel.getPersonalInfo().getPages() : formsModel.getPersonalInfo().getPages(), getResources().getString(R.string.personal_info), isEditable, isNew);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.container, formFragment, getResources().getString(R.string.personal_info) + 20);
         transaction.commit();
@@ -175,10 +186,10 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         startActivity(intent);
     }
 
-    public String loadJSONFromAsset() {
+    public String loadJSONFromAsset(String jsonFile) {
         String json;
         try {
-            InputStream is = getAssets().open("registration_form_actual.json");
+            InputStream is = getAssets().open(jsonFile);
 //            InputStream is = getAssets().open("registration_form.json");
             int size = is.available();
             byte[] buffer = new byte[size];
@@ -204,19 +215,57 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
     }
 
     @Override
-    public void submitClick(int formNumber) {
-        addProfileFragment(false);
-        bottomTabLayout.setVisibility(View.VISIBLE);
+    public void submitClick(int formNumber, boolean isNew) {
+        showProgress();
+        addProfileFragment(false, isNew);
+        setTabLayoutDisable(false);
+    }
+
+    private void setTabLayoutDisable(boolean isDisable) {
+
+        LinearLayout tabStrip = ((LinearLayout) formTabLayout.getChildAt(0));
+        tabStrip.setAlpha(isDisable ? .3f : 1f);
+        tabStrip.setEnabled(isDisable);
+        for (int i = 0; i < tabStrip.getChildCount(); i++) {
+            tabStrip.getChildAt(i).setClickable(!isDisable);
+        }
     }
 
     @Override
-    public void editClick(int formNumber) {
-        bottomTabLayout.setVisibility(View.GONE);
-        addProfileFragment(true);
+    public void editClick(int formNumber, boolean isNew) {
+        showProgress();
+        setTabLayoutDisable(true);
+        addProfileFragment(true, isNew);
     }
 
     @Override
     public void onClickRegister() {
-        addProfileFragment(true);
+        showProgress();
+        addProfileFragment(true, true);
+        setTabLayoutDisable(true);
+    }
+
+    @Override
+    public void onClickGetInfo(String mobileText) {
+            showProgress();
+            addProfileFragment(false, false);
+            setTabLayoutDisable(false);
+    }
+
+    private void showProgress() {
+        customProgressDialog.show();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                // dismiss
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        bottomTabLayout.setVisibility(View.VISIBLE);
+                    }
+                });
+                customProgressDialog.dismiss();
+            }
+        }, 300);
     }
 }

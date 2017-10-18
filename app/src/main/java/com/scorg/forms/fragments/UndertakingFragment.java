@@ -1,6 +1,5 @@
 package com.scorg.forms.fragments;
 
-import android.content.Context;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -17,6 +16,8 @@ import com.scorg.forms.customui.CustomButton;
 import com.scorg.forms.customui.CustomTextView;
 
 public class UndertakingFragment extends Fragment {
+    private String name = "Sanseep Bahalkar"; // hard coded
+    private String companyName = "Antarnad Counselling Center"; // hard coded
 
 //    private OnSubmitListener mListener;
 
@@ -40,6 +41,7 @@ public class UndertakingFragment extends Fragment {
     private CustomTextView mTitleTextView;
     private CustomTextView mDateTextView;
     private CustomTextView mContentTextView;
+    private CustomTextView mNameTextView;
     private SignaturePad mSignature_pad;
     private CustomButton mClearButton;
     private Button mSubmitButton;
@@ -51,21 +53,10 @@ public class UndertakingFragment extends Fragment {
         mTitleTextView = (CustomTextView) view.findViewById(R.id.titleTextView);
         mDateTextView = (CustomTextView) view.findViewById(R.id.dateTextView);
         mContentTextView = (CustomTextView) view.findViewById(R.id.contentTextView);
+        mNameTextView = (CustomTextView) view.findViewById(R.id.nameTextView);
         mSignature_pad = (SignaturePad) view.findViewById(R.id.signature_pad);
         mClearButton = (CustomButton) view.findViewById(R.id.clearButton);
         mSubmitButton = (Button) view.findViewById(R.id.submitButton);
-
-        mTitleTextView.setPaintFlags(mTitleTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        mTitleTextView.setText(getResources().getString(R.string.undertaking));
-
-        mContentTextView.setText(Html.fromHtml(getResources().getString(R.string.content)));
-
-        mClearButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mSignature_pad.clear();
-            }
-        });
     }
 
     @Override
@@ -74,6 +65,20 @@ public class UndertakingFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_undertaking, container, false);
         bindViews(rootView);
+
+        mTitleTextView.setPaintFlags(mTitleTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        mTitleTextView.setText(getResources().getString(R.string.undertaking));
+
+        String contentWithName = " I/We <b>Mr./Ms. " + name + "</b> solemnly agree and accept following terms and conditions at <b>'" + companyName + "'</b>.";
+        mNameTextView.setText(Html.fromHtml(contentWithName));
+        mContentTextView.setText(Html.fromHtml(getResources().getString(R.string.content)));
+        mClearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mSignature_pad.clear();
+            }
+        });
+
         return rootView;
     }
 

@@ -7,17 +7,19 @@
     <color name="tab_unfilled_color">#e7ecef</color>-->
 
     <color name="colorPrimaryDark">#09354A</color>
-    <color name="colorAccent">#9CBA68</color>
+    <color name="colorAccent">#3F4049</color>
     <color name="colorPrimary">#0A405A</color>
 
     <color name="tab_unfilled_color">#e7ecef</color>
-    <color name="form_background">#dec56a</color>
+    <color name="form_background">#9DD05B</color>
     <!--<color name="title_background">#1eace3</color>-->
-    <color name="title_background">#87E7BB</color>
+    <color name="title_background">#526690</color>
 
-    <color name="button">#9CBA68</color>
-    <color name="button_pressed">#94ba51</color>
-    <color name="disable_button">#B7CC91</color>
+    <color name="button">#9DD05B</color>
+    <color name="button_pressed">#8FBE53</color>
+    <color name="disable_button">#B7DC87</color>
+
+    <color name="register_button">#048CB6</color>
 
     <color name="text_color">#808080</color>
 

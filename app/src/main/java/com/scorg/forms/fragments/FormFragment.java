@@ -37,6 +37,7 @@ public class FormFragment extends Fragment {
     private static final String PAGES = "pages";
     private static final String FORM_NAME = "form_name";
     public static final String IS_EDITABLE = "is_editable";
+    public static final String IS_NEW = "is_new";
 
     ArrayList<Page> pages;
     private String formName;
@@ -51,17 +52,19 @@ public class FormFragment extends Fragment {
     private Button preButton;
     private Button nextButton;
     private Button submitEditButton;
+    private boolean isNew;
 
     public FormFragment() {
         // Required empty public constructor
     }
 
-    public static FormFragment newInstance(int formNumber, ArrayList<Page> pages, String formName, boolean isEditable) {
+    public static FormFragment newInstance(int formNumber, ArrayList<Page> pages, String formName, boolean isEditable, boolean isNew) {
         FormFragment fragment = new FormFragment();
         Bundle args = new Bundle();
         args.putParcelableArrayList(PAGES, pages);
         args.putInt(FORM_NUMBER, formNumber);
         args.putBoolean(IS_EDITABLE, isEditable);
+        args.putBoolean(IS_NEW, isNew);
         args.putString(FORM_NAME, formName);
         fragment.setArguments(args);
         return fragment;
@@ -72,6 +75,7 @@ public class FormFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             isEditable = getArguments().getBoolean(IS_EDITABLE);
+            isNew = getArguments().getBoolean(IS_NEW);
             pages = getArguments().getParcelableArrayList(PAGES);
             formNumber = getArguments().getInt(FORM_NUMBER);
         }
@@ -138,8 +142,8 @@ public class FormFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (isEditable)
-                mListener.submitClick(formNumber);
-                else mListener.editClick(formNumber);
+                mListener.submitClick(formNumber, isNew);
+                else mListener.editClick(formNumber, isNew);
             }
         });
 
@@ -321,9 +325,9 @@ public class FormFragment extends Fragment {
     public interface ButtonClickListener {
         void backClick(int formNumber);
         void nextClick(int formNumber);
-        void submitClick(int formNumber);
+        void submitClick(int formNumber, boolean isNew);
 
-        void editClick(int formNumber);
+        void editClick(int formNumber, boolean isNew);
     }
 
     private void fieldValidation(Field field) {

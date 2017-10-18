@@ -181,6 +181,10 @@ public class PageFragment extends Fragment {
                 final AutoCompleteTextView textBox = fieldLayout.findViewById(R.id.editText);
                 textBox.setId(CommonMethods.generateViewId());
 
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
+                        android.R.layout.simple_dropdown_item_1line, field.getDataList());
+                textBox.setAdapter(adapter);
+
                 textBox.setEnabled(isEditable);
 
                 // set pre value

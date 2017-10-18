@@ -1,19 +1,33 @@
 package com.scorg.forms.fragments;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.scorg.forms.R;
+import com.scorg.forms.util.CommonMethods;
+import com.scorg.forms.util.Valid;
 
 public class NewRegistrationFragment extends Fragment {
 
     private OnRegistrationListener mListener;
+
+    // hard coded
+
+    private String registeredMobile = "8208127880";
+    private EditText mobileText;
+    private TextView mobileTextLabelView;
+    private ImageView getInfoButton;
+    private Button newRegistration;
 
     public NewRegistrationFragment() {
         // Required empty public constructor
@@ -36,7 +50,12 @@ public class NewRegistrationFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_new_registration, container, false);
 
-        TextView newRegistration = (TextView) rootView.findViewById(R.id.newRegistration);
+        mobileText = (EditText) rootView.findViewById(R.id.mobileText);
+        getInfoButton = (ImageView) rootView.findViewById(R.id.getInfoButton);
+        newRegistration = (Button) rootView.findViewById(R.id.newRegistrationButton);
+
+        mobileTextLabelView = (TextView) rootView.findViewById(R.id.mobileTextLabelView);
+
         newRegistration.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,7 +63,48 @@ public class NewRegistrationFragment extends Fragment {
             }
         });
 
+        getInfoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                go();
+            }
+        });
+
+        mobileText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+            @Override
+            public boolean onEditorAction(TextView arg0, int arg1, KeyEvent arg2) {
+                if (arg1 == EditorInfo.IME_ACTION_GO)
+                    go();
+
+                return false;
+            }
+
+        });
+
         return rootView;
+    }
+
+    private void go() {
+
+        String mobile = mobileText.getText().toString().trim();
+
+        if (Valid.validateMobileNo(mobile, getContext())) {
+            if (mobile.equals(registeredMobile))
+                mListener.onClickGetInfo(mobile);
+            else {
+
+                CommonMethods.hideKeyboard(getActivity());
+
+                mobileTextLabelView.setText(mobile);
+                mobileTextLabelView.setVisibility(View.VISIBLE);
+                getInfoButton.setVisibility(View.INVISIBLE);
+                mobileText.setVisibility(View.INVISIBLE);
+                newRegistration.setVisibility(View.VISIBLE);
+
+                newRegistration.requestFocus();
+            }
+        }
     }
 
     @Override
@@ -77,5 +137,6 @@ public class NewRegistrationFragment extends Fragment {
     public interface OnRegistrationListener {
         // TODO: Update argument type and name
         void onClickRegister();
+        void onClickGetInfo(String mobileText);
     }
 }

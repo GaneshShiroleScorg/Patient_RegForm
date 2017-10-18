@@ -57,60 +57,11 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <RelativeLayout
-            android:id="@+id/mobileTextLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp12"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true">
-
-            <com.scorg.forms.customui.CustomTextView
-                android:id="@+id/mobileTextLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="@dimen/view_margin"
-                android:paddingEnd="@dimen/view_margin"
-                android:textSize="@dimen/section_title_text_size"
-                app:customFont="@string/roboto_medium"
-                android:layout_centerVertical="true"
-                android:text="@string/mobile"/>
-
-            <com.scorg.forms.customui.CustomEditText
-                android:id="@+id/mobileText"
-                android:layout_width="160dp"
-                android:layout_height="wrap_content"
-                android:paddingStart="@dimen/view_margin"
-                android:paddingEnd="@dimen/view_margin"
-                android:layout_centerVertical="true"
-                android:layout_toEndOf="@+id/mobileTextLabel"
-                android:layout_toRightOf="@+id/mobileTextLabel"
-                android:gravity="center"
-                android:inputType="phone"
-                android:maxLength="10"
-                android:imeOptions="actionGo"
-                android:textSize="@dimen/section_title_text_size" />
-
-            <ImageView
-                android:id="@+id/getInfoButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/view_margin"
-                android:layout_marginRight="@dimen/view_margin"
-                android:layout_toEndOf="@+id/mobileText"
-                android:layout_toRightOf="@+id/mobileText"
-                android:padding="@dimen/dp5"
-                app:srcCompat="@drawable/ic_navigate_next_24dp" />
-
-        </RelativeLayout>
-
         <FrameLayout
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/bottomTabLayout"
-            android:layout_below="@+id/mobileTextLayout"
             android:layout_marginTop="@dimen/dp10"
             android:layout_marginEnd="@dimen/view_margin"
             android:layout_marginStart="@dimen/view_margin"

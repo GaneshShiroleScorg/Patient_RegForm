@@ -9,6 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clickable="false"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -34,30 +35,63 @@
             android:layout_gravity="center_horizontal"
             android:padding="@dimen/dp12"
             android:textAllCaps="true"
-            android:textSize="@dimen/button_text_size"
             android:textColor="@color/title_background"
+            android:textSize="@dimen/button_text_size"
             app:customFont="@string/roboto_medium"
             tools:text="@string/undertaking" />
 
-        <com.scorg.forms.customui.CustomTextView
-            android:id="@+id/dateTextView"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="end"
-            android:textSize="@dimen/button_text_size"
-            android:padding="@dimen/view_margin"
-            android:text="Date: 12/10/2017"
-            app:customFont="@string/roboto_medium" />
+            android:layout_height="180dp">
+
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/profilePhoto"
+                android:layout_width="140dp"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/view_margin"
+                android:layout_marginLeft="@dimen/view_margin"
+                android:layout_marginStart="@dimen/view_margin"
+                android:layout_marginTop="@dimen/view_margin"
+                android:background="@drawable/profile_photo_back"
+                android:cropToPadding="true"
+                android:orientation="vertical"
+                android:padding="@dimen/dp5"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/ic_camera" />
+
+            <com.scorg.forms.customui.CustomTextView
+                android:id="@+id/dateTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:padding="@dimen/view_margin"
+                android:text="Date: 12/10/2017"
+                android:textSize="@dimen/button_text_size"
+                app:customFont="@string/roboto_medium" />
+
+            <com.scorg.forms.customui.CustomTextView
+                android:id="@+id/nameTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_toEndOf="@+id/profilePhoto"
+                android:layout_toRightOf="@+id/profilePhoto"
+                android:lineSpacingExtra="@dimen/dp5"
+                android:padding="@dimen/view_margin"
+                android:textSize="@dimen/button_text_size" />
+
+        </RelativeLayout>
 
         <com.scorg.forms.customui.CustomTextView
             android:id="@+id/contentTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/view_margin"
             android:layout_marginBottom="@dimen/view_margin"
-            android:textSize="@dimen/button_text_size"
+            android:layout_marginTop="@dimen/view_margin"
             android:lineSpacingExtra="@dimen/dp5"
-            android:padding="@dimen/view_margin" />
+            android:padding="@dimen/view_margin"
+            android:textSize="@dimen/button_text_size" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -69,10 +103,18 @@
                 android:id="@+id/signature_pad"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="@dimen/view_margin"
                 app:penColor="@android:color/black"
                 app:penMaxWidth="2.5dp"
                 app:penMinWidth=".5dp" />
+
+            <com.scorg.forms.customui.CustomTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:textSize="28sp"
+                android:gravity="center"
+                android:alpha=".1"
+                android:text="@string/digital_signature"/>
 
             <com.scorg.forms.customui.CustomButton
                 android:id="@+id/clearButton"
@@ -92,6 +134,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/button_selector"
+            android:layout_marginBottom="@dimen/view_margin"
             android:text="@string/submit"
             android:textColor="@android:color/white" />
 

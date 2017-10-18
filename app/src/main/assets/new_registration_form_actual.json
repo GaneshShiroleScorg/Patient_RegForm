@@ -1,0 +1,676 @@
+{
+  "personalInfo": {
+    "pages": [
+      {
+        "pageIcon": "http://www.iconsdb.com/icons/preview/black/pages-1-xxl.png",
+        "pageName": "Personal Information",
+        "section": [
+          {
+            "sectionName": "Section 1",
+            "profilePhoto": "http://www.xsjjys.com/data/out/96/WHDQ-512397052.jpg",
+            "fields": [
+              {
+                "name": "First Name",
+                "type": "textbox",
+                "isMandatory": true,
+                "length": 15,
+                "inputType": "name"
+              },
+              {
+                "name": "Last Name",
+                "type": "textbox",
+                "isMandatory": true,
+                "length": 15,
+                "inputType": "name"
+              },
+              {
+                "name": "Gender",
+                "type": "radiobutton",
+                "dataList": [
+                  "Male",
+                  "Female",
+                  "Transgender"
+                ]
+              }
+            ]
+          },
+          {
+            "sectionName": "Section 2",
+            "fields": [
+              {
+                "name": "Address Line 1",
+                "type": "textbox",
+                "isMandatory": true,
+                "length": 50,
+                "inputType": "textboxbig"
+              },
+              {
+                "name": "Address Line 2",
+                "type": "textbox",
+                "isMandatory": false,
+                "length": 50,
+                "inputType": "textboxbig"
+              },
+              {
+                "name": "City",
+                "type": "dropdown",
+                "dataList": [
+                  "Agra",
+                  "Pune",
+                  "Mumbai",
+                  "Banglore",
+                  "Hydrabad",
+                  "Kolkata",
+                  "Delhi"
+                ]
+              },
+              {
+                "name": "Pincode",
+                "type": "textbox",
+                "isMandatory": true,
+                "length": 6,
+                "inputType": "pincode"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "pageIcon": "http://www.iconsdb.com/icons/preview/black/pages-1-xxl.png",
+        "pageName": "Preliminary Information",
+        "section": [
+          {
+            "sectionName": "Section 1",
+            "fields": [
+              {
+                "name": "Marital Status",
+                "type": "radiobutton",
+                "dataList": [
+                  "Married",
+                  "Single",
+                  "Divorcee",
+                  "Widower"
+                ]
+              },
+              {
+                "name": "Occupation",
+                "type": "checkbox",
+                "dataList": [
+                  "Student",
+                  "Service",
+                  "Business",
+                  "Home Maker"
+                ]
+              },
+              {
+                "name": "Spouse Name",
+                "type": "textbox",
+                "isMandatory": false,
+                "length": 15,
+                "inputType": "name"
+              },
+              {
+                "name": "Spouse Mobile",
+                "type": "textbox",
+                "isMandatory": false,
+                "length": 10,
+                "inputType": "mobile"
+              },
+              {
+                "name": "Referred by",
+                "type": "textbox",
+                "isMandatory": false,
+                "length": 15,
+                "inputType": "name"
+              },
+              {
+                "name": "Reason for Consultation",
+                "type": "textbox",
+                "isMandatory": false,
+                "length": 160,
+                "inputType": "textboxbig"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "undertaking": {
+    "content": "<p>a) It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p><p>b) Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p><p>c) Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>"
+  },
+  "forms": [
+    {
+      "formIcon": "http://www.iconsdb.com/icons/preview/white/pages-1-xxl.png",
+      "formName": "Aptitude",
+      "pages": [
+        {
+          "pageIcon": "http://www.iconsdb.com/icons/preview/black/pages-1-xxl.png",
+          "pageName": "Page 1",
+          "section": [
+            {
+              "sectionName": "Section 1",
+              "fields": [
+                {
+                  "name": "School / College Name",
+                  "type": "textbox",
+                  "isMandatory": true,
+                  "length": 30,
+                  "inputType": "name"
+                },
+                {
+                  "name": "Medium",
+                  "type": "radiobutton",
+                  "dataList": [
+                    "English",
+                    "Hindi",
+                    "Marathi",
+                    "Gujrati",
+                    "Urdu"
+                  ]
+                },
+                {
+                  "name": "Present Standard",
+                  "type": "dropdown",
+                  "dataList": [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7",
+                    "8",
+                    "9",
+                    "10",
+                    "11",
+                    "12",
+                    "13",
+                    "14",
+                    "15"
+                  ]
+                },
+                {
+                  "name": "%(Percentage) in Previous Class",
+                  "type": "dropdown",
+                  "dataList": [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7",
+                    "8",
+                    "9",
+                    "10",
+                    "11",
+                    "12",
+                    "13",
+                    "14",
+                    "15",
+                    "16",
+                    "17",
+                    "18",
+                    "19",
+                    "20",
+                    "21",
+                    "22",
+                    "23",
+                    "24",
+                    "25",
+                    "26",
+                    "27",
+                    "28",
+                    "29",
+                    "30",
+                    "31",
+                    "32",
+                    "33",
+                    "34",
+                    "35",
+                    "36",
+                    "37",
+                    "38",
+                    "39",
+                    "40",
+                    "41",
+                    "42",
+                    "43",
+                    "44",
+                    "45",
+                    "46",
+                    "47",
+                    "48",
+                    "49",
+                    "50",
+                    "51",
+                    "52",
+                    "53",
+                    "54",
+                    "55",
+                    "56",
+                    "57",
+                    "58",
+                    "59",
+                    "60",
+                    "61",
+                    "62",
+                    "63",
+                    "64",
+                    "65",
+                    "66",
+                    "67",
+                    "68",
+                    "69",
+                    "70",
+                    "71",
+                    "72",
+                    "73",
+                    "74",
+                    "75",
+                    "76",
+                    "77",
+                    "78",
+                    "79",
+                    "80",
+                    "81",
+                    "82",
+                    "83",
+                    "84",
+                    "85",
+                    "86",
+                    "87",
+                    "88",
+                    "89",
+                    "90",
+                    "91",
+                    "92",
+                    "93",
+                    "94",
+                    "95",
+                    "96",
+                    "97",
+                    "98",
+                    "99",
+                    "100"
+                  ]
+                },
+                {
+                  "name": "Hobbies / Interests",
+                  "type": "textbox",
+                  "isMandatory": true,
+                  "length": 30,
+                  "inputType": "name"
+                },
+                {
+                  "name": "Aims & Goals",
+                  "type": "textbox",
+                  "isMandatory": true,
+                  "length": 30,
+                  "inputType": "name"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "pageIcon": "http://www.iconsdb.com/icons/preview/black/pages-1-xxl.png",
+          "pageName": "Page 2",
+          "section": [
+            {
+              "sectionName": "Section 1",
+              "fields": [
+                {
+                  "name": "Father's Name",
+                  "type": "textbox",
+                  "length": 30,
+                  "inputType": "name"
+                },
+                {
+                  "name": "Age",
+                  "type": "textbox",
+                  "length": 3,
+                  "inputType": "date"
+                },
+                {
+                  "name": "Education",
+                  "type": "textbox",
+                  "length": 30,
+                  "inputType": "name"
+                },
+                {
+                  "name": "Occupation",
+                  "type": "checkbox",
+                  "dataList": [
+                    "Student",
+                    "Service",
+                    "Business",
+                    "Home Maker"
+                  ]
+                }
+              ]
+            },
+            {
+              "sectionName": "Section 2",
+              "fields": [
+                {
+                  "name": "Mother's Name",
+                  "type": "textbox",
+                  "length": 30,
+                  "inputType": "name"
+                },
+                {
+                  "name": "Age",
+                  "type": "textbox",
+                  "length": 3,
+                  "inputType": "date"
+                },
+                {
+                  "name": "Education",
+                  "type": "textbox",
+                  "length": 30,
+                  "inputType": "name"
+                },
+                {
+                  "name": "Occupation",
+                  "type": "checkbox",
+                  "dataList": [
+                    "Student",
+                    "Service",
+                    "Business",
+                    "Home Maker"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "formIcon": "http://www.iconsdb.com/icons/preview/white/pages-1-xxl.png",
+      "formName": "Personality",
+      "pages": [
+        {
+          "pageIcon": "http://www.iconsdb.com/icons/preview/black/pages-1-xxl.png",
+          "pageName": "Page 1 ",
+          "section": [
+            {
+              "sectionName": "Section 1",
+              "fields": [
+                {
+                  "name": "Educational Qualification",
+                  "type": "textbox",
+                  "isMandatory": true,
+                  "length": 30,
+                  "inputType": "name"
+                },
+                {
+                  "name": "Hobbies / Interests",
+                  "type": "textbox",
+                  "isMandatory": false,
+                  "length": 30,
+                  "inputType": "name"
+                },
+                {
+                  "name": "Aims & Goals",
+                  "type": "textbox",
+                  "isMandatory": false,
+                  "length": 30,
+                  "inputType": "name"
+                }
+              ]
+            },
+            {
+              "sectionName": "Section 2",
+              "fields": [
+                {
+                  "name": "Currently studying",
+                  "type": "radiobutton",
+                  "dataList": [
+                    "Yes",
+                    "No"
+                  ]
+                },
+                {
+                  "name": "Previous Performance",
+                  "type": "dropdown",
+                  "dataList": [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7",
+                    "8",
+                    "9",
+                    "10",
+                    "11",
+                    "12",
+                    "13",
+                    "14",
+                    "15",
+                    "16",
+                    "17",
+                    "18",
+                    "19",
+                    "20",
+                    "21",
+                    "22",
+                    "23",
+                    "24",
+                    "25",
+                    "26",
+                    "27",
+                    "28",
+                    "29",
+                    "30",
+                    "31",
+                    "32",
+                    "33",
+                    "34",
+                    "35",
+                    "36",
+                    "37",
+                    "38",
+                    "39",
+                    "40",
+                    "41",
+                    "42",
+                    "43",
+                    "44",
+                    "45",
+                    "46",
+                    "47",
+                    "48",
+                    "49",
+                    "50",
+                    "51",
+                    "52",
+                    "53",
+                    "54",
+                    "55",
+                    "56",
+                    "57",
+                    "58",
+                    "59",
+                    "60",
+                    "61",
+                    "62",
+                    "63",
+                    "64",
+                    "65",
+                    "66",
+                    "67",
+                    "68",
+                    "69",
+                    "70",
+                    "71",
+                    "72",
+                    "73",
+                    "74",
+                    "75",
+                    "76",
+                    "77",
+                    "78",
+                    "79",
+                    "80",
+                    "81",
+                    "82",
+                    "83",
+                    "84",
+                    "85",
+                    "86",
+                    "87",
+                    "88",
+                    "89",
+                    "90",
+                    "91",
+                    "92",
+                    "93",
+                    "94",
+                    "95",
+                    "96",
+                    "97",
+                    "98",
+                    "99",
+                    "100"
+                  ]
+                },
+                {
+                  "name": "Institution Name",
+                  "type": "textbox",
+                  "isMandatory": true,
+                  "length": 30,
+                  "inputType": "name"
+                },
+                {
+                  "name": "Medium",
+                  "type": "radiobutton",
+                  "dataList": [
+                    "English",
+                    "Hindi",
+                    "Marathi",
+                    "Gujrati",
+                    "Urdu"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "formIcon": "http://www.iconsdb.com/icons/preview/white/pages-1-xxl.png",
+      "formName": "Medical",
+      "pages": [
+        {
+          "pageIcon": "http://www.iconsdb.com/icons/preview/black/pages-1-xxl.png",
+          "pageName": "Page 1",
+          "section": [
+            {
+              "sectionName": "Section 1",
+              "fields": [
+                {
+                  "type": "textboxgroup",
+                  "name": "Any major operation",
+                  "isMandatory": false,
+                  "inputType": "name",
+                  "dataList": [
+                    "Heart",
+                    "Hand",
+                    "Legs",
+                    "nose"
+                  ],
+                  "moreField": [
+                    {
+                      "name": "Approximate Date",
+                      "type": "textbox",
+                      "length": 15,
+                      "inputType": "date"
+                    }
+                  ]
+                },
+                {
+                  "type": "textboxgroup",
+                  "name": "Any major illness",
+                  "isMandatory": false,
+                  "inputType": "name",
+                  "dataList": [
+                    "Maleria",
+                    "tifoid",
+                    "Dengu"
+                  ],
+                  "moreField": [
+                    {
+                      "name": "Approximate Date",
+                      "type": "textbox",
+                      "length": 15,
+                      "inputType": "date"
+                    }
+                  ]
+                },
+                {
+                  "name": "Allergies",
+                  "type": "textbox",
+                  "isMandatory": false,
+                  "length": 15,
+                  "inputType": "name"
+                }
+              ]
+            },
+            {
+              "sectionName": "Section 2",
+              "fields": [
+                {
+                  "name": "Current Complaint",
+                  "type": "dropdown",
+                  "dataTable": "complaint"
+                },
+                {
+                  "name": "Duration (since)",
+                  "type": "dropdown",
+                  "dataList": [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7",
+                    "8",
+                    "9",
+                    "10",
+                    "11",
+                    "12",
+                    "13",
+                    "14",
+                    "15",
+                    "16",
+                    "17",
+                    "18",
+                    "19",
+                    "20",
+                    "21",
+                    "22",
+                    "23",
+                    "24",
+                    "25",
+                    "26",
+                    "27",
+                    "28",
+                    "29",
+                    "30"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

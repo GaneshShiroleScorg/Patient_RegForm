@@ -1,5 +1,7 @@
 <resources>
 
+    <bool name="isTab">false</bool>
+
     <!--Dimension should proper if we wants to give support for mobile-->
 
     <dimen name="view_margin">18dp</dimen>
