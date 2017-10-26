@@ -1,101 +1,148 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_gravity="center"
     android:background="@android:color/white"
-    android:gravity="center"
     android:orientation="vertical"
     tools:context="com.scorg.forms.fragments.NewRegistrationFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <ImageView
-            app:srcCompat="@drawable/profile"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
-            android:layout_gravity="center_horizontal"
-            android:alpha=".5" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp0"
+            android:layout_weight="1"></LinearLayout>
 
-        <RelativeLayout
-            android:id="@+id/mobileTextLayout"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal">
+            android:orientation="horizontal">
 
-            <com.scorg.forms.customui.CustomTextView
-                android:id="@+id/mobileTextLabel"
-                app:customFont="@string/roboto_medium"
+            <LinearLayout
+                android:layout_width="@dimen/dp0"
+                android:layout_height="match_parent"
+                android:layout_weight="1"></LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:paddingEnd="@dimen/view_margin"
-                android:paddingStart="@dimen/view_margin"
-                android:text="@string/mobile"
-                android:textSize="@dimen/section_title_text_size" />
-
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/mobileTextLabel"
-                android:layout_toRightOf="@+id/mobileTextLabel">
-
-                <com.scorg.forms.customui.CustomTextView
-                    android:id="@+id/mobileTextLabelView"
-                    app:customFont="@string/roboto_medium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="@dimen/view_margin"
-                    android:layout_marginStart="@dimen/view_margin"
-                    android:padding="@dimen/view_margin"
-                    android:textSize="22sp"
-                    android:visibility="invisible" />
-
-                <com.scorg.forms.customui.CustomEditText
-                    android:id="@+id/mobileText"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:gravity="center"
-                    android:imeOptions="actionGo"
-                    android:inputType="phone"
-                    android:maxLength="10"
-                    android:paddingEnd="@dimen/view_margin"
-                    android:paddingStart="@dimen/view_margin"
-                    android:textSize="@dimen/section_title_text_size" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
                 <ImageView
-                    android:id="@+id/getInfoButton"
-                    app:srcCompat="@drawable/ic_navigate_next_24dp"
-                    android:layout_width="wrap_content"
+                    android:layout_width="296dp"
+                    android:layout_height="296dp"
+                    android:layout_gravity="center"
+                    android:alpha=".8"
+                    app:srcCompat="@drawable/imgpsh_fullsize" />
+
+                <LinearLayout
+                    android:id="@+id/mobileTextLayout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toEndOf="@+id/mobileText"
-                    android:layout_toRightOf="@+id/mobileText"
-                    android:padding="@dimen/dp5" />
+                    android:orientation="vertical">
 
-            </RelativeLayout>
+                    <com.scorg.forms.customui.CustomTextView
+                        android:id="@+id/mobileTextLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp0"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="@dimen/dp10"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="Enter Mobile Number"
+                        android:textSize="@dimen/section_title_text_size"
+                        app:customFont="@string/roboto_medium" />
 
-        </RelativeLayout>
+                    <!--     NOT USING CURRENTLY : START -->
+                    <com.scorg.forms.customui.CustomTextView
+                        android:id="@+id/mobileTextLabelView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/dp0"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="@dimen/dp10"
 
-        <com.scorg.forms.customui.CustomButton
-            android:id="@+id/newRegistrationButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="50dp"
-            android:background="@drawable/button_register"
-            android:padding="@dimen/dp12"
-            android:text="@string/new_registration"
-            android:textColor="@android:color/white"
-            android:visibility="invisible" />
+                        android:layout_marginLeft="@dimen/view_margin"
+                        android:layout_marginStart="@dimen/view_margin"
+                        android:layout_weight="1"
+                        android:padding="@dimen/view_margin"
+                        android:textSize="22sp"
+                        android:visibility="gone"
+                        app:customFont="@string/roboto_medium" />
+                    <!--     NOT USING CURRENTLY : END -->
 
+                    <com.scorg.forms.customui.CustomEditText
+                        android:id="@+id/mobileText"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp0"
+                        android:layout_marginBottom="@dimen/dp10"
+                        android:layout_weight="1"
+                        android:gravity="center"
+
+                        android:imeOptions="actionGo"
+                        android:inputType="phone"
+                        android:maxLength="10"
+                        android:text=""
+                        android:textSize="@dimen/section_title_text_size" />
+
+                    <com.scorg.forms.customui.CustomButton
+                        android:id="@+id/getInfoButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp0"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="@dimen/dp10"
+                        android:layout_weight="1"
+                        android:background="@drawable/button_register"
+                        android:text="@string/submit"
+                        android:textColor="@android:color/white"
+                        app:srcCompat="@drawable/ic_navigate_next_24dp" />
+
+                    <LinearLayout
+                        android:id="@+id/newRegistrationLayout"
+                        android:layout_width="130dp"
+                        android:layout_height="120dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/dp50"
+                        android:background="@drawable/button_register"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:visibility="invisible">
+
+                        <ImageView
+                            android:id="@+id/formIcon"
+                            android:layout_width="@dimen/icon_size"
+                            android:layout_height="@dimen/icon_size"
+                            android:layout_gravity="center_horizontal"
+                            android:src="@drawable/registration_icon" />
+
+                        <com.scorg.forms.customui.CustomButton
+                            android:id="@+id/newRegistrationButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/button_register"
+                            android:padding="@dimen/dp5"
+                            android:text="@string/new_registration"
+                            android:textColor="@android:color/white"
+                            android:visibility="visible" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="@dimen/dp0"
+                android:layout_height="match_parent"
+                android:layout_weight="1"></LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp0"
+            android:layout_weight="1"></LinearLayout>
     </LinearLayout>
 
 </LinearLayout>
-

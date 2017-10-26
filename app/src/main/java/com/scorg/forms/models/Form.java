@@ -17,6 +17,9 @@ public class Form implements Parcelable {
     @SerializedName("formName")
     @Expose
     private String formName;
+    @SerializedName("date")
+    @Expose
+    private String date;
     @SerializedName("pages")
     @Expose
     private ArrayList<Page> pages = new ArrayList<Page>();
@@ -39,6 +42,7 @@ public class Form implements Parcelable {
     protected Form(Parcel in) {
         this.formIcon = ((String) in.readValue((String.class.getClassLoader())));
         this.formName = ((String) in.readValue((String.class.getClassLoader())));
+        this.date = ((String) in.readValue((String.class.getClassLoader())));
         in.readList(this.pages, (Page.class.getClassLoader()));
     }
 
@@ -69,9 +73,18 @@ public class Form implements Parcelable {
         this.pages = pages;
     }
 
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(formIcon);
         dest.writeValue(formName);
+        dest.writeValue(date);
         dest.writeList(pages);
     }
 

@@ -11,12 +11,16 @@ import java.util.ArrayList;
 
 public class FormsModel implements Parcelable {
 
+    @SerializedName("clinicLogoUrl")
+    @Expose
+    private String clinicLogoUrl;
+    @SerializedName("clinicName")
+    @Expose
+    private String clinicName;
     @SerializedName("personalInfo")
     @Expose
     private PersonalInfo personalInfo;
-    @SerializedName("undertaking")
-    @Expose
-    private Undertaking undertaking;
+
     @SerializedName("forms")
     @Expose
     private ArrayList<Form> forms = new ArrayList<Form>();
@@ -37,9 +41,12 @@ public class FormsModel implements Parcelable {
     };
 
     protected FormsModel(Parcel in) {
+        this.clinicLogoUrl = ((String) in.readValue((String.class.getClassLoader())));
+        this.clinicName = ((String) in.readValue((String.class.getClassLoader())));
+
         this.personalInfo = ((PersonalInfo) in.readValue((PersonalInfo.class.getClassLoader())));
-        this.undertaking = ((Undertaking) in.readValue((Undertaking.class.getClassLoader())));
         in.readList(this.forms, (Form.class.getClassLoader()));
+
     }
 
     public FormsModel() {
@@ -53,14 +60,6 @@ public class FormsModel implements Parcelable {
         this.personalInfo = personalInfo;
     }
 
-    public Undertaking getUndertaking() {
-        return undertaking;
-    }
-
-    public void setUndertaking(Undertaking undertaking) {
-        this.undertaking = undertaking;
-    }
-
     public ArrayList<Form> getForms() {
         return forms;
     }
@@ -69,9 +68,27 @@ public class FormsModel implements Parcelable {
         this.forms = forms;
     }
 
+    public String getClinicLogoUrl() {
+        return clinicLogoUrl;
+    }
+
+    public void setClinicLogoUrl(String clinicLogoUrl) {
+        this.clinicLogoUrl = clinicLogoUrl;
+    }
+
+    public String getClinicName() {
+        return clinicName;
+    }
+
+    public void setClinicName(String clinicName) {
+        this.clinicName = clinicName;
+    }
+
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue(clinicLogoUrl);
+        dest.writeValue(clinicName);
+
         dest.writeValue(personalInfo);
-        dest.writeValue(undertaking);
         dest.writeList(forms);
     }
 

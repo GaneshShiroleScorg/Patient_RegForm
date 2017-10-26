@@ -1,3 +1,5 @@
 <resources>
     <bool name="isTab">true</bool>
+    <dimen name="dp0">0dp</dimen>
+
 </resources>

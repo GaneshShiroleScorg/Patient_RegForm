@@ -1,9 +1,10 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
+    android:orientation="vertical"
     tools:context="com.scorg.forms.fragments.UndertakingFragment">
 
     <LinearLayout
@@ -15,7 +16,8 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/title_background">
+            android:background="@color/title_background"
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/logo"
@@ -30,7 +32,7 @@
 
         <com.scorg.forms.customui.CustomTextView
             android:id="@+id/titleTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="140dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:padding="@dimen/dp12"
@@ -42,60 +44,80 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="180dp">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
 
-            <android.support.v7.widget.AppCompatImageView
-                android:id="@+id/profilePhoto"
-                android:layout_width="140dp"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="@dimen/view_margin"
-                android:layout_marginLeft="@dimen/view_margin"
-                android:layout_marginStart="@dimen/view_margin"
-                android:layout_marginTop="@dimen/view_margin"
+            <LinearLayout
+                android:id="@+id/profilePhotoLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="false"
+                android:layout_margin="@dimen/dp26"
                 android:background="@drawable/profile_photo_back"
-                android:cropToPadding="true"
+                android:gravity="center"
                 android:orientation="vertical"
-                android:padding="@dimen/dp5"
-                android:scaleType="centerCrop"
-                app:srcCompat="@drawable/ic_camera" />
+                android:padding="@dimen/dp5">
+
+                <android.support.v7.widget.AppCompatImageView
+                    android:id="@+id/profilePhoto"
+                    android:layout_width="140dp"
+                    android:layout_height="150dp"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/ic_camera" />
+
+                <com.scorg.forms.customui.CustomTextView
+                    android:id="@+id/editButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#FFA500"
+                    android:drawableLeft="@android:drawable/ic_menu_edit"
+                    android:gravity="center"
+                    android:paddingBottom="@dimen/dp8"
+                    android:paddingEnd="@dimen/dp5"
+                    android:paddingLeft="@dimen/dp10"
+                    android:paddingRight="@dimen/dp5"
+                    android:paddingStart="@dimen/dp10"
+                    android:paddingTop="@dimen/dp8"
+                    android:text="@string/change_photo"
+                    android:textColor="@android:color/white"
+                    android:textSize="13sp"
+                    app:customFont="@string/roboto_medium" />
+
+            </LinearLayout>
 
             <com.scorg.forms.customui.CustomTextView
                 android:id="@+id/dateTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:padding="@dimen/view_margin"
-                android:text="Date: 12/10/2017"
+                android:text="@string/date"
                 android:textSize="@dimen/button_text_size"
                 app:customFont="@string/roboto_medium" />
 
+        </RelativeLayout>
+
+        <android.support.v4.widget.NestedScrollView
+            android:id="@+id/contentScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbarAlwaysDrawVerticalTrack="true">
+
             <com.scorg.forms.customui.CustomTextView
-                android:id="@+id/nameTextView"
+                android:id="@+id/contentTextView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_toEndOf="@+id/profilePhoto"
-                android:layout_toRightOf="@+id/profilePhoto"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/view_margin"
+                android:layout_marginTop="@dimen/view_margin"
                 android:lineSpacingExtra="@dimen/dp5"
                 android:padding="@dimen/view_margin"
                 android:textSize="@dimen/button_text_size" />
 
-        </RelativeLayout>
-
-        <com.scorg.forms.customui.CustomTextView
-            android:id="@+id/contentTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/view_margin"
-            android:layout_marginTop="@dimen/view_margin"
-            android:lineSpacingExtra="@dimen/dp5"
-            android:padding="@dimen/view_margin"
-            android:textSize="@dimen/button_text_size" />
+        </android.support.v4.widget.NestedScrollView>
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="200dp"
             android:layout_margin="@dimen/view_margin"
             android:background="@drawable/profile_photo_back">
 
@@ -111,10 +133,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:textSize="28sp"
-                android:gravity="center"
                 android:alpha=".1"
-                android:text="@string/digital_signature"/>
+                android:gravity="center"
+                android:text="@string/digital_signature"
+                android:textSize="28sp" />
 
             <com.scorg.forms.customui.CustomButton
                 android:id="@+id/clearButton"
@@ -128,15 +150,25 @@
 
         </RelativeLayout>
 
+        <com.scorg.forms.customui.CustomTextView
+            android:id="@+id/patientName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/view_margin"
+            android:text="Name:"
+            android:textSize="@dimen/button_text_size"
+            app:customFont="@string/roboto_medium" />
+
         <Button
             android:id="@+id/submitButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:background="@drawable/button_selector"
             android:layout_marginBottom="@dimen/view_margin"
+            android:background="@drawable/button_selector"
             android:text="@string/submit"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:visibility="gone" />
 
     </LinearLayout>
-</ScrollView>
+</LinearLayout>

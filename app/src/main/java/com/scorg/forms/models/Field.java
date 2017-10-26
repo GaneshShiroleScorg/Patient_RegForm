@@ -40,6 +40,11 @@ public class Field implements Parcelable, Cloneable {
     @SerializedName("dataTable")
     @Expose
     private String dataTable = "";
+
+    @SerializedName("isIncludeInShortDescription")
+    @Expose
+    private boolean isIncludeInShortDescription = false;
+
     public final static Parcelable.Creator<Field> CREATOR = new Creator<Field>() {
 
 
@@ -67,6 +72,7 @@ public class Field implements Parcelable, Cloneable {
         in.readList(this.dataList, (java.lang.String.class.getClassLoader()));
         this.dataTable = ((String) in.readValue((String.class.getClassLoader())));
         in.readList(this.textBoxGroup, (Field.class.getClassLoader()));
+        this.isIncludeInShortDescription = ((boolean) in.readValue((boolean.class.getClassLoader())));
     }
 
     public Field() {
@@ -152,6 +158,14 @@ public class Field implements Parcelable, Cloneable {
         this.textBoxGroup = textBoxGroup;
     }
 
+    public boolean isIncludeInShortDescription() {
+        return isIncludeInShortDescription;
+    }
+
+    public void setIncludeInShortDescription(boolean includeInShortDescription) {
+        isIncludeInShortDescription = includeInShortDescription;
+    }
+
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(name);
         dest.writeValue(type);
@@ -163,6 +177,8 @@ public class Field implements Parcelable, Cloneable {
         dest.writeList(dataList);
         dest.writeValue(dataTable);
         dest.writeList(textBoxGroup);
+        dest.writeValue(isIncludeInShortDescription);
+
     }
 
     public int describeContents() {

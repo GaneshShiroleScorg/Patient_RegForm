@@ -4,30 +4,52 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <android.support.v7.widget.AppCompatImageView
-        android:id="@+id/profilePhoto"
+    <LinearLayout
+        android:id="@+id/profilePhotoLayout"
         android:layout_width="140dp"
-        android:layout_height="150dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/dp26"
         android:layout_marginLeft="@dimen/dp26"
         android:layout_marginStart="@dimen/dp26"
         android:layout_marginTop="@dimen/dp26"
-        android:background="@drawable/profile_photo_back"
-        android:cropToPadding="true"
-        android:orientation="vertical"
-        android:padding="@dimen/dp5"
-        android:visibility="gone"
-        android:scaleType="centerCrop"
-        app:srcCompat="@drawable/ic_camera">
+        android:orientation="vertical">
 
-    </android.support.v7.widget.AppCompatImageView>
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/profilePhoto"
+            android:layout_width="140dp"
+            android:layout_height="150dp"
+            android:background="@drawable/profile_photo_back"
+            android:cropToPadding="true"
+            android:orientation="vertical"
+            android:padding="@dimen/dp5"
+            android:scaleType="centerCrop"
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_camera">
+
+        </android.support.v7.widget.AppCompatImageView>
+
+        <com.scorg.forms.customui.CustomButton
+            android:id="@+id/profileSectionEditButton"
+            android:layout_width="wrap_content"
+            android:layout_height="42dp"
+            android:layout_below="@+id/profilePhoto"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/dp50"
+            android:background="@drawable/button_selector"
+            android:gravity="center"
+            android:padding="@dimen/dp10"
+            android:text="@string/edit"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/button_text_size" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/fieldsContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/profilePhoto"
-        android:layout_toRightOf="@id/profilePhoto"
+        android:layout_toEndOf="@id/profilePhotoLayout"
+        android:layout_toRightOf="@id/profilePhotoLayout"
         android:orientation="vertical"
         android:paddingBottom="@dimen/dp8"
         android:paddingEnd="@dimen/view_margin"

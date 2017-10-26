@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.content.res.AppCompatResources;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -44,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import static com.scorg.forms.fragments.FormFragment.FORM_NUMBER;
+import static com.scorg.forms.fragments.FormFragment.FORM_NAME;
 import static com.scorg.forms.fragments.FormFragment.IS_EDITABLE;
 
 /**
@@ -53,6 +55,11 @@ public class PageFragment extends Fragment {
 
     private DatePickerDialog datePickerDialog;
     private boolean isEditable = true;
+    private TextView mTitleTextView;
+    private LinearLayout mSectionsContainer;
+    private LayoutInflater mInflater;
+    private String mReceivedDate;
+    private String mReceivedFormName;
 
     interface TYPE {
         String TEXTBOX = "textbox";
@@ -78,6 +85,7 @@ public class PageFragment extends Fragment {
      */
     private static final String PAGE_NUMBER = "section_number";
     private static final String PAGE = "page";
+    private static final String FORM_RECEIVED_DATE = "FORM_RECEIVED_DATE";
     private int pageNumber;
     private int formNumber;
     private Page page;
@@ -89,13 +97,16 @@ public class PageFragment extends Fragment {
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static PageFragment newInstance(int formNumber, int pageNumber, Page page, boolean isEditable) {
+    public static PageFragment newInstance(int formNumber, int pageNumber, Page page, boolean isEditable, String mReceivedDate, String mReceivedFormName) {
         PageFragment fragment = new PageFragment();
         Bundle args = new Bundle();
         args.putInt(FORM_NUMBER, formNumber);
         args.putInt(PAGE_NUMBER, pageNumber);
         args.putBoolean(IS_EDITABLE, isEditable);
         args.putParcelable(PAGE, page);
+        args.putString(FORM_RECEIVED_DATE, mReceivedDate);
+        args.putString(FORM_NAME, mReceivedFormName);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -108,6 +119,8 @@ public class PageFragment extends Fragment {
             pageNumber = getArguments().getInt(PAGE_NUMBER);
             formNumber = getArguments().getInt(FORM_NUMBER);
             isEditable = getArguments().getBoolean(IS_EDITABLE);
+            mReceivedDate = getArguments().getString(FORM_RECEIVED_DATE);
+            mReceivedFormName = getArguments().getString(FORM_NAME);
         }
     }
 
@@ -117,55 +130,12 @@ public class PageFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_pages, container, false);
 
-        TextView titleTextView = rootView.findViewById(R.id.titleView);
-        LinearLayout sectionsContainer = rootView.findViewById(R.id.sectionsContainer);
+        mInflater = inflater;
+        mTitleTextView = rootView.findViewById(R.id.titleView);
+        mSectionsContainer = rootView.findViewById(R.id.sectionsContainer);
 
-        titleTextView.setText(page.getPageName());
 
-        for (int sectionIndex = 0; sectionIndex < page.getSection().size(); sectionIndex++) {
-            View sectionLayout = inflater.inflate(R.layout.section_layout, sectionsContainer, false);
-
-            LinearLayout profilePhotoLayout = sectionLayout.findViewById(R.id.profilePhotoLayout);
-            ImageView profilePhoto = sectionLayout.findViewById(R.id.profilePhoto);
-            TextView editButton = sectionLayout.findViewById(R.id.editButton);
-
-            editButton.setEnabled(isEditable);
-
-            Drawable leftDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_edit);
-            editButton.setCompoundDrawablesWithIntrinsicBounds(leftDrawable, null, null, null);
-
-            if (page.getSection().get(sectionIndex).getProfilePhoto() == null) {
-                profilePhotoLayout.setVisibility(View.GONE);
-            } else {
-                profilePhotoLayout.setVisibility(View.VISIBLE);
-
-                RequestOptions requestOptions = new RequestOptions();
-                requestOptions.dontAnimate();
-                requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
-                requestOptions.skipMemoryCache(true);
-                requestOptions.error(R.drawable.ic_camera);
-                requestOptions.placeholder(R.drawable.ic_camera);
-
-                Glide.with(getContext())
-                        .load(page.getSection().get(sectionIndex).getProfilePhoto())
-                        .into(profilePhoto);
-            }
-
-            View fieldsContainer = sectionLayout.findViewById(R.id.fieldsContainer);
-
-            ArrayList<Field> fields = page.getSection().get(sectionIndex).getFields();
-
-            TextView sectionTitle = sectionLayout.findViewById(R.id.sectionTitleView);
-            sectionTitle.setText(page.getSection().get(sectionIndex).getSectionName());
-
-            for (int fieldsIndex = 0; fieldsIndex < fields.size(); fieldsIndex++) {
-                final Field field = fields.get(fieldsIndex);
-                addField(fieldsContainer, sectionIndex, fields, field, fieldsIndex, inflater, -1);
-            }
-
-            sectionsContainer.addView(sectionLayout);
-        }
-
+        initializeDataViews();
         return rootView;
     }
 
@@ -294,7 +264,7 @@ public class PageFragment extends Fragment {
                         textBox.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                             @Override
                             public void onFocusChange(View v, boolean hasFocus) {
-                                if (hasFocus){
+                                if (hasFocus) {
                                     textBox.clearFocus();
                                     Calendar now = Calendar.getInstance();
                                     // As of version 2.3.0, `BottomSheetDatePickerDialog` is deprecated.
@@ -492,5 +462,65 @@ public class PageFragment extends Fragment {
 
     public Page getPage() {
         return page;
+    }
+
+    private void initializeDataViews() {
+
+        mTitleTextView.setText(mReceivedFormName + ": " + page.getPageName());
+
+        for (int sectionIndex = 0; sectionIndex < page.getSection().size(); sectionIndex++) {
+            View sectionLayout = mInflater.inflate(R.layout.section_layout, mSectionsContainer, false);
+
+            LinearLayout profilePhotoLayout = sectionLayout.findViewById(R.id.profilePhotoLayout);
+            ImageView profilePhoto = sectionLayout.findViewById(R.id.profilePhoto);
+            TextView editButton = sectionLayout.findViewById(R.id.editButton);
+
+            editButton.setEnabled(isEditable);
+
+            Drawable leftDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_edit);
+            editButton.setCompoundDrawablesWithIntrinsicBounds(leftDrawable, null, null, null);
+
+            if (page.getSection().get(sectionIndex).getProfilePhoto() == null) {
+                profilePhotoLayout.setVisibility(View.GONE);
+            } else {
+                profilePhotoLayout.setVisibility(View.VISIBLE);
+
+                /*RequestOptions requestOptions = new RequestOptions();
+                requestOptions.dontAnimate();
+                requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
+                requestOptions.skipMemoryCache(true);
+                requestOptions.error(R.drawable.ic_camera);
+                requestOptions.placeholder(R.drawable.ic_camera);*/
+                Glide.with(getContext())
+                        .load(page.getSection().get(sectionIndex).getProfilePhoto())
+                        .into(profilePhoto);
+            }
+
+            View fieldsContainer = sectionLayout.findViewById(R.id.fieldsContainer);
+
+            ArrayList<Field> fields = page.getSection().get(sectionIndex).getFields();
+
+            TextView sectionTitle = sectionLayout.findViewById(R.id.sectionTitleView);
+            sectionTitle.setText(page.getSection().get(sectionIndex).getSectionName());
+
+            for (int fieldsIndex = 0; fieldsIndex < fields.size(); fieldsIndex++) {
+                final Field field = fields.get(fieldsIndex);
+                addField(fieldsContainer, sectionIndex, fields, field, fieldsIndex, mInflater, -1);
+            }
+            mSectionsContainer.addView(sectionLayout);
+        }
+
+        //------ in case of undertaking comes----
+        // dont show header if it is undertaking content fragment.
+        if (page.getUndertakingContent() != null) {
+            mTitleTextView.setVisibility(View.GONE);
+
+            UndertakingFragment newRegistrationFragment = UndertakingFragment.newInstance(mReceivedDate, page.getUndertakingContent(), page.getUndertakingImageUrl());
+            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+            transaction.replace(R.id.sectionsContainer, newRegistrationFragment, getResources().getString(R.string.undertaking));
+            transaction.commit();
+
+        }
+        //----------
     }
 }

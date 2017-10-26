@@ -52,9 +52,10 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <FrameLayout
@@ -62,35 +63,35 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/bottomTabLayout"
-            android:layout_marginTop="@dimen/dp10"
+            android:layout_marginBottom="@dimen/view_margin"
             android:layout_marginEnd="@dimen/view_margin"
             android:layout_marginStart="@dimen/view_margin"
-            android:layout_marginBottom="@dimen/view_margin"/>
+            android:layout_marginTop="@dimen/dp10"
+            android:layout_weight="1" />
 
         <RelativeLayout
             android:id="@+id/bottomTabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             android:paddingBottom="@dimen/view_margin"
             android:paddingEnd="@dimen/view_margin"
-            android:visibility="gone"
-            android:paddingStart="@dimen/view_margin">
+            android:paddingStart="@dimen/view_margin"
+            android:visibility="gone">
 
             <android.support.design.widget.TabLayout
                 android:id="@+id/formTabLayout"
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
                 app:tabGravity="center"
+                app:tabIndicatorColor="@android:color/transparent"
                 app:tabMaxWidth="250dp"
                 app:tabMinWidth="120dp"
-                app:tabIndicatorColor="@android:color/transparent"
                 app:tabMode="fixed"
                 app:tabPaddingEnd="@dimen/dp5"
-                app:tabPaddingStart="@dimen/dp5"/>
+                app:tabPaddingStart="@dimen/dp5" />
 
         </RelativeLayout>
 
-    </RelativeLayout>
+    </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

@@ -22,6 +22,8 @@ public class FormsActivity extends AppCompatActivity implements FormFragment.But
 
     public static final String FORM = "form";
     public static final String FORM_INDEX = "form_index";
+    public static final String CLINIC_NAME = "CLINIC_NAME";
+    public static final String CLINIC_LOGO = "CLINIC_LOGO";
 
     @SuppressWarnings("CheckResult")
     @Override
@@ -32,11 +34,13 @@ public class FormsActivity extends AppCompatActivity implements FormFragment.But
         Form form = getIntent().getParcelableExtra(FORM);
         int formIndex = getIntent().getIntExtra(FORM_INDEX, 0);
 
-        FormFragment formFragment = FormFragment.newInstance(formIndex, form.getPages(), form.getFormName(), true, false);
+        FormFragment formFragment = FormFragment.newInstance(formIndex, form.getPages(), form.getFormName(), true, false,form.getDate());
         addFormFragment(formFragment, form.getFormName(), formIndex);
 
+        //-------
         TextView titleTextView = findViewById(R.id.titleTextView);
-        titleTextView.setText(form.getFormName());
+        titleTextView.setText(getIntent().getStringExtra(CLINIC_NAME));
+        //-------
         ImageView logo = findViewById(R.id.logo);
 
         int iconSize = getResources().getDimensionPixelSize(R.dimen.icon_size);
@@ -49,9 +53,10 @@ public class FormsActivity extends AppCompatActivity implements FormFragment.But
         requestOptions.placeholder(R.drawable.ic_assignment);
 
         Glide.with(FormsActivity.this)
-                .load(form.getFormIcon())
+                .load(getIntent().getStringExtra(CLINIC_LOGO))
                 .apply(requestOptions)
                 .into(logo);
+        //-------
 
         ImageView backButton = findViewById(R.id.backButton);
 

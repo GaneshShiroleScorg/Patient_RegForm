@@ -15,7 +15,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.philliphsu.bottomsheetpickers.date.DatePickerDialog;
 import com.scorg.forms.R;
+import com.scorg.forms.customui.CustomButton;
 import com.scorg.forms.models.Field;
+import com.scorg.forms.models.Form;
 import com.scorg.forms.models.Page;
 import com.scorg.forms.util.CommonMethods;
 
@@ -29,6 +31,7 @@ import static com.scorg.forms.fragments.FormFragment.FORM_NUMBER;
 public class ProfilePageFragment extends Fragment {
 
     private DatePickerDialog datePickerDialog;
+    private FormFragment mParentFormFragment;
 
     interface TYPE {
         String TEXTBOX = "textbox";
@@ -89,7 +92,11 @@ public class ProfilePageFragment extends Fragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_pages, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_form_dashboard, container, false);
+
+        //--------
+        configureViewsOfParentFragment();
+        //------------
 
         TextView titleTextView = rootView.findViewById(R.id.titleView);
         LinearLayout sectionsContainer = rootView.findViewById(R.id.sectionsContainer);
@@ -123,8 +130,19 @@ public class ProfilePageFragment extends Fragment {
 
             for (int fieldsIndex = 0; fieldsIndex < fields.size(); fieldsIndex++) {
                 final Field field = fields.get(fieldsIndex);
-                addField(fieldsContainer, sectionIndex, fields, field, fieldsIndex, inflater, -1);
+                if (field.isIncludeInShortDescription())
+                    addField(fieldsContainer, sectionIndex, fields, field, fieldsIndex, inflater, -1);
             }
+
+            //----- This is done to call edit/submit functionality of FormFragment.java---
+            CustomButton profileSectionEditButton = sectionLayout.findViewById(R.id.profileSectionEditButton);
+            profileSectionEditButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mParentFormFragment.doOperationEditOrSubmit();
+                }
+            });
+
         }
 
         sectionsContainer.addView(sectionLayout);
@@ -264,5 +282,19 @@ public class ProfilePageFragment extends Fragment {
 
     public Page getPage() {
         return page;
+    }
+
+    /**
+     * This is use to visible/invisible views in parent FormFragmnet.java.
+     * For now, tablayout,footerButton and footer tabs is gone.
+     * Dont call this in case not required.
+     */
+    private void configureViewsOfParentFragment() {
+        //-----
+        Fragment parentFragment = getParentFragment();
+        if (parentFragment instanceof FormFragment) {
+            mParentFormFragment = (FormFragment) parentFragment;
+            mParentFormFragment.manageProfileFragmentViews();
+        }
     }
 }

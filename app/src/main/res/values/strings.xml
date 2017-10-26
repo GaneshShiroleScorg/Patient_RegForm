@@ -29,5 +29,6 @@
     <string name="digital_signature">Digital Signature</string>
     <string name="tablet_message">This app is for tablet only</string>
     <string name="ok">OK</string>
+    <string name="date">Date:&#160;</string>
 
 </resources>

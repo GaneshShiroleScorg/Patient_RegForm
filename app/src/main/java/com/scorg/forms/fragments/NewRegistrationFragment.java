@@ -3,6 +3,8 @@ package com.scorg.forms.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +13,9 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.scorg.forms.R;
 import com.scorg.forms.util.CommonMethods;
@@ -26,8 +30,10 @@ public class NewRegistrationFragment extends Fragment {
     private String registeredMobile = "8208127880";
     private EditText mobileText;
     private TextView mobileTextLabelView;
-    private ImageView getInfoButton;
+    private Button getInfoButton;
     private Button newRegistration;
+    private boolean isNewRegistrationVisible = false;
+    private LinearLayout mNewRegistrationLayout;
 
     public NewRegistrationFragment() {
         // Required empty public constructor
@@ -51,15 +57,24 @@ public class NewRegistrationFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_new_registration, container, false);
 
         mobileText = (EditText) rootView.findViewById(R.id.mobileText);
-        getInfoButton = (ImageView) rootView.findViewById(R.id.getInfoButton);
+        getInfoButton = (Button) rootView.findViewById(R.id.getInfoButton);
         newRegistration = (Button) rootView.findViewById(R.id.newRegistrationButton);
+        mNewRegistrationLayout = rootView.findViewById(R.id.newRegistrationLayout);
 
         mobileTextLabelView = (TextView) rootView.findViewById(R.id.mobileTextLabelView);
 
-        newRegistration.setOnClickListener(new View.OnClickListener() {
+        mNewRegistrationLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onClickRegister();
+                String mobile = mobileText.getText().toString().trim();
+
+                if (Valid.validateMobileNo(mobile, getContext())) {
+                    if (mobile.equals(registeredMobile)) {
+                        Toast.makeText(getActivity(), "Number already registered", Toast.LENGTH_SHORT).show();
+                    } else {
+                        mListener.onClickRegister();
+                    }
+                }
             }
         });
 
@@ -82,27 +97,62 @@ public class NewRegistrationFragment extends Fragment {
 
         });
 
+        mobileText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+                if (isNewRegistrationVisible) {
+                    mNewRegistrationLayout.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
         return rootView;
     }
+
 
     private void go() {
 
         String mobile = mobileText.getText().toString().trim();
 
         if (Valid.validateMobileNo(mobile, getContext())) {
-            if (mobile.equals(registeredMobile))
+            if (mobile.equals(registeredMobile)) {
+                CommonMethods.setAlreadyRegisteredUser(true);
                 mListener.onClickGetInfo(mobile);
-            else {
-
+            } else {
                 CommonMethods.hideKeyboard(getActivity());
-
-                mobileTextLabelView.setText(mobile);
+                //------ Ritesh commented :: start
+                /*mobileTextLabelView.setText(mobile);
                 mobileTextLabelView.setVisibility(View.VISIBLE);
                 getInfoButton.setVisibility(View.INVISIBLE);
                 mobileText.setVisibility(View.INVISIBLE);
                 newRegistration.setVisibility(View.VISIBLE);
+                newRegistration.requestFocus();*/
+                //----   //------ Ritesh commented :: start
 
-                newRegistration.requestFocus();
+               /* mobileTextLabelView.setText(mobile);
+                mobileTextLabelView.setVisibility(View.GONE);
+                getInfoButton.setVisibility(View.VISIBLE);
+                mobileText.setVisibility(View.VISIBLE);
+                newRegistration.setText(getString(R.string.new_registration));
+                mNewRegistrationLayout.setVisibility(View.VISIBLE);
+                isNewRegistrationVisible = true;*/
+
+                CommonMethods.setAlreadyRegisteredUser(false); // this means user is newly registered.
+
+                // Register directly if new mobile number, No need to show registration button
+                mListener.onClickRegister();
+
             }
         }
     }
@@ -137,6 +187,7 @@ public class NewRegistrationFragment extends Fragment {
     public interface OnRegistrationListener {
         // TODO: Update argument type and name
         void onClickRegister();
+
         void onClickGetInfo(String mobileText);
     }
 }

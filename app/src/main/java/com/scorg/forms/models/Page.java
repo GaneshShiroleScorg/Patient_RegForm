@@ -20,6 +20,14 @@ public class Page implements Parcelable {
     @SerializedName("section")
     @Expose
     private ArrayList<Section> section = new ArrayList<Section>();
+
+    @SerializedName("undertakingContent")
+    @Expose
+    private String undertakingContent;
+    @SerializedName("undertakingImageUrl")
+    @Expose
+    private String undertakingImageUrl;
+
     public final static Parcelable.Creator<Page> CREATOR = new Creator<Page>() {
 
 
@@ -40,6 +48,9 @@ public class Page implements Parcelable {
         this.pageIcon = ((String) in.readValue((String.class.getClassLoader())));
         this.pageName = ((String) in.readValue((String.class.getClassLoader())));
         in.readList(this.section, (Section.class.getClassLoader()));
+        this.undertakingContent = ((String) in.readValue((String.class.getClassLoader())));
+        this.undertakingImageUrl = ((String) in.readValue((String.class.getClassLoader())));
+
     }
 
     public Page() {
@@ -69,10 +80,29 @@ public class Page implements Parcelable {
         this.section = section;
     }
 
+    public String getUndertakingContent() {
+        return undertakingContent;
+    }
+
+    public void setUndertakingContent(String undertakingContent) {
+        this.undertakingContent = undertakingContent;
+    }
+
+    public String getUndertakingImageUrl() {
+        return undertakingImageUrl;
+    }
+
+    public void setUndertakingImageUrl(String undertakingImageUrl) {
+        this.undertakingImageUrl = undertakingImageUrl;
+    }
+
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(pageIcon);
         dest.writeValue(pageName);
         dest.writeList(section);
+        dest.writeValue(undertakingContent);
+        dest.writeValue(undertakingImageUrl);
+
     }
 
     public int describeContents() {

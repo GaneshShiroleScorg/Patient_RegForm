@@ -34,6 +34,8 @@ import java.util.TimerTask;
 
 import static com.scorg.forms.activities.FormsActivity.FORM;
 import static com.scorg.forms.activities.FormsActivity.FORM_INDEX;
+import static com.scorg.forms.activities.FormsActivity.CLINIC_LOGO;
+import static com.scorg.forms.activities.FormsActivity.CLINIC_NAME;
 
 public class PersonalInfoActivity extends AppCompatActivity implements FormFragment.ButtonClickListener, NewRegistrationFragment.OnRegistrationListener {
 
@@ -53,7 +55,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_info);
 
-        if(!getResources().getBoolean(R.bool.isTab)) {
+        if (!getResources().getBoolean(R.bool.isTab)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(getResources().getString(R.string.tablet_message))
                     .setCancelable(false)
@@ -70,6 +72,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         customProgressDialog.setCancelable(false);
 
         bottomTabLayout = (RelativeLayout) findViewById(R.id.bottomTabLayout);
+
 
 //        CommonMethods.setEditTextLineColor(mobileText, getResources().getColor(android.R.color.white));
 
@@ -161,7 +164,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
 
     private void addUndertakingFragment() {
 
-        UndertakingFragment undertakingFragment = UndertakingFragment.newInstance();
+        UndertakingFragment undertakingFragment = UndertakingFragment.newInstance("", "", "");
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.container, undertakingFragment, getResources().getString(R.string.new_registration));
         transaction.commit();
@@ -171,7 +174,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
 
     private void addProfileFragment(boolean isEditable, boolean isNew) {
 
-        FormFragment formFragment = FormFragment.newInstance(20, isNew ? newFormsModel.getPersonalInfo().getPages() : formsModel.getPersonalInfo().getPages(), getResources().getString(R.string.personal_info), isEditable, isNew);
+        FormFragment formFragment = FormFragment.newInstance(20, isNew ? newFormsModel.getPersonalInfo().getPages() : formsModel.getPersonalInfo().getPages(), getResources().getString(R.string.personal_info), isEditable, isNew, "");
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.container, formFragment, getResources().getString(R.string.personal_info) + 20);
         transaction.commit();
@@ -183,6 +186,9 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         Intent intent = new Intent(PersonalInfoActivity.this, FormsActivity.class);
         intent.putExtra(FORM, form);
         intent.putExtra(FORM_INDEX, tab.getPosition());
+        intent.putExtra(CLINIC_NAME, formsModel.getClinicName());
+        intent.putExtra(CLINIC_LOGO, formsModel.getClinicLogoUrl());
+
         startActivity(intent);
     }
 
@@ -218,10 +224,17 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
     public void submitClick(int formNumber, boolean isNew) {
         showProgress();
         addProfileFragment(false, isNew);
-        setTabLayoutDisable(false);
+        setTabLayoutDisable(false,true);
+
     }
 
-    private void setTabLayoutDisable(boolean isDisable) {
+    private void setTabLayoutDisable(boolean isDisable, boolean showFormTabLayout) {
+
+        if (showFormTabLayout) {
+            formTabLayout.setVisibility(View.VISIBLE);
+        } else {
+            formTabLayout.setVisibility(View.GONE);
+        }
 
         LinearLayout tabStrip = ((LinearLayout) formTabLayout.getChildAt(0));
         tabStrip.setAlpha(isDisable ? .3f : 1f);
@@ -234,22 +247,46 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
     @Override
     public void editClick(int formNumber, boolean isNew) {
         showProgress();
-        setTabLayoutDisable(true);
+        setTabLayoutDisable(true, false);
         addProfileFragment(true, isNew);
     }
 
     @Override
     public void onClickRegister() {
+
+        //----Set logo and clinic Name in home window---
+        int iconSize = getResources().getDimensionPixelSize(R.dimen.icon_size);
+
+        TextView headerName = findViewById(R.id.titleTextView);
+        headerName.setText(formsModel.getClinicName());
+        ImageView headerLogo = findViewById(R.id.logo);
+        Glide.with(PersonalInfoActivity.this)
+                .load(formsModel.getClinicLogoUrl())
+                .into(headerLogo);
+        //-------
+
         showProgress();
         addProfileFragment(true, true);
-        setTabLayoutDisable(true);
-    }
+        setTabLayoutDisable(true,false);
+     }
 
     @Override
     public void onClickGetInfo(String mobileText) {
-            showProgress();
-            addProfileFragment(false, false);
-            setTabLayoutDisable(false);
+
+        //----Set logo and clinic Name in home window---
+        int iconSize = getResources().getDimensionPixelSize(R.dimen.icon_size);
+
+        TextView headerName = findViewById(R.id.titleTextView);
+        headerName.setText(formsModel.getClinicName());
+        ImageView headerLogo = findViewById(R.id.logo);
+        Glide.with(PersonalInfoActivity.this)
+                .load(formsModel.getClinicLogoUrl())
+                .into(headerLogo);
+        //-------
+        showProgress();
+        addProfileFragment(false, false);
+        setTabLayoutDisable(false, true);
+
     }
 
     private void showProgress() {
@@ -268,4 +305,6 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
             }
         }, 300);
     }
+
+
 }

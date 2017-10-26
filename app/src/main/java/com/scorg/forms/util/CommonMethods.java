@@ -24,6 +24,8 @@ public class CommonMethods {
 
     private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
+    private static boolean alreadyRegisteredUser = false;
+
     public static int getAge(int year, int month, int day) {
 
         Calendar cal = Calendar.getInstance();
@@ -102,5 +104,13 @@ public class CommonMethods {
                 return result;
             }
         }
+    }
+
+    public static void setAlreadyRegisteredUser(boolean alreadyRegisteredUser) {
+        CommonMethods.alreadyRegisteredUser = alreadyRegisteredUser;
+    }
+
+    public static boolean isAlreadyRegisteredUser() {
+        return CommonMethods.alreadyRegisteredUser;
     }
 }

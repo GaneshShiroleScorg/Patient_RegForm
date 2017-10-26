@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -35,9 +36,10 @@ public class FormFragment extends Fragment {
     public static final String FORM_NUMBER = "form_number";
     private static final String TAG = "Form";
     private static final String PAGES = "pages";
-    private static final String FORM_NAME = "form_name";
+    public static final String FORM_NAME = "form_name";
     public static final String IS_EDITABLE = "is_editable";
     public static final String IS_NEW = "is_new";
+    public static final String DATE = "date";
 
     ArrayList<Page> pages;
     private String formName;
@@ -52,13 +54,16 @@ public class FormFragment extends Fragment {
     private Button preButton;
     private Button nextButton;
     private Button submitEditButton;
+    private RelativeLayout mAllButtonLayout;
     private boolean isNew;
+    private String mReceivedDate;
+    private String mReceivedFormName;
 
     public FormFragment() {
         // Required empty public constructor
     }
 
-    public static FormFragment newInstance(int formNumber, ArrayList<Page> pages, String formName, boolean isEditable, boolean isNew) {
+    public static FormFragment newInstance(int formNumber, ArrayList<Page> pages, String formName, boolean isEditable, boolean isNew, String date) {
         FormFragment fragment = new FormFragment();
         Bundle args = new Bundle();
         args.putParcelableArrayList(PAGES, pages);
@@ -66,6 +71,7 @@ public class FormFragment extends Fragment {
         args.putBoolean(IS_EDITABLE, isEditable);
         args.putBoolean(IS_NEW, isNew);
         args.putString(FORM_NAME, formName);
+        args.putString(DATE, date);
         fragment.setArguments(args);
         return fragment;
     }
@@ -78,6 +84,8 @@ public class FormFragment extends Fragment {
             isNew = getArguments().getBoolean(IS_NEW);
             pages = getArguments().getParcelableArrayList(PAGES);
             formNumber = getArguments().getInt(FORM_NUMBER);
+            mReceivedDate = getArguments().getString(DATE);
+            mReceivedFormName = getArguments().getString(FORM_NAME);
         }
     }
 
@@ -89,6 +97,7 @@ public class FormFragment extends Fragment {
 
         // Buttons
 
+        mAllButtonLayout = roolView.findViewById(R.id.buttonLayout);
         preButton = (Button) roolView.findViewById(R.id.backButton);
         nextButton = (Button) roolView.findViewById(R.id.nextButton);
         submitEditButton = (Button) roolView.findViewById(R.id.submitEditButton);
@@ -110,9 +119,9 @@ public class FormFragment extends Fragment {
         mViewPager.setId(formNumber + 2000);
         setupViewPager(pages);
 
-        if (mTabLayout.getTabCount() > 5){
+        if (mTabLayout.getTabCount() > 5) {
             mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-        }else {
+        } else {
             mTabLayout.setTabMode(TabLayout.MODE_FIXED);
         }
 
@@ -141,9 +150,7 @@ public class FormFragment extends Fragment {
         submitEditButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isEditable)
-                mListener.submitClick(formNumber, isNew);
-                else mListener.editClick(formNumber, isNew);
+                doOperationEditOrSubmit();
             }
         });
 
@@ -237,13 +244,21 @@ public class FormFragment extends Fragment {
     }
 
     private void handleButtons(int position) {
-        if (position == 0)
+        if (position == 0) {
             preButton.setEnabled(false);
-        else preButton.setEnabled(true);
+            preButton.setVisibility(View.GONE);
+        } else {
+            preButton.setEnabled(true);
+            preButton.setVisibility(View.VISIBLE);
+        }
 
-        if ((position + 1) == mTabLayout.getTabCount())
+        if ((position + 1) == mTabLayout.getTabCount()) {
             nextButton.setEnabled(false);
-        else nextButton.setEnabled(true);
+            nextButton.setVisibility(View.GONE);
+        } else {
+            nextButton.setEnabled(true);
+            nextButton.setVisibility(View.VISIBLE);
+        }
     }
 
     private void selectTab(View tabView, boolean isSelected) {
@@ -289,7 +304,7 @@ public class FormFragment extends Fragment {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             if (isEditable)
-                return PageFragment.newInstance(formNumber, position, pages.get(position), isEditable);
+                return PageFragment.newInstance(formNumber, position, pages.get(position), isEditable, mReceivedDate, mReceivedFormName);
             else return ProfilePageFragment.newInstance(formNumber, position, pages.get(position));
         }
 
@@ -324,7 +339,9 @@ public class FormFragment extends Fragment {
     // Listener
     public interface ButtonClickListener {
         void backClick(int formNumber);
+
         void nextClick(int formNumber);
+
         void submitClick(int formNumber, boolean isNew);
 
         void editClick(int formNumber, boolean isNew);
@@ -391,4 +408,15 @@ public class FormFragment extends Fragment {
 
     }
 
+
+    public void doOperationEditOrSubmit() {
+        if (isEditable)
+            mListener.submitClick(formNumber, isNew);
+        else mListener.editClick(formNumber, isNew);
+    }
+
+    public void manageProfileFragmentViews() {
+        mTabLayout.setVisibility(View.INVISIBLE);
+        mAllButtonLayout.setVisibility(View.GONE);
+    }
 }
