@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/white"
     android:orientation="vertical"
-    tools:context=".activities.FormsActivity">
+    tools:context=".fragments.PageFragment">
 
     <com.scorg.forms.customui.CustomTextView
         android:id="@+id/titleView"
@@ -21,16 +21,11 @@
         app:customFont="@string/roboto_medium"
         tools:text="Basic Info" />
 
-    <android.support.v4.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
         <LinearLayout
             android:id="@+id/sectionsContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusableInTouchMode="false"
             android:orientation="vertical" />
-    </android.support.v4.widget.NestedScrollView>
 
 </LinearLayout>

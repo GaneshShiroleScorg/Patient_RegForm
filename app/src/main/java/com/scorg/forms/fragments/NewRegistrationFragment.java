@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.scorg.forms.R;
+import com.scorg.forms.preference.PreferencesManager;
 import com.scorg.forms.util.CommonMethods;
 import com.scorg.forms.util.Valid;
 
@@ -41,8 +42,7 @@ public class NewRegistrationFragment extends Fragment {
 
 
     public static NewRegistrationFragment newInstance() {
-        NewRegistrationFragment fragment = new NewRegistrationFragment();
-        return fragment;
+        return new NewRegistrationFragment();
     }
 
     @Override
@@ -69,6 +69,9 @@ public class NewRegistrationFragment extends Fragment {
                 String mobile = mobileText.getText().toString().trim();
 
                 if (Valid.validateMobileNo(mobile, getContext())) {
+
+                    PreferencesManager.putString(PreferencesManager.PREFERENCES_KEY.MOBILE, mobile, getContext());
+
                     if (mobile.equals(registeredMobile)) {
                         Toast.makeText(getActivity(), "Number already registered", Toast.LENGTH_SHORT).show();
                     } else {
@@ -126,6 +129,9 @@ public class NewRegistrationFragment extends Fragment {
         String mobile = mobileText.getText().toString().trim();
 
         if (Valid.validateMobileNo(mobile, getContext())) {
+
+            PreferencesManager.putString(PreferencesManager.PREFERENCES_KEY.MOBILE, mobile, getContext());
+
             if (mobile.equals(registeredMobile)) {
                 CommonMethods.setAlreadyRegisteredUser(true);
                 mListener.onClickGetInfo(mobile);

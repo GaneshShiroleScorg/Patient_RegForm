@@ -1,17 +1,16 @@
 package com.scorg.forms.fragments;
 
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.NestedScrollView;
+import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.AppCompatImageView;
 import android.text.Html;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -22,15 +21,15 @@ import com.scorg.forms.customui.CustomButton;
 import com.scorg.forms.customui.CustomTextView;
 
 
+@SuppressWarnings("CheckResult")
 public class UndertakingFragment extends Fragment {
-    private String name = "Sandeep Bahalkar"; // hard coded
-    private String companyName = "Antarnad Counselling Center"; // hard coded
+
+    private static final String NAME = "name";
 
     private static final String FORM_RECEIVED_DATE = "FORM_RECEIVED_DATE";
     private static final String CONTENT = "CONTENT";
     private static final String IMAGE_URL = "IMAGE_URL";
     private String mReceivedDate;
-    private NestedScrollView mContentScrollView;
     private AppCompatImageView mProfilePhoto;
 //    private OnSubmitListener mListener;
 
@@ -38,12 +37,13 @@ public class UndertakingFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static UndertakingFragment newInstance(String formReceivedDate, String content, String imageUrl) {
+    public static UndertakingFragment newInstance(String formReceivedDate, String content, String imageUrl, String name) {
         UndertakingFragment fragment = new UndertakingFragment();
         Bundle args = new Bundle();
         args.putString(FORM_RECEIVED_DATE, formReceivedDate);
         args.putString(CONTENT, content);
         args.putString(IMAGE_URL, imageUrl);
+        args.putString(NAME, name);
         fragment.setArguments(args);
         return fragment;
     }
@@ -55,36 +55,27 @@ public class UndertakingFragment extends Fragment {
 
     // Content View Elements
 
-    private ImageView mLogo;
+    //    private ImageView mLogo;
     private CustomTextView mTitleTextView;
     private CustomTextView mDateTextView;
     private CustomTextView mContentTextView;
     private SignaturePad mSignature_pad;
     private CustomButton mClearButton;
-    private Button mSubmitButton;
+    private TextView mEditButton;
+    private TextView mPatientName;
 
     // End Of Content View Elements
 
     private void bindViews(View view) {
-        mLogo = (ImageView) view.findViewById(R.id.logo);
+//        mLogo = (ImageView) view.findViewById(R.id.logo);
         mProfilePhoto = view.findViewById(R.id.profilePhoto);
-        mTitleTextView = (CustomTextView) view.findViewById(R.id.titleTextView);
-        mDateTextView = (CustomTextView) view.findViewById(R.id.dateTextView);
-        mContentTextView = (CustomTextView) view.findViewById(R.id.contentTextView);
-        mSignature_pad = (SignaturePad) view.findViewById(R.id.signature_pad);
-        mClearButton = (CustomButton) view.findViewById(R.id.clearButton);
-        mSubmitButton = (Button) view.findViewById(R.id.submitButton);
-        mContentScrollView = view.findViewById(R.id.contentScrollView);
-
-        mContentScrollView.setOnTouchListener(new View.OnTouchListener() {
-
-            public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
-                //Log.v(TAG,"PARENT TOUCH");
-                mContentScrollView.getParent().requestDisallowInterceptTouchEvent(true);
-                return false;
-            }
-        });
+        mTitleTextView = view.findViewById(R.id.titleTextView);
+        mDateTextView = view.findViewById(R.id.dateTextView);
+        mContentTextView = view.findViewById(R.id.contentTextView);
+        mSignature_pad = view.findViewById(R.id.signature_pad);
+        mClearButton = view.findViewById(R.id.clearButton);
+        mEditButton = view.findViewById(R.id.editButton);
+        mPatientName = view.findViewById(R.id.patientName);
     }
 
     @Override
@@ -103,6 +94,11 @@ public class UndertakingFragment extends Fragment {
 
             mTitleTextView.setPaintFlags(mTitleTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             mTitleTextView.setText(getString(R.string.undertaking));
+
+            Drawable leftDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_photo_camera);
+            mEditButton.setCompoundDrawablesWithIntrinsicBounds(leftDrawable, null, null, null);
+
+            mPatientName.setText(getString(R.string.name) + ": " + arguments.getString(NAME));
 
             RequestOptions requestOptions = new RequestOptions();
             requestOptions.dontAnimate();

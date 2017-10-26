@@ -63,12 +63,12 @@ public class FormFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static FormFragment newInstance(int formNumber, ArrayList<Page> pages, String formName, boolean isEditable, boolean isNew, String date) {
+    public static FormFragment newInstance(int formNumber, ArrayList<Page> pages, String formName/*, boolean isEditable*/, boolean isNew, String date) {
         FormFragment fragment = new FormFragment();
         Bundle args = new Bundle();
         args.putParcelableArrayList(PAGES, pages);
         args.putInt(FORM_NUMBER, formNumber);
-        args.putBoolean(IS_EDITABLE, isEditable);
+//        args.putBoolean(IS_EDITABLE, isEditable);
         args.putBoolean(IS_NEW, isNew);
         args.putString(FORM_NAME, formName);
         args.putString(DATE, date);
@@ -80,7 +80,7 @@ public class FormFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            isEditable = getArguments().getBoolean(IS_EDITABLE);
+//            isEditable = getArguments().getBoolean(IS_EDITABLE);
             isNew = getArguments().getBoolean(IS_NEW);
             pages = getArguments().getParcelableArrayList(PAGES);
             formNumber = getArguments().getInt(FORM_NUMBER);
@@ -303,9 +303,9 @@ public class FormFragment extends Fragment {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            if (isEditable)
-                return PageFragment.newInstance(formNumber, position, pages.get(position), isEditable, mReceivedDate, mReceivedFormName);
-            else return ProfilePageFragment.newInstance(formNumber, position, pages.get(position));
+//            if (isEditable)
+            return PageFragment.newInstance(formNumber, position, pages.get(position), isEditable, mReceivedDate, mReceivedFormName);
+//            else return ProfilePageFragment.newInstance(formNumber, position, pages.get(position));
         }
 
         @Override
@@ -415,8 +415,8 @@ public class FormFragment extends Fragment {
         else mListener.editClick(formNumber, isNew);
     }
 
-    public void manageProfileFragmentViews() {
-        mTabLayout.setVisibility(View.INVISIBLE);
+   /* public void manageProfileFragmentViews() {
+        mTabLayout.setVisibility(View.GONE);
         mAllButtonLayout.setVisibility(View.GONE);
-    }
+    }*/
 }

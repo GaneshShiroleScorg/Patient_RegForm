@@ -43,7 +43,7 @@ public class Field implements Parcelable, Cloneable {
 
     @SerializedName("isIncludeInShortDescription")
     @Expose
-    private boolean isIncludeInShortDescription = false;
+    private boolean isIncludeInShortDescription = true;
 
     public final static Parcelable.Creator<Field> CREATOR = new Creator<Field>() {
 
@@ -61,7 +61,7 @@ public class Field implements Parcelable, Cloneable {
 
     };
 
-    protected Field(Parcel in) {
+    private Field(Parcel in) {
         this.name = ((String) in.readValue((String.class.getClassLoader())));
         this.type = ((String) in.readValue((String.class.getClassLoader())));
         this.isMandatory = ((boolean) in.readValue((boolean.class.getClassLoader())));

@@ -11,26 +11,67 @@
         android:id="@+id/titleView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/title_background"
-        android:paddingBottom="@dimen/dp12"
+        android:paddingBottom="50dp"
         android:paddingEnd="@dimen/view_margin"
         android:paddingStart="@dimen/view_margin"
-        android:paddingTop="@dimen/dp12"
-        android:textColor="@android:color/white"
+        android:gravity="center_horizontal"
+        android:paddingTop="50dp"
+        android:textColor="@color/title_background"
         android:textSize="@dimen/title_text_size"
         app:customFont="@string/roboto_medium"
         tools:text="Basic Info" />
 
-    <android.support.v4.widget.NestedScrollView
+    <LinearLayout
+        android:id="@+id/sectionsContainer"
         android:layout_width="match_parent"
-         android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
 
-        <LinearLayout
-            android:id="@+id/sectionsContainer"
-            android:layout_width="match_parent"
+    <!--Add Tabs-->
+
+    <RelativeLayout
+        android:id="@+id/bottomTabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/view_margin"
+        android:paddingBottom="@dimen/view_margin"
+        android:paddingEnd="@dimen/view_margin"
+        android:paddingStart="@dimen/view_margin">
+
+        <com.scorg.forms.customui.CustomTextView
+            android:id="@+id/editButton"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </android.support.v4.widget.NestedScrollView>
+            android:background="@drawable/edit_button_normal"
+            android:gravity="center"
+            android:paddingBottom="@dimen/dp8"
+            android:paddingEnd="@dimen/dp10"
+            android:paddingLeft="@dimen/dp10"
+            android:paddingRight="@dimen/dp10"
+            android:layout_alignParentEnd="true"
+            android:paddingStart="@dimen/dp10"
+            android:paddingTop="@dimen/dp8"
+            android:layout_marginBottom="50dp"
+            android:text="@string/edit"
+            app:textAllCaps="true"
+            android:textColor="@android:color/white"
+            android:textSize="13sp"
+            app:customFont="@string/roboto_medium"
+            android:layout_alignParentRight="true" />
 
+        <android.support.design.widget.TabLayout
+            android:id="@+id/formTabLayout"
+            android:layout_below="@+id/editButton"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            app:tabGravity="center"
+            app:tabIndicatorColor="@android:color/transparent"
+            app:tabMaxWidth="250dp"
+            app:tabMinWidth="120dp"
+            app:tabMode="fixed"
+            app:tabPaddingEnd="@dimen/dp10"
+            app:tabPaddingStart="@dimen/dp10" />
+
+    </RelativeLayout>
 
 </LinearLayout>

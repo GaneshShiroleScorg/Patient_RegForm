@@ -20,7 +20,6 @@
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:background="@drawable/tab_layout_background"
-            android:visibility="visible"
             app:tabGravity="center"
             app:tabIndicatorColor="@android:color/transparent"
             app:tabMaxWidth="580dp"
@@ -40,7 +39,7 @@
         <com.scorg.forms.customui.CustomViewPager
             android:id="@+id/container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_weight="1" />
 
         <RelativeLayout
@@ -48,9 +47,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/dp10"
-            android:paddingEnd="@dimen/view_margin"
-            android:paddingStart="@dimen/view_margin"
-            android:paddingTop="@dimen/dp10">
+            android:paddingTop="@dimen/view_margin">
 
             <com.scorg.forms.customui.CustomButton
                 android:id="@+id/backButton"
@@ -58,8 +55,6 @@
                 android:layout_height="42dp"
                 android:layout_marginEnd="@dimen/view_margin"
                 android:layout_marginRight="@dimen/view_margin"
-                android:layout_toLeftOf="@+id/nextButton"
-                android:layout_toStartOf="@+id/nextButton"
                 android:background="@drawable/button_selector"
                 android:padding="@dimen/dp10"
                 android:text="@string/previous"
@@ -72,8 +67,8 @@
                 android:layout_height="42dp"
                 android:layout_marginEnd="@dimen/view_margin"
                 android:layout_marginRight="@dimen/view_margin"
-                android:layout_toLeftOf="@+id/submitEditButton"
-                android:layout_toStartOf="@+id/submitEditButton"
+                android:layout_toRightOf="@+id/backButton"
+                android:layout_toEndOf="@+id/backButton"
                 android:background="@drawable/button_selector"
                 android:padding="@dimen/dp10"
                 android:text="@string/next"

@@ -1,8 +1,13 @@
 package com.scorg.forms.fragments;
 
+import android.content.Context;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.content.res.AppCompatResources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,25 +18,30 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
-import com.philliphsu.bottomsheetpickers.date.DatePickerDialog;
 import com.scorg.forms.R;
+import com.scorg.forms.activities.PersonalInfoActivity;
 import com.scorg.forms.customui.CustomButton;
 import com.scorg.forms.models.Field;
 import com.scorg.forms.models.Form;
+import com.scorg.forms.models.FormsModel;
 import com.scorg.forms.models.Page;
+import com.scorg.forms.preference.PreferencesManager;
 import com.scorg.forms.util.CommonMethods;
 
 import java.util.ArrayList;
 
 import static com.scorg.forms.fragments.FormFragment.FORM_NUMBER;
+import static com.scorg.forms.fragments.FormFragment.IS_NEW;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class ProfilePageFragment extends Fragment {
 
-    private DatePickerDialog datePickerDialog;
-    private FormFragment mParentFormFragment;
+//    private FormFragment mParentFormFragment;
+    private ButtonClickListener mListener;
+
+    public static final int PERSONAL_INFO_FORM = 20;
 
     interface TYPE {
         String TEXTBOX = "textbox";
@@ -55,11 +65,12 @@ public class ProfilePageFragment extends Fragment {
      * The fragment argument representing the section number for this
      * fragment.
      */
-    private static final String PAGE_NUMBER = "section_number";
-    private static final String PAGE = "page";
-    private int pageNumber;
+//    private static final String PAGE_NUMBER = "section_number";
+    private static final String PERSONAL_INFO = "personal_info";
+    //    private int pageNumber;
     private int formNumber;
-    private Page page;
+    private boolean isNew;
+    private FormsModel formsModel;
 
     public ProfilePageFragment() {
     }
@@ -68,12 +79,12 @@ public class ProfilePageFragment extends Fragment {
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static ProfilePageFragment newInstance(int formNumber, int pageNumber, Page page) {
+    public static ProfilePageFragment newInstance(int formNumber, FormsModel formsModel, boolean isNew) {
         ProfilePageFragment fragment = new ProfilePageFragment();
         Bundle args = new Bundle();
         args.putInt(FORM_NUMBER, formNumber);
-        args.putInt(PAGE_NUMBER, pageNumber);
-        args.putParcelable(PAGE, page);
+        args.putParcelable(PERSONAL_INFO, formsModel);
+        args.putBoolean(IS_NEW, isNew);
         fragment.setArguments(args);
         return fragment;
     }
@@ -82,9 +93,10 @@ public class ProfilePageFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            page = getArguments().getParcelable(PAGE);
-            pageNumber = getArguments().getInt(PAGE_NUMBER);
+            formsModel = getArguments().getParcelable(PERSONAL_INFO);
+//            pageNumber = getArguments().getInt(PAGE_NUMBER);
             formNumber = getArguments().getInt(FORM_NUMBER);
+            isNew = getArguments().getBoolean(IS_NEW);
         }
     }
 
@@ -95,54 +107,117 @@ public class ProfilePageFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_form_dashboard, container, false);
 
         //--------
-        configureViewsOfParentFragment();
+//        configureViewsOfParentFragment();
         //------------
 
-        TextView titleTextView = rootView.findViewById(R.id.titleView);
-        LinearLayout sectionsContainer = rootView.findViewById(R.id.sectionsContainer);
+        TextView editButton = rootView.findViewById(R.id.editButton);
+        Drawable leftDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_edit);
+        editButton.setCompoundDrawablesWithIntrinsicBounds(leftDrawable, null, null, null);
 
-        titleTextView.setText(page.getPageName());
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.editClick(20, isNew);
+            }
+        });
+
+        /// Form Tab
+
+        TabLayout formTabLayout = rootView.findViewById(R.id.formTabLayout);
+
+        int iconSize = getResources().getDimensionPixelSize(R.dimen.icon_size);
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions.dontAnimate();
+        requestOptions.override(iconSize, iconSize);
+        requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
+        requestOptions.skipMemoryCache(true);
+        requestOptions.error(R.drawable.ic_assignment);
+        requestOptions.placeholder(R.drawable.ic_assignment);
+
+        for (int formIndex = 0; formIndex < formsModel.getForms().size(); formIndex++) {
+
+            Form form = formsModel.getForms().get(formIndex);
+
+            View tabView = getLayoutInflater().inflate(R.layout.custom_tab_personal_form, null);
+
+            ImageView formIcon = tabView.findViewById(R.id.formIcon);
+            TextView titleTextView = tabView.findViewById(R.id.titleTextView);
+
+            Glide.with(getContext())
+                    .load(form.getFormIcon())
+                    .apply(requestOptions)
+                    .into(formIcon);
+
+            titleTextView.setText(form.getFormName());
+
+            TabLayout.Tab customTab = formTabLayout.newTab().setCustomView(tabView);
+            formTabLayout.addTab(customTab);
+        }
+
+        formTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                mListener.openForm(tab, formsModel.getForms().get(tab.getPosition()));
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                mListener.openForm(tab, formsModel.getForms().get(tab.getPosition()));
+            }
+        });
+
+        TextView titleTextView = rootView.findViewById(R.id.titleView);
+        titleTextView.setPaintFlags(titleTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        titleTextView.setText(getString(R.string.personal_information));
+
+        LinearLayout sectionsContainer = rootView.findViewById(R.id.sectionsContainer);
+//        titleTextView.setText(page.getPageName());
 
         View sectionLayout = inflater.inflate(R.layout.profile_section_layout, sectionsContainer, false);
+        
+        for (int pageIndex = 0; pageIndex < formsModel.getPersonalInfo().getPages().size(); pageIndex++) {
 
-        for (int sectionIndex = 0; sectionIndex < page.getSection().size(); sectionIndex++) {
+            Page page = formsModel.getPersonalInfo().getPages().get(pageIndex);
 
-            ImageView profilePhoto = sectionLayout.findViewById(R.id.profilePhoto);
+            for (int sectionIndex = 0; sectionIndex < page.getSection().size(); sectionIndex++) {
 
-            if (page.getSection().get(sectionIndex).getProfilePhoto() != null) {
-                profilePhoto.setVisibility(View.VISIBLE);
+                ImageView profilePhoto = sectionLayout.findViewById(R.id.profilePhoto);
 
-                RequestOptions requestOptions = new RequestOptions();
-                requestOptions.dontAnimate();
-                requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
-                requestOptions.skipMemoryCache(true);
-                requestOptions.error(R.drawable.ic_camera);
-                requestOptions.placeholder(R.drawable.ic_camera);
+                if (page.getSection().get(sectionIndex).getProfilePhoto() != null) {
+                    profilePhoto.setVisibility(View.VISIBLE);
 
-                Glide.with(getContext())
-                        .load(page.getSection().get(sectionIndex).getProfilePhoto())
-                        .into(profilePhoto);
-            }
+                    RequestOptions requestOpt = new RequestOptions();
+                    requestOpt.dontAnimate();
+                    requestOpt.diskCacheStrategy(DiskCacheStrategy.NONE);
+                    requestOpt.skipMemoryCache(true);
+                    requestOpt.error(R.drawable.ic_camera);
+                    requestOpt.placeholder(R.drawable.ic_camera);
 
-            View fieldsContainer = sectionLayout.findViewById(R.id.fieldsContainer);
-
-            ArrayList<Field> fields = page.getSection().get(sectionIndex).getFields();
-
-            for (int fieldsIndex = 0; fieldsIndex < fields.size(); fieldsIndex++) {
-                final Field field = fields.get(fieldsIndex);
-                if (field.isIncludeInShortDescription())
-                    addField(fieldsContainer, sectionIndex, fields, field, fieldsIndex, inflater, -1);
-            }
-
-            //----- This is done to call edit/submit functionality of FormFragment.java---
-            CustomButton profileSectionEditButton = sectionLayout.findViewById(R.id.profileSectionEditButton);
-            profileSectionEditButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mParentFormFragment.doOperationEditOrSubmit();
+                    Glide.with(getContext())
+                            .load(page.getSection().get(sectionIndex).getProfilePhoto())
+                            .into(profilePhoto);
                 }
-            });
 
+                View fieldsContainer = sectionLayout.findViewById(R.id.fieldsContainer);
+
+                ArrayList<Field> fields = page.getSection().get(sectionIndex).getFields();
+
+                for (int fieldsIndex = 0; fieldsIndex < fields.size(); fieldsIndex++) {
+                    final Field field = fields.get(fieldsIndex);
+                    if (field.isIncludeInShortDescription())
+                        addField(fieldsContainer, sectionIndex, fields, field, fieldsIndex, inflater, -1);
+                }
+
+                TextView mobileText = sectionLayout.findViewById(R.id.mobileText);
+                mobileText.setText(PreferencesManager.getString(PreferencesManager.PREFERENCES_KEY.MOBILE, getContext()));
+                Drawable leftDrawablePhone = AppCompatResources.getDrawable(getContext(), R.drawable.ic_phone_iphone_24dp);
+                mobileText.setCompoundDrawablesWithIntrinsicBounds(leftDrawablePhone, null, null, null);
+
+            }
         }
 
         sectionsContainer.addView(sectionLayout);
@@ -280,15 +355,30 @@ public class ProfilePageFragment extends Fragment {
         }
     }
 
-    public Page getPage() {
-        return page;
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof ProfilePageFragment.ButtonClickListener) {
+            mListener = (ProfilePageFragment.ButtonClickListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement ButtonClickListener");
+        }
     }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+   /* */
 
     /**
      * This is use to visible/invisible views in parent FormFragmnet.java.
      * For now, tablayout,footerButton and footer tabs is gone.
      * Dont call this in case not required.
-     */
+     *//*
     private void configureViewsOfParentFragment() {
         //-----
         Fragment parentFragment = getParentFragment();
@@ -296,5 +386,11 @@ public class ProfilePageFragment extends Fragment {
             mParentFormFragment = (FormFragment) parentFragment;
             mParentFormFragment.manageProfileFragmentViews();
         }
+    }*/
+
+    // Listener
+    public interface ButtonClickListener {
+        void editClick(int formNumber, boolean isNew);
+        void openForm(TabLayout.Tab tab, Form form);
     }
 }

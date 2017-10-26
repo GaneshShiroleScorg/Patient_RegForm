@@ -43,6 +43,7 @@
                     android:id="@+id/mobileTextLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp5"
                     android:orientation="vertical">
 
                     <com.scorg.forms.customui.CustomTextView
@@ -50,7 +51,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/dp0"
                         android:layout_gravity="center"
-                        android:layout_marginBottom="@dimen/dp10"
+                        android:layout_marginBottom="@dimen/dp12"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="Enter Mobile Number"
@@ -64,7 +65,6 @@
                         android:layout_height="@dimen/dp0"
                         android:layout_gravity="center"
                         android:layout_marginBottom="@dimen/dp10"
-
                         android:layout_marginLeft="@dimen/view_margin"
                         android:layout_marginStart="@dimen/view_margin"
                         android:layout_weight="1"
@@ -78,10 +78,9 @@
                         android:id="@+id/mobileText"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/dp0"
-                        android:layout_marginBottom="@dimen/dp10"
+                        android:layout_marginBottom="@dimen/dp16"
                         android:layout_weight="1"
                         android:gravity="center"
-
                         android:imeOptions="actionGo"
                         android:inputType="phone"
                         android:maxLength="10"
@@ -93,10 +92,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/dp0"
                         android:layout_gravity="center"
-                        android:layout_marginBottom="@dimen/dp10"
+                        android:layout_marginBottom="@dimen/dp12"
                         android:layout_weight="1"
                         android:background="@drawable/button_register"
                         android:text="@string/submit"
+                        app:customFont="@string/roboto_medium"
                         android:textColor="@android:color/white"
                         app:srcCompat="@drawable/ic_navigate_next_24dp" />
 

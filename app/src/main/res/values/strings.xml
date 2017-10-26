@@ -7,6 +7,7 @@
     <string name="previous">Previous</string>
     <string name="select_date">Select Date</string>
     <string name="personal_info">Personal Info</string>
+    <string name="personal_information">Personal Information</string>
     <string name="mobile">Mobile Number</string>
     <string name="enter_mobile_no">Enter mobile number.</string>
     <string name="err_invalid_mobile_no">Enter valid mobile number.</string>
@@ -17,7 +18,7 @@
     <string name="roboto_medium">roboto_medium.ttf</string>
     <string name="roboto_regular">roboto_regular.ttf</string>
     <string name="edit">Edit</string>
-    <string name="change_photo">Change Photo</string>
+    <string name="change_photo">Take Photo</string>
     <string name="exit_message">Are you sure you want to exit?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -30,5 +31,6 @@
     <string name="tablet_message">This app is for tablet only</string>
     <string name="ok">OK</string>
     <string name="date">Date:&#160;</string>
+    <string name="name">Name</string>
 
 </resources>

@@ -34,4 +34,5 @@
     <dimen name="tab_circle_size">45dp</dimen>
     <dimen name="dp12">12dp</dimen>
     <dimen name="dp26">26dp</dimen>
+    <dimen name="dp16">16dp</dimen>
 </resources>

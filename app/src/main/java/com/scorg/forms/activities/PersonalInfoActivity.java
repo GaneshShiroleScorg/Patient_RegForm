@@ -21,23 +21,25 @@ import com.scorg.forms.R;
 import com.scorg.forms.customui.CustomProgressDialog;
 import com.scorg.forms.fragments.FormFragment;
 import com.scorg.forms.fragments.NewRegistrationFragment;
-import com.scorg.forms.fragments.UndertakingFragment;
+import com.scorg.forms.fragments.ProfilePageFragment;
 import com.scorg.forms.models.Form;
 import com.scorg.forms.models.FormsModel;
 import com.scorg.forms.util.CommonMethods;
-import com.scorg.forms.util.Valid;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.scorg.forms.activities.FormsActivity.FORM;
-import static com.scorg.forms.activities.FormsActivity.FORM_INDEX;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static com.scorg.forms.activities.FormsActivity.CLINIC_LOGO;
 import static com.scorg.forms.activities.FormsActivity.CLINIC_NAME;
+import static com.scorg.forms.activities.FormsActivity.FORM;
+import static com.scorg.forms.activities.FormsActivity.FORM_INDEX;
+import static com.scorg.forms.fragments.ProfilePageFragment.PERSONAL_INFO_FORM;
 
-public class PersonalInfoActivity extends AppCompatActivity implements FormFragment.ButtonClickListener, NewRegistrationFragment.OnRegistrationListener {
+public class PersonalInfoActivity extends AppCompatActivity implements FormFragment.ButtonClickListener, NewRegistrationFragment.OnRegistrationListener, ProfilePageFragment.ButtonClickListener {
 
     private FormsModel formsModel;
     private FormsModel newFormsModel;
@@ -162,27 +164,29 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         CommonMethods.hideKeyboard(PersonalInfoActivity.this);
     }
 
-    private void addUndertakingFragment() {
-
-        UndertakingFragment undertakingFragment = UndertakingFragment.newInstance("", "", "");
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.container, undertakingFragment, getResources().getString(R.string.new_registration));
-        transaction.commit();
-
-        CommonMethods.hideKeyboard(PersonalInfoActivity.this);
-    }
-
     private void addProfileFragment(boolean isEditable, boolean isNew) {
 
-        FormFragment formFragment = FormFragment.newInstance(20, isNew ? newFormsModel.getPersonalInfo().getPages() : formsModel.getPersonalInfo().getPages(), getResources().getString(R.string.personal_info), isEditable, isNew, "");
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.container, formFragment, getResources().getString(R.string.personal_info) + 20);
-        transaction.commit();
+        if (isEditable) {
+            FormFragment formFragment = FormFragment.newInstance(PERSONAL_INFO_FORM, isNew ? newFormsModel.getPersonalInfo().getPages() : formsModel.getPersonalInfo().getPages(), getResources().getString(R.string.personal_info)/*, isEditable*/, isNew, "");
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.container, formFragment, getResources().getString(R.string.personal_info) + PERSONAL_INFO_FORM);
+            transaction.commit();
+        } else {
+
+            bottomTabLayout.setVisibility(GONE);
+            showProgress(GONE);
+
+            ProfilePageFragment profilePageFragment = ProfilePageFragment.newInstance(PERSONAL_INFO_FORM, isNew ? newFormsModel : formsModel, isNew);
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.container, profilePageFragment, getResources().getString(R.string.personal_info) + PERSONAL_INFO_FORM);
+            transaction.commit();
+        }
 
         CommonMethods.hideKeyboard(PersonalInfoActivity.this);
     }
 
-    private void openForm(TabLayout.Tab tab, Form form) {
+    @Override
+    public void openForm(TabLayout.Tab tab, Form form) {
         Intent intent = new Intent(PersonalInfoActivity.this, FormsActivity.class);
         intent.putExtra(FORM, form);
         intent.putExtra(FORM_INDEX, tab.getPosition());
@@ -196,7 +200,6 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         String json;
         try {
             InputStream is = getAssets().open(jsonFile);
-//            InputStream is = getAssets().open("registration_form.json");
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);
@@ -222,16 +225,17 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
 
     @Override
     public void submitClick(int formNumber, boolean isNew) {
-        showProgress();
+        /*bottomTabLayout.setVisibility(GONE);
+        showProgress(GONE);*/
         addProfileFragment(false, isNew);
-        setTabLayoutDisable(false,true);
+        setTabLayoutDisable(false, true);
 
     }
 
     private void setTabLayoutDisable(boolean isDisable, boolean showFormTabLayout) {
 
         if (showFormTabLayout) {
-            formTabLayout.setVisibility(View.VISIBLE);
+            formTabLayout.setVisibility(VISIBLE);
         } else {
             formTabLayout.setVisibility(View.GONE);
         }
@@ -246,7 +250,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
 
     @Override
     public void editClick(int formNumber, boolean isNew) {
-        showProgress();
+        showProgress(VISIBLE);
         setTabLayoutDisable(true, false);
         addProfileFragment(true, isNew);
     }
@@ -265,10 +269,10 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
                 .into(headerLogo);
         //-------
 
-        showProgress();
+        showProgress(VISIBLE);
         addProfileFragment(true, true);
-        setTabLayoutDisable(true,false);
-     }
+        setTabLayoutDisable(true, false);
+    }
 
     @Override
     public void onClickGetInfo(String mobileText) {
@@ -283,13 +287,13 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
                 .load(formsModel.getClinicLogoUrl())
                 .into(headerLogo);
         //-------
-        showProgress();
+
         addProfileFragment(false, false);
         setTabLayoutDisable(false, true);
 
     }
 
-    private void showProgress() {
+    private void showProgress(final int visible) {
         customProgressDialog.show();
         timer.schedule(new TimerTask() {
             @Override
@@ -298,7 +302,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        bottomTabLayout.setVisibility(View.VISIBLE);
+                        bottomTabLayout.setVisibility(visible);
                     }
                 });
                 customProgressDialog.dismiss();

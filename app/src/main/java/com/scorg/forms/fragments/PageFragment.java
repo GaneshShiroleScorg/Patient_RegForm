@@ -31,22 +31,22 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.philliphsu.bottomsheetpickers.date.DatePickerDialog;
 import com.scorg.forms.R;
 import com.scorg.forms.customui.FlowLayout;
 import com.scorg.forms.customui.FlowRadioGroup;
 import com.scorg.forms.models.Field;
 import com.scorg.forms.models.Page;
+import com.scorg.forms.preference.PreferencesManager;
 import com.scorg.forms.util.CommonMethods;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import static com.scorg.forms.fragments.FormFragment.FORM_NUMBER;
 import static com.scorg.forms.fragments.FormFragment.FORM_NAME;
+import static com.scorg.forms.fragments.FormFragment.FORM_NUMBER;
 import static com.scorg.forms.fragments.FormFragment.IS_EDITABLE;
+import static com.scorg.forms.fragments.ProfilePageFragment.PERSONAL_INFO_FORM;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -106,7 +106,6 @@ public class PageFragment extends Fragment {
         args.putParcelable(PAGE, page);
         args.putString(FORM_RECEIVED_DATE, mReceivedDate);
         args.putString(FORM_NAME, mReceivedFormName);
-
         fragment.setArguments(args);
         return fragment;
     }
@@ -133,7 +132,6 @@ public class PageFragment extends Fragment {
         mInflater = inflater;
         mTitleTextView = rootView.findViewById(R.id.titleView);
         mSectionsContainer = rootView.findViewById(R.id.sectionsContainer);
-
 
         initializeDataViews();
         return rootView;
@@ -280,8 +278,8 @@ public class PageFragment extends Fragment {
                                         datePickerDialog.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
                                             @Override
                                             public void onDateSet(DatePickerDialog dialog, int year, int monthOfYear, int dayOfMonth) {
-                                                if (field.getName().equalsIgnoreCase("age"))
-                                                    textBox.setText(String.valueOf(CommonMethods.getAge(year, monthOfYear, dayOfMonth)));
+                                                if (field.getName().equalsIgnoreCase("age") || field.getName().toLowerCase().contains("age"))
+                                                    textBox.setText(CommonMethods.calculateAge((monthOfYear + 1) + "-" + dayOfMonth + "-" + year, "MM-dd-yyyy"));
                                                 else
                                                     textBox.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
                                             }
@@ -466,7 +464,9 @@ public class PageFragment extends Fragment {
 
     private void initializeDataViews() {
 
-        mTitleTextView.setText(mReceivedFormName + ": " + page.getPageName());
+        if (formNumber == PERSONAL_INFO_FORM)
+            mTitleTextView.setText(page.getPageName());
+        else mTitleTextView.setText(mReceivedFormName + ": " + page.getPageName());
 
         for (int sectionIndex = 0; sectionIndex < page.getSection().size(); sectionIndex++) {
             View sectionLayout = mInflater.inflate(R.layout.section_layout, mSectionsContainer, false);
@@ -477,8 +477,14 @@ public class PageFragment extends Fragment {
 
             editButton.setEnabled(isEditable);
 
-            Drawable leftDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_edit);
+            Drawable leftDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_photo_camera);
             editButton.setCompoundDrawablesWithIntrinsicBounds(leftDrawable, null, null, null);
+
+            TextView mobileText = sectionLayout.findViewById(R.id.mobileText);
+            mobileText.setText(PreferencesManager.getString(PreferencesManager.PREFERENCES_KEY.MOBILE, getContext()));
+            Drawable leftDrawablePhone = AppCompatResources.getDrawable(getContext(), R.drawable.ic_phone_iphone_24dp);
+            mobileText.setCompoundDrawablesWithIntrinsicBounds(leftDrawablePhone, null, null, null);
+
 
             if (page.getSection().get(sectionIndex).getProfilePhoto() == null) {
                 profilePhotoLayout.setVisibility(View.GONE);
@@ -515,7 +521,7 @@ public class PageFragment extends Fragment {
         if (page.getUndertakingContent() != null) {
             mTitleTextView.setVisibility(View.GONE);
 
-            UndertakingFragment newRegistrationFragment = UndertakingFragment.newInstance(mReceivedDate, page.getUndertakingContent(), page.getUndertakingImageUrl());
+            UndertakingFragment newRegistrationFragment = UndertakingFragment.newInstance(mReceivedDate, page.getUndertakingContent(), page.getUndertakingImageUrl(), page.getName());
             FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
             transaction.replace(R.id.sectionsContainer, newRegistrationFragment, getResources().getString(R.string.undertaking));
             transaction.commit();

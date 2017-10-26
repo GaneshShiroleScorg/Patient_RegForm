@@ -21,6 +21,10 @@ public class Page implements Parcelable {
     @Expose
     private ArrayList<Section> section = new ArrayList<Section>();
 
+    @SerializedName("name")
+    @Expose
+    private String name;
+
     @SerializedName("undertakingContent")
     @Expose
     private String undertakingContent;
@@ -48,6 +52,7 @@ public class Page implements Parcelable {
         this.pageIcon = ((String) in.readValue((String.class.getClassLoader())));
         this.pageName = ((String) in.readValue((String.class.getClassLoader())));
         in.readList(this.section, (Section.class.getClassLoader()));
+        this.name = ((String) in.readValue((String.class.getClassLoader())));
         this.undertakingContent = ((String) in.readValue((String.class.getClassLoader())));
         this.undertakingImageUrl = ((String) in.readValue((String.class.getClassLoader())));
 
@@ -80,6 +85,14 @@ public class Page implements Parcelable {
         this.section = section;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getUndertakingContent() {
         return undertakingContent;
     }
@@ -100,6 +113,7 @@ public class Page implements Parcelable {
         dest.writeValue(pageIcon);
         dest.writeValue(pageName);
         dest.writeList(section);
+        dest.writeValue(name);
         dest.writeValue(undertakingContent);
         dest.writeValue(undertakingImageUrl);
 

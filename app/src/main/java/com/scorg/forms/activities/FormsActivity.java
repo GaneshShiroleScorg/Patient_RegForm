@@ -34,7 +34,7 @@ public class FormsActivity extends AppCompatActivity implements FormFragment.But
         Form form = getIntent().getParcelableExtra(FORM);
         int formIndex = getIntent().getIntExtra(FORM_INDEX, 0);
 
-        FormFragment formFragment = FormFragment.newInstance(formIndex, form.getPages(), form.getFormName(), true, false,form.getDate());
+        FormFragment formFragment = FormFragment.newInstance(formIndex, form.getPages(), form.getFormName()/*, true*/, false ,form.getDate());
         addFormFragment(formFragment, form.getFormName(), formIndex);
 
         //-------
