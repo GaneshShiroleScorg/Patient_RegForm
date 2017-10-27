@@ -68,7 +68,7 @@ public class NewRegistrationFragment extends Fragment {
             public void onClick(View v) {
                 String mobile = mobileText.getText().toString().trim();
 
-                if (Valid.validateMobileNo(mobile, getContext())) {
+                if (Valid.validateMobileNo(mobile, getContext(), true)) {
 
                     PreferencesManager.putString(PreferencesManager.PREFERENCES_KEY.MOBILE, mobile, getContext());
 
@@ -128,7 +128,7 @@ public class NewRegistrationFragment extends Fragment {
 
         String mobile = mobileText.getText().toString().trim();
 
-        if (Valid.validateMobileNo(mobile, getContext())) {
+        if (Valid.validateMobileNo(mobile, getContext(), true)) {
 
             PreferencesManager.putString(PreferencesManager.PREFERENCES_KEY.MOBILE, mobile, getContext());
 

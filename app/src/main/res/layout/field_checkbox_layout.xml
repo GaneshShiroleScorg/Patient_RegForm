@@ -3,9 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:paddingBottom="@dimen/dp10"
-    android:paddingTop="@dimen/dp10">
+    android:orientation="horizontal">
 
     <com.scorg.forms.customui.CustomTextView
         android:id="@+id/labelView"
@@ -19,25 +17,30 @@
         tools:text="Name" />
 
     <LinearLayout
+        android:id="@+id/checkBoxGroupParent"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_weight="1"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:paddingTop="@dimen/field_padding_top">
 
-        <com.scorg.forms.customui.CustomSpinner
-            android:id="@+id/dropDown"
-            android:layout_width="0dp"
+        <com.scorg.forms.customui.FlowLayout
+            android:id="@+id/checkBoxGroup"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:clipToPadding="false"
-            android:textSize="@dimen/field_text_size" />
+            android:orientation="horizontal" />
 
-        <View
-            android:layout_width="0dp"
+        <com.scorg.forms.customui.CustomTextView
+            android:id="@+id/checkBoxGroupError"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:paddingTop="@dimen/error_message_padding"
+            android:paddingBottom="@dimen/error_message_padding"
+            tools:text="Select Answer"
+            android:textColor="@color/red"
+            android:textSize="@dimen/error_message_text" />
 
     </LinearLayout>
 

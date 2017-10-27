@@ -3,8 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/dp10"
-    android:paddingTop="@dimen/dp10"
     android:orientation="horizontal">
 
     <com.scorg.forms.customui.CustomTextView
@@ -18,23 +16,32 @@
         android:textSize="@dimen/field_text_size"
         tools:text="Name" />
 
-    <RelativeLayout
+    <LinearLayout
+        android:id="@+id/checkBoxGroupParent"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/field_padding_top">
 
-        <com.scorg.forms.customui.CustomEditText
-            android:id="@+id/editText"
+        <com.scorg.forms.customui.FlowRadioGroup
+            android:id="@+id/radioGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/field_text_size"
-            android:overScrollMode="always"
-            android:scrollbarStyle="insideInset"
-            android:scrollbars="vertical"
-            android:inputType="text"
-            tools:text="Ganesh Shirole" />
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal" />
 
-    </RelativeLayout>
+        <com.scorg.forms.customui.CustomTextView
+            android:id="@+id/radioGroupError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/error_message_padding"
+            android:paddingBottom="@dimen/error_message_padding"
+            tools:text="Select Answer"
+            android:textColor="@color/red"
+            android:textSize="@dimen/error_message_text" />
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -16,11 +16,12 @@
     <color name="title_background">#526690</color>
 
     <color name="button">#9DD05B</color>
-    <color name="button_pressed">#8FBE53</color>
+    <color name="button_pressed">#698b3e</color>
     <color name="disable_button">#B7DC87</color>
 
     <color name="register_button">#048CB6</color>
 
     <color name="text_color">#808080</color>
+    <color name="red">#FF0000</color>
 
 </resources>

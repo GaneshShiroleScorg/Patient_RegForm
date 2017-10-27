@@ -1,77 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     tools:context="com.scorg.forms.fragments.FormFragment">
 
-    <com.scorg.forms.customui.CustomTextView
-        android:id="@+id/titleView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="50dp"
-        android:paddingEnd="@dimen/view_margin"
-        android:paddingStart="@dimen/view_margin"
-        android:gravity="center_horizontal"
-        android:paddingTop="50dp"
-        android:textColor="@color/title_background"
-        android:textSize="@dimen/title_text_size"
-        app:customFont="@string/roboto_medium"
-        tools:text="Basic Info" />
-
     <LinearLayout
-        android:id="@+id/sectionsContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" />
+        android:orientation="vertical">
 
-    <!--Add Tabs-->
-
-    <RelativeLayout
-        android:id="@+id/bottomTabLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/view_margin"
-        android:paddingBottom="@dimen/view_margin"
-        android:paddingEnd="@dimen/view_margin"
-        android:paddingStart="@dimen/view_margin">
-
-        <com.scorg.forms.customui.CustomTextView
-            android:id="@+id/editButton"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/edit_button_normal"
-            android:gravity="center"
-            android:paddingBottom="@dimen/dp8"
-            android:paddingEnd="@dimen/dp10"
-            android:paddingLeft="@dimen/dp10"
-            android:paddingRight="@dimen/dp10"
-            android:layout_alignParentEnd="true"
-            android:paddingStart="@dimen/dp10"
-            android:paddingTop="@dimen/dp8"
-            android:layout_marginBottom="50dp"
-            android:text="@string/edit"
-            app:textAllCaps="true"
-            android:textColor="@android:color/white"
-            android:textSize="13sp"
-            app:customFont="@string/roboto_medium"
-            android:layout_alignParentRight="true" />
-
-        <android.support.design.widget.TabLayout
-            android:id="@+id/formTabLayout"
-            android:layout_below="@+id/editButton"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="180dp"
-            app:tabGravity="center"
-            app:tabIndicatorColor="@android:color/transparent"
-            app:tabMaxWidth="250dp"
-            app:tabMinWidth="120dp"
-            app:tabMode="fixed"
-            app:tabPaddingEnd="@dimen/dp10"
-            app:tabPaddingStart="@dimen/dp10" />
+            android:layout_height="wrap_content">
 
-    </RelativeLayout>
+            <com.scorg.forms.customui.CustomTextView
+                android:id="@+id/titleView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:paddingBottom="50dp"
+                android:paddingEnd="@dimen/view_margin"
+                android:paddingStart="@dimen/view_margin"
+                android:paddingTop="50dp"
+                android:textColor="@color/title_background"
+                android:textSize="@dimen/title_text_size"
+                app:customFont="@string/roboto_medium"
+                tools:text="Basic Info" />
 
-</LinearLayout>
+            <com.scorg.forms.customui.CustomTextView
+                android:id="@+id/editButton"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/view_margin"
+                android:layout_marginRight="@dimen/view_margin"
+                android:background="@drawable/edit_button_normal"
+                android:gravity="center"
+                android:paddingBottom="@dimen/dp8"
+                android:paddingEnd="@dimen/dp10"
+                android:paddingLeft="@dimen/dp10"
+                android:paddingRight="@dimen/dp10"
+                android:paddingStart="@dimen/dp10"
+                android:paddingTop="@dimen/dp8"
+                android:text="@string/edit"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                app:customFont="@string/roboto_medium"
+                app:textAllCaps="true" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/sectionsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <!--Add Tabs-->
+
+        <RelativeLayout
+            android:id="@+id/bottomTabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/view_margin"
+            android:paddingEnd="@dimen/view_margin"
+            android:paddingStart="@dimen/view_margin"
+            android:paddingTop="@dimen/view_margin">
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/formTabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                app:tabGravity="center"
+                app:tabIndicatorColor="@android:color/transparent"
+                app:tabMaxWidth="250dp"
+                app:tabMinWidth="120dp"
+                app:tabMode="fixed"
+                app:tabPaddingEnd="@dimen/dp10"
+                app:tabPaddingStart="@dimen/dp10" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+</ScrollView>

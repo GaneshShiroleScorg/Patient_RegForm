@@ -1,8 +1,12 @@
 package com.scorg.forms.fragments;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -26,11 +30,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.philliphsu.bottomsheetpickers.date.DatePickerDialog;
 import com.scorg.forms.R;
 import com.scorg.forms.customui.FlowLayout;
@@ -40,17 +45,27 @@ import com.scorg.forms.models.Page;
 import com.scorg.forms.preference.PreferencesManager;
 import com.scorg.forms.util.CommonMethods;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
+
+import droidninja.filepicker.FilePickerBuilder;
+import droidninja.filepicker.FilePickerConst;
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.RuntimePermissions;
 
 import static com.scorg.forms.fragments.FormFragment.FORM_NAME;
 import static com.scorg.forms.fragments.FormFragment.FORM_NUMBER;
 import static com.scorg.forms.fragments.FormFragment.IS_EDITABLE;
 import static com.scorg.forms.fragments.ProfilePageFragment.PERSONAL_INFO_FORM;
+import static com.scorg.forms.fragments.UndertakingFragment.MAX_ATTACHMENT_COUNT;
 
 /**
  * A placeholder fragment containing a simple view.
  */
+@RuntimePermissions
+@SuppressWarnings("CheckResult")
 public class PageFragment extends Fragment {
 
     private DatePickerDialog datePickerDialog;
@@ -60,6 +75,9 @@ public class PageFragment extends Fragment {
     private LayoutInflater mInflater;
     private String mReceivedDate;
     private String mReceivedFormName;
+
+    private ImageView profilePhoto;
+    private TextView editButton;
 
     interface TYPE {
         String TEXTBOX = "textbox";
@@ -85,7 +103,6 @@ public class PageFragment extends Fragment {
      */
     private static final String PAGE_NUMBER = "section_number";
     private static final String PAGE = "page";
-    private static final String FORM_RECEIVED_DATE = "FORM_RECEIVED_DATE";
     private int pageNumber;
     private int formNumber;
     private Page page;
@@ -97,14 +114,13 @@ public class PageFragment extends Fragment {
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static PageFragment newInstance(int formNumber, int pageNumber, Page page, boolean isEditable, String mReceivedDate, String mReceivedFormName) {
+    public static PageFragment newInstance(int formNumber, int pageNumber, Page page, boolean isEditable, String mReceivedFormName) {
         PageFragment fragment = new PageFragment();
         Bundle args = new Bundle();
         args.putInt(FORM_NUMBER, formNumber);
         args.putInt(PAGE_NUMBER, pageNumber);
         args.putBoolean(IS_EDITABLE, isEditable);
         args.putParcelable(PAGE, page);
-        args.putString(FORM_RECEIVED_DATE, mReceivedDate);
         args.putString(FORM_NAME, mReceivedFormName);
         fragment.setArguments(args);
         return fragment;
@@ -118,7 +134,11 @@ public class PageFragment extends Fragment {
             pageNumber = getArguments().getInt(PAGE_NUMBER);
             formNumber = getArguments().getInt(FORM_NUMBER);
             isEditable = getArguments().getBoolean(IS_EDITABLE);
-            mReceivedDate = getArguments().getString(FORM_RECEIVED_DATE);
+
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+            mReceivedDate = df.format(c.getTime());
+
             mReceivedFormName = getArguments().getString(FORM_NAME);
         }
     }
@@ -142,12 +162,17 @@ public class PageFragment extends Fragment {
 
             case TYPE.TEXTBOXGROUP: {
                 // Added Extended Layout
-                final View fieldLayout = inflater.inflate(R.layout.autocomplete_textbox_layout, (LinearLayout) fieldsContainer, false);
+                final View fieldLayout = inflater.inflate(R.layout.field_autocomplete_textbox_layout, (LinearLayout) fieldsContainer, false);
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
-                labelView.setText(field.getName());
+                labelView.setText(field.isMandatory() ? "*" + field.getName() : " " + field.getName());
 
                 final AutoCompleteTextView textBox = fieldLayout.findViewById(R.id.editText);
                 textBox.setId(CommonMethods.generateViewId());
+                field.setFieldId(textBox.getId());
+
+                final TextView editTextError = fieldLayout.findViewById(R.id.editTextError);
+                editTextError.setId(CommonMethods.generateViewId());
+                field.setErrorViewId(editTextError.getId());
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
                         android.R.layout.simple_dropdown_item_1line, field.getDataList());
@@ -191,6 +216,8 @@ public class PageFragment extends Fragment {
 
                     @Override
                     public void afterTextChanged(Editable editable) {
+                        editTextError.setText("");
+                        textBox.setBackgroundResource(R.drawable.edittext_selector);
                         // set latest value
                         field.setValue(String.valueOf(editable));
                     }
@@ -207,12 +234,14 @@ public class PageFragment extends Fragment {
                             final Field fieldGroupNew = (Field) field.clone();
                             fields.add(fields.indexOf(field) + 1, fieldGroupNew);
                             fieldGroupNew.setValue("");
+                            fieldGroupNew.setisMandatory(false);
 
                             ArrayList<Field> clonedMoreFields = new ArrayList<Field>();
                             for (Field field1 :
                                     field.getTextBoxGroup()) {
                                 Field cloneField = (Field) field1.clone();
                                 cloneField.setValue("");
+                                cloneField.setisMandatory(false);
                                 clonedMoreFields.add(cloneField);
                             }
 
@@ -229,18 +258,22 @@ public class PageFragment extends Fragment {
             }
 
             case TYPE.TEXTBOX: {
-                View fieldLayout = inflater.inflate(R.layout.textbox_layout, (LinearLayout) fieldsContainer, false);
+                View fieldLayout = inflater.inflate(R.layout.field_textbox_layout, (LinearLayout) fieldsContainer, false);
 
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
 
-                labelView.setText(field.getName());
+                labelView.setText(field.isMandatory() ? "*" + field.getName() : " " + field.getName());
 
                 final EditText textBox = fieldLayout.findViewById(R.id.editText);
-                RelativeLayout.LayoutParams textBoxParams = (RelativeLayout.LayoutParams) textBox.getLayoutParams();
-
+                LinearLayout.LayoutParams textBoxParams = (LinearLayout.LayoutParams) textBox.getLayoutParams();
                 textBox.setId(CommonMethods.generateViewId());
-
                 textBox.setEnabled(isEditable);
+
+                field.setFieldId(textBox.getId());
+
+                final TextView editTextError = fieldLayout.findViewById(R.id.editTextError);
+                editTextError.setId(CommonMethods.generateViewId());
+                field.setErrorViewId(editTextError.getId());
 
                 // set pre value
                 textBox.setText(field.getValue());
@@ -326,6 +359,8 @@ public class PageFragment extends Fragment {
 
                     @Override
                     public void afterTextChanged(Editable editable) {
+                        editTextError.setText("");
+                        textBox.setBackgroundResource(R.drawable.edittext_selector);
                         // set latest value
                         field.setValue(String.valueOf(editable));
                     }
@@ -338,12 +373,17 @@ public class PageFragment extends Fragment {
             }
 
             case TYPE.RADIOBUTTON: {
-                View fieldLayout = inflater.inflate(R.layout.radiobutton_layout, (LinearLayout) fieldsContainer, false);
+                View fieldLayout = inflater.inflate(R.layout.field_radiobutton_layout, (LinearLayout) fieldsContainer, false);
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
-                labelView.setText(field.getName());
+                labelView.setText(field.isMandatory() ? "*" + field.getName() : " " + field.getName());
 
-                FlowRadioGroup radioGroup = fieldLayout.findViewById(R.id.radioGroup);
+                final FlowRadioGroup radioGroup = fieldLayout.findViewById(R.id.radioGroup);
                 radioGroup.setId(CommonMethods.generateViewId());
+
+                final TextView radioGroupError = fieldLayout.findViewById(R.id.radioGroupError);
+                radioGroupError.setId(CommonMethods.generateViewId());
+                field.setErrorViewId(radioGroupError.getId());
+
                 ArrayList<String> dataList = field.getDataList();
 
                 for (int dataIndex = 0; dataIndex < dataList.size(); dataIndex++) {
@@ -365,6 +405,7 @@ public class PageFragment extends Fragment {
                     @Override
                     public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
                         field.setValue(((RadioButton) group.findViewById(checkedId)).getText().toString());
+                        radioGroupError.setText("");
                     }
                 });
 
@@ -374,12 +415,16 @@ public class PageFragment extends Fragment {
                 break;
             }
             case TYPE.CHECKBOX: {
-                View fieldLayout = inflater.inflate(R.layout.checkbox_layout, (LinearLayout) fieldsContainer, false);
+                View fieldLayout = inflater.inflate(R.layout.field_checkbox_layout, (LinearLayout) fieldsContainer, false);
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
-                labelView.setText(field.getName());
+                labelView.setText(field.isMandatory() ? "*" + field.getName() : " " + field.getName());
 
                 FlowLayout checkBoxGroup = fieldLayout.findViewById(R.id.checkBoxGroup);
                 checkBoxGroup.setId(CommonMethods.generateViewId());
+
+                final TextView checkBoxGroupError = fieldLayout.findViewById(R.id.checkBoxGroupError);
+                checkBoxGroupError.setId(CommonMethods.generateViewId());
+                field.setErrorViewId(checkBoxGroupError.getId());
 
                 ArrayList<String> dataList = field.getDataList();
                 final ArrayList<String> values = field.getValues();
@@ -401,6 +446,8 @@ public class PageFragment extends Fragment {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
+                            checkBoxGroupError.setText("");
+
                             // set latest value
 
                             if (isChecked) {
@@ -420,15 +467,24 @@ public class PageFragment extends Fragment {
                 break;
             }
             case TYPE.DROPDOWN: {
-                View fieldLayout = inflater.inflate(R.layout.dropdown_layout, (LinearLayout) fieldsContainer, false);
+                View fieldLayout = inflater.inflate(R.layout.field_dropdown_layout, (LinearLayout) fieldsContainer, false);
 
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
-                labelView.setText(field.getName());
+                labelView.setText(field.isMandatory() ? "*" + field.getName() : " " + field.getName());
 
-                Spinner dropDown = fieldLayout.findViewById(R.id.dropDown);
+                final Spinner dropDown = fieldLayout.findViewById(R.id.dropDown);
                 dropDown.setId(CommonMethods.generateViewId());
 
+                field.setFieldId(dropDown.getId());
+
+                final TextView dropDownError = fieldLayout.findViewById(R.id.dropDownError);
+                dropDownError.setId(CommonMethods.generateViewId());
+                field.setErrorViewId(dropDownError.getId());
+
                 final ArrayList<String> dataList = field.getDataList();
+                if (dataList.size() > 0)
+                    if (!dataList.get(0).equals("Select"))
+                        dataList.add(0, "Select");
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(dropDown.getContext(), R.layout.dropdown_item, dataList);
                 dropDown.setAdapter(adapter);
@@ -441,8 +497,14 @@ public class PageFragment extends Fragment {
                 dropDown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        // set latest value
-                        field.setValue(dataList.get(position));
+
+                        if (position != 0) {
+                            // set latest value
+                            field.setValue(dataList.get(position));
+                            dropDownError.setText("");
+                            dropDown.setBackgroundResource(R.drawable.dropdown_selector);
+
+                        } else field.setValue("");
                     }
 
                     @Override
@@ -458,10 +520,6 @@ public class PageFragment extends Fragment {
         }
     }
 
-    public Page getPage() {
-        return page;
-    }
-
     private void initializeDataViews() {
 
         if (formNumber == PERSONAL_INFO_FORM)
@@ -471,11 +529,18 @@ public class PageFragment extends Fragment {
         for (int sectionIndex = 0; sectionIndex < page.getSection().size(); sectionIndex++) {
             View sectionLayout = mInflater.inflate(R.layout.section_layout, mSectionsContainer, false);
 
-            LinearLayout profilePhotoLayout = sectionLayout.findViewById(R.id.profilePhotoLayout);
-            ImageView profilePhoto = sectionLayout.findViewById(R.id.profilePhoto);
-            TextView editButton = sectionLayout.findViewById(R.id.editButton);
+            View profilePhotoLayout = sectionLayout.findViewById(R.id.profilePhotoLayout);
+            profilePhoto = sectionLayout.findViewById(R.id.profilePhoto);
+            editButton = sectionLayout.findViewById(R.id.editButton);
 
             editButton.setEnabled(isEditable);
+
+            editButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PageFragmentPermissionsDispatcher.onPickPhotoWithCheck(PageFragment.this);
+                }
+            });
 
             Drawable leftDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_photo_camera);
             editButton.setCompoundDrawablesWithIntrinsicBounds(leftDrawable, null, null, null);
@@ -491,12 +556,12 @@ public class PageFragment extends Fragment {
             } else {
                 profilePhotoLayout.setVisibility(View.VISIBLE);
 
-                /*RequestOptions requestOptions = new RequestOptions();
+                RequestOptions requestOptions = new RequestOptions();
                 requestOptions.dontAnimate();
                 requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
                 requestOptions.skipMemoryCache(true);
-                requestOptions.error(R.drawable.ic_camera);
-                requestOptions.placeholder(R.drawable.ic_camera);*/
+//                requestOptions.error(R.drawable.ic_camera);
+//                requestOptions.placeholder(R.drawable.ic_camera);
                 Glide.with(getContext())
                         .load(page.getSection().get(sectionIndex).getProfilePhoto())
                         .into(profilePhoto);
@@ -519,14 +584,54 @@ public class PageFragment extends Fragment {
         //------ in case of undertaking comes----
         // dont show header if it is undertaking content fragment.
         if (page.getUndertakingContent() != null) {
-            mTitleTextView.setVisibility(View.GONE);
 
             UndertakingFragment newRegistrationFragment = UndertakingFragment.newInstance(mReceivedDate, page.getUndertakingContent(), page.getUndertakingImageUrl(), page.getName());
             FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-            transaction.replace(R.id.sectionsContainer, newRegistrationFragment, getResources().getString(R.string.undertaking));
+            transaction.replace(R.id.pageLayout, newRegistrationFragment, getResources().getString(R.string.undertaking));
             transaction.commit();
 
         }
         //----------
+    }
+
+    @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    public void onPickPhoto() {
+        FilePickerBuilder.getInstance().setMaxCount(MAX_ATTACHMENT_COUNT)
+                .setSelectedFiles(new ArrayList<String>())
+                .setActivityTheme(R.style.AppTheme)
+                .enableVideoPicker(false)
+                .enableCameraSupport(true)
+                .showGifs(false)
+                .showFolderView(true)
+                .pickPhoto(this);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        PageFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == FilePickerConst.REQUEST_CODE_PHOTO) {
+                if (!data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA).isEmpty()) {
+                    RequestOptions requestOptions = new RequestOptions();
+                    requestOptions.dontAnimate();
+                    requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
+                    requestOptions.skipMemoryCache(true);
+//            requestOptions.error(R.drawable.ic_assignment);
+//            requestOptions.placeholder(R.drawable.ic_assignment);
+
+                    Glide.with(getContext())
+                            .load(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA).get(0))
+                            .apply(requestOptions)
+                            .thumbnail(.1f)
+                            .into(profilePhoto);
+                }
+            }
+        }
     }
 }

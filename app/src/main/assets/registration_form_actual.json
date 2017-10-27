@@ -29,6 +29,14 @@
                 "isIncludeInShortDescription": true
               },
               {
+                "name": "Mobile Number",
+                "type": "textbox",
+                "isMandatory": true,
+                "length": 10,
+                "value": "8208127880",
+                "inputType": "mobile"
+              },
+              {
                 "name": "Gender",
                 "type": "radiobutton",
                 "dataList": [

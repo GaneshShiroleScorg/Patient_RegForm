@@ -40,10 +40,12 @@ public class Field implements Parcelable, Cloneable {
     @SerializedName("dataTable")
     @Expose
     private String dataTable = "";
-
     @SerializedName("isIncludeInShortDescription")
     @Expose
     private boolean isIncludeInShortDescription = true;
+
+    private int fieldId;
+    private int errorViewId;
 
     public final static Parcelable.Creator<Field> CREATOR = new Creator<Field>() {
 
@@ -73,6 +75,8 @@ public class Field implements Parcelable, Cloneable {
         this.dataTable = ((String) in.readValue((String.class.getClassLoader())));
         in.readList(this.textBoxGroup, (Field.class.getClassLoader()));
         this.isIncludeInShortDescription = ((boolean) in.readValue((boolean.class.getClassLoader())));
+        this.fieldId = ((int) in.readValue((int.class.getClassLoader())));
+        this.errorViewId = ((int) in.readValue((int.class.getClassLoader())));
     }
 
     public Field() {
@@ -166,6 +170,22 @@ public class Field implements Parcelable, Cloneable {
         isIncludeInShortDescription = includeInShortDescription;
     }
 
+    public int getFieldId() {
+        return fieldId;
+    }
+
+    public void setFieldId(int fieldId) {
+        this.fieldId = fieldId;
+    }
+
+    public int getErrorViewId() {
+        return errorViewId;
+    }
+
+    public void setErrorViewId(int errorViewId) {
+        this.errorViewId = errorViewId;
+    }
+
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(name);
         dest.writeValue(type);
@@ -178,7 +198,8 @@ public class Field implements Parcelable, Cloneable {
         dest.writeValue(dataTable);
         dest.writeList(textBoxGroup);
         dest.writeValue(isIncludeInShortDescription);
-
+        dest.writeValue(fieldId);
+        dest.writeValue(errorViewId);
     }
 
     public int describeContents() {

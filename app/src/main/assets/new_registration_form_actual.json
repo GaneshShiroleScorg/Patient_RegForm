@@ -24,6 +24,14 @@
                 "inputType": "name"
               },
               {
+                "name": "Mobile Number",
+                "type": "textbox",
+                "isMandatory": true,
+                "length": 10,
+                "value" : "9988776655",
+                "inputType": "mobile"
+              },
+              {
                 "name": "Gender",
                 "type": "radiobutton",
                 "isMandatory": true,

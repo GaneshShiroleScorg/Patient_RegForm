@@ -15,6 +15,6 @@ public class CustomSpinner extends AppCompatSpinner {
 
     private void setCustomProperties(Context context) {
         setPadding(context.getResources().getDimensionPixelSize(R.dimen.spinner_left), 0, context.getResources().getDimensionPixelSize(R.dimen.spinner_right), 0);
-        setBackgroundResource(R.drawable.dropdown_background);
+        setBackgroundResource(R.drawable.dropdown_selector);
     }
 }

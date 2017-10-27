@@ -1,8 +1,12 @@
 package com.scorg.forms.fragments;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.AppCompatImageView;
@@ -20,7 +24,14 @@ import com.scorg.forms.R;
 import com.scorg.forms.customui.CustomButton;
 import com.scorg.forms.customui.CustomTextView;
 
+import java.util.ArrayList;
 
+import droidninja.filepicker.FilePickerBuilder;
+import droidninja.filepicker.FilePickerConst;
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.RuntimePermissions;
+
+@RuntimePermissions
 @SuppressWarnings("CheckResult")
 public class UndertakingFragment extends Fragment {
 
@@ -29,6 +40,7 @@ public class UndertakingFragment extends Fragment {
     private static final String FORM_RECEIVED_DATE = "FORM_RECEIVED_DATE";
     private static final String CONTENT = "CONTENT";
     private static final String IMAGE_URL = "IMAGE_URL";
+    public static final int MAX_ATTACHMENT_COUNT = 1;
     private String mReceivedDate;
     private AppCompatImageView mProfilePhoto;
 //    private OnSubmitListener mListener;
@@ -104,12 +116,13 @@ public class UndertakingFragment extends Fragment {
             requestOptions.dontAnimate();
             requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
             requestOptions.skipMemoryCache(true);
-            requestOptions.error(R.drawable.ic_assignment);
-            requestOptions.placeholder(R.drawable.ic_assignment);
+//            requestOptions.error(R.drawable.ic_assignment);
+//            requestOptions.placeholder(R.drawable.ic_assignment);
 
             Glide.with(getActivity())
                     .load(arguments.getString(IMAGE_URL))
                     .apply(requestOptions)
+                    .thumbnail(.1f)
                     .into(mProfilePhoto);
         }
 
@@ -120,38 +133,54 @@ public class UndertakingFragment extends Fragment {
             }
         });
 
+        mEditButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UndertakingFragmentPermissionsDispatcher.onPickPhotoWithCheck(UndertakingFragment.this);
+            }
+        });
+
         return rootView;
     }
 
-    /*@Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnSubmitListener) {
-            mListener = (OnSubmitListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnRegistrationListener");
-        }
+    @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    public void onPickPhoto() {
+        FilePickerBuilder.getInstance().setMaxCount(MAX_ATTACHMENT_COUNT)
+                .setSelectedFiles(new ArrayList<String>())
+                .setActivityTheme(R.style.AppTheme)
+                .enableVideoPicker(false)
+                .enableCameraSupport(true)
+                .showGifs(false)
+                .showFolderView(true)
+                .pickPhoto(this);
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        UndertakingFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
-    *//**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     *//*
-    public interface OnSubmitListener {
-        // TODO: Update argument type and name
-        void onClickSubmit();
-    }*/
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == FilePickerConst.REQUEST_CODE_PHOTO) {
+                if (!data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA).isEmpty()) {
+                    RequestOptions requestOptions = new RequestOptions();
+                    requestOptions.dontAnimate();
+                    requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
+                    requestOptions.skipMemoryCache(true);
+//            requestOptions.error(R.drawable.ic_assignment);
+//            requestOptions.placeholder(R.drawable.ic_assignment);
+
+                    Glide.with(getContext())
+                            .load(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA).get(0))
+                            .apply(requestOptions)
+                            .thumbnail(.1f)
+                            .into(mProfilePhoto);
+                }
+            }
+        }
+    }
 }

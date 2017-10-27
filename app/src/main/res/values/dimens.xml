@@ -35,4 +35,8 @@
     <dimen name="dp12">12dp</dimen>
     <dimen name="dp26">26dp</dimen>
     <dimen name="dp16">16dp</dimen>
+    <dimen name="sp12">12sp</dimen>
+    <dimen name="error_message_padding">3dp</dimen>
+    <dimen name="field_padding_top">12dp</dimen>
+    <dimen name="error_message_text">14sp</dimen>
 </resources>

@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/white"
     android:orientation="vertical"
+    android:id="@+id/pageLayout"
     tools:context=".fragments.PageFragment">
 
     <com.scorg.forms.customui.CustomTextView
@@ -21,11 +22,16 @@
         app:customFont="@string/roboto_medium"
         tools:text="Basic Info" />
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
         <LinearLayout
             android:id="@+id/sectionsContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusableInTouchMode="false"
             android:orientation="vertical" />
+    </ScrollView>
 
 </LinearLayout>

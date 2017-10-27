@@ -1,29 +1,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:background="@android:color/white"
     android:clickable="false"
-    android:orientation="vertical"
     tools:context=".fragments.UndertakingFragment">
-
-    <!--<RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/title_background"
-        android:visibility="gone">
-
-        <ImageView
-            android:id="@+id/logo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_margin="@dimen/view_margin"
-            app:srcCompat="@drawable/ic_logo" />
-
-    </RelativeLayout>-->
 
     <com.scorg.forms.customui.CustomTextView
         android:id="@+id/titleTextView"
@@ -161,18 +143,5 @@
         android:layout_alignParentBottom="true"
         android:textSize="@dimen/button_text_size"
         app:customFont="@string/roboto_medium" />
-
-    <!--Unused now-->
-
-    <Button
-        android:id="@+id/submitButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="@dimen/view_margin"
-        android:background="@drawable/button_selector"
-        android:text="@string/submit"
-        android:textColor="@android:color/white"
-        android:visibility="gone" />
 
 </RelativeLayout>
