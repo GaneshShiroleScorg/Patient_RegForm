@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.scorg.forms.R;
+import com.scorg.forms.fragments.FeedbackFragment;
 import com.scorg.forms.fragments.FormFragment;
 import com.scorg.forms.models.Form;
 
@@ -34,8 +35,13 @@ public class FormsActivity extends AppCompatActivity implements FormFragment.But
         Form form = getIntent().getParcelableExtra(FORM);
         int formIndex = getIntent().getIntExtra(FORM_INDEX, 0);
 
-        FormFragment formFragment = FormFragment.newInstance(formIndex, form.getPages(), form.getFormName()/*, true*/, false ,form.getDate());
-        addFormFragment(formFragment, form.getFormName(), formIndex);
+        if (form.getFormName().toLowerCase().contains("feedback")) {
+            FeedbackFragment feedbackFragment = FeedbackFragment.newInstance(formIndex, form.getFields(), form.getFormName()/*, true*/, false, form.getDate());
+            addFormFragment(feedbackFragment, form.getFormName(), formIndex);
+        } else {
+            FormFragment formFragment = FormFragment.newInstance(formIndex, form.getPages(), form.getFormName()/*, true*/, false, form.getDate());
+            addFormFragment(formFragment, form.getFormName(), formIndex);
+        }
 
         //-------
         TextView titleTextView = findViewById(R.id.titleTextView);

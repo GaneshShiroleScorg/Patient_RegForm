@@ -719,6 +719,137 @@
           ]
         }
       ]
+    },
+    {
+      "formIcon": "http://www.iconsdb.com/icons/preview/white/pages-1-xxl.png",
+      "formName": "Feedback",
+      "fields": [
+        {
+          "type": "mixgroup",
+          "name": "How long was the wait time before you were seen by the doctor?",
+          "isMandatory": false,
+          "maxRating": 5,
+          "rating": 0,
+          "dataList": [
+            "Less than 15 minutes",
+            "Between 15 & 30 minutes",
+            "Between 30 & 60 minutes",
+            "Over an hour"
+          ]
+        },
+        {
+          "type": "radiobutton",
+          "name": "Was the doctor polite and considerate?",
+          "isMandatory": false,
+          "dataList": [
+            "More than expectation",
+            "Yes, definitely",
+            "Yes, to some extent",
+            "Not really",
+            "Definitely not"
+          ]
+        },
+        {
+          "type": "mixgroup",
+          "name": "Did the doctor listen to what you had to say?",
+          "isMandatory": false,
+          "maxRating": 5,
+          "rating": 0,
+          "dataList": [
+            "Yes, definitely",
+            "Yes, to some extent",
+            "Not really",
+            "Definitely not"
+          ]
+        },
+        {
+          "type": "mixgroup",
+          "name": "Did the doctor give you enough opportunity to ask queries?",
+          "isMandatory": false,
+          "maxRating": 5,
+          "rating": 0,
+          "dataList": [
+            "Yes, definitely",
+            "Yes, to some extent",
+            "Not really",
+            "Definitely not"
+          ]
+        },
+        {
+          "type": "mixgroup",
+          "name": "Did the doctor explain about your condition in a way you could understand?",
+          "isMandatory": false,
+          "maxRating": 5,
+          "rating": 0,
+          "dataList": [
+            "Yes, definitely",
+            "Yes, to some extent",
+            "Not really",
+            "Definitely not"
+          ]
+        },
+        {
+          "type": "mixgroup",
+          "name": "Before examining you, did the doctor",
+          "isMandatory": false,
+          "maxRating": 5,
+          "rating": 0,
+          "dataList": [
+            "Ask your permission?",
+            "Respect your privacy?",
+            "Does not apply"
+          ]
+        },
+        {
+          "type": "mixgroup",
+          "name": "How would you rate the doctor’s bedside manners?",
+          "isMandatory": false,
+          "maxRating": 5,
+          "rating": 0,
+          "dataList": [
+            "Excellent",
+            "Good",
+            "Satisfactory",
+            "Unsatisfactory",
+            "Does not apply"
+          ]
+        },
+        {
+          "type": "radiobutton",
+          "name": "By the end of the consultation, did you feel better able to manage / understand your condition?",
+          "isMandatory": false,
+          "maxRating": 5,
+          "rating": 0,
+          "dataList": [
+            "Yes, definitely",
+            "Yes, to some extent",
+            "Not really",
+            "Definitely not",
+            "Does not reply"
+          ]
+        },
+        {
+          "type": "radiobutton",
+          "name": "Would you recommend the doctor to other patients?",
+          "isMandatory": false,
+          "maxRating": 5,
+          "rating": 0,
+          "dataList": [
+            "Highly Recommend",
+            "Probably",
+            "Maybe",
+            "Probable Not",
+            "Never"
+          ]
+        },
+        {
+          "type": "textbox",
+          "inputType": "textboxbig",
+          "name": "Would you like to give any suggestions to improve your clinic experience?",
+          "isMandatory": false,
+          "length": 100
+        }
+      ]
     }
   ]
 }

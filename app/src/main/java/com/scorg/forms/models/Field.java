@@ -44,6 +44,17 @@ public class Field implements Parcelable, Cloneable {
     @Expose
     private boolean isIncludeInShortDescription = true;
 
+    @SerializedName("maxRating")
+    @Expose
+    private int maxRating;
+    @SerializedName("rating")
+    @Expose
+    private float rating;
+
+    @SerializedName("others")
+    @Expose
+    private String others;
+
     private int fieldId;
     private int errorViewId;
 
@@ -75,6 +86,9 @@ public class Field implements Parcelable, Cloneable {
         this.dataTable = ((String) in.readValue((String.class.getClassLoader())));
         in.readList(this.textBoxGroup, (Field.class.getClassLoader()));
         this.isIncludeInShortDescription = ((boolean) in.readValue((boolean.class.getClassLoader())));
+        this.maxRating = ((int) in.readValue((int.class.getClassLoader())));
+        this.rating = ((float) in.readValue((float.class.getClassLoader())));
+        this.others = ((String) in.readValue((String.class.getClassLoader())));
         this.fieldId = ((int) in.readValue((int.class.getClassLoader())));
         this.errorViewId = ((int) in.readValue((int.class.getClassLoader())));
     }
@@ -170,6 +184,30 @@ public class Field implements Parcelable, Cloneable {
         isIncludeInShortDescription = includeInShortDescription;
     }
 
+    public int getMaxRating() {
+        return maxRating;
+    }
+
+    public void setMaxRating(int maxRating) {
+        this.maxRating = maxRating;
+    }
+
+    public float getRating() {
+        return rating;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
+
+    public String getOthers() {
+        return others;
+    }
+
+    public void setOthers(String others) {
+        this.others = others;
+    }
+
     public int getFieldId() {
         return fieldId;
     }
@@ -198,6 +236,9 @@ public class Field implements Parcelable, Cloneable {
         dest.writeValue(dataTable);
         dest.writeList(textBoxGroup);
         dest.writeValue(isIncludeInShortDescription);
+        dest.writeValue(maxRating);
+        dest.writeValue(rating);
+        dest.writeValue(others);
         dest.writeValue(fieldId);
         dest.writeValue(errorViewId);
     }

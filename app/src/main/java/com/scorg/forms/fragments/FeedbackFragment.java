@@ -1,16 +1,10 @@
 package com.scorg.forms.fragments;
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.Intent;
-import android.graphics.drawable.Drawable;
+
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.content.res.AppCompatResources;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -30,138 +24,86 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.philliphsu.bottomsheetpickers.date.DatePickerDialog;
 import com.scorg.forms.R;
 import com.scorg.forms.customui.FlowLayout;
 import com.scorg.forms.customui.FlowRadioGroup;
 import com.scorg.forms.models.Field;
-import com.scorg.forms.models.Page;
-import com.scorg.forms.preference.PreferencesManager;
 import com.scorg.forms.util.CommonMethods;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Locale;
-
-import droidninja.filepicker.FilePickerBuilder;
-import droidninja.filepicker.FilePickerConst;
-import permissions.dispatcher.NeedsPermission;
-import permissions.dispatcher.RuntimePermissions;
 
 import static com.scorg.forms.fragments.FormFragment.FORM_NAME;
 import static com.scorg.forms.fragments.FormFragment.FORM_NUMBER;
-import static com.scorg.forms.fragments.FormFragment.IS_EDITABLE;
-import static com.scorg.forms.fragments.ProfilePageFragment.PERSONAL_INFO_FORM;
-import static com.scorg.forms.fragments.UndertakingFragment.MAX_ATTACHMENT_COUNT;
+import static com.scorg.forms.fragments.FormFragment.IS_NEW;
 
-/**
- * A placeholder fragment containing a simple view.
- */
-@RuntimePermissions
-@SuppressWarnings("CheckResult")
-public class PageFragment extends Fragment {
+public class FeedbackFragment extends Fragment {
 
-    private DatePickerDialog datePickerDialog;
-    private boolean isEditable = true;
-    private TextView mTitleTextView;
-    private LinearLayout mSectionsContainer;
-    private LayoutInflater mInflater;
-    private String mReceivedDate;
-    private String mReceivedFormName;
-
-    private ImageView profilePhoto;
-    private TextView editButton;
-
-    interface TYPE {
-        String TEXTBOX = "textbox";
-        String DROPDOWN = "dropdown";
-        String RADIOBUTTON = "radiobutton";
-        String CHECKBOX = "checkbox";
-        String TEXTBOXGROUP = "textboxgroup";
-        String MIXGROUP = "mixgroup";
-    }
-
-    interface INPUT_TYPE {
-        String NAME = "name";
-        String MOBILE = "mobile";
-        String DATE = "date";
-        String EMAIL = "email";
-        String PIN_CODE = "pincode";
-        String NUMBER = "number";
-        String TEXTBOX_BIG = "textboxbig";
-    }
-
-    /**
-     * The fragment argument representing the section number for this
-     * fragment.
-     */
-    private static final String PAGE_NUMBER = "section_number";
-    private static final String PAGE = "page";
-    private int pageNumber;
+    private static final String FIELDS = "fields";
+    private boolean isNew;
+    private ArrayList<Field> fields;
     private int formNumber;
-    private Page page;
+    private String mReceivedFormName;
+    private boolean isEditable = true;
+    private DatePickerDialog datePickerDialog;
 
-    public PageFragment() {
+    public FeedbackFragment() {
+        // Required empty public constructor
     }
 
-    /**
-     * Returns a new instance of this fragment for the given section
-     * number.
-     */
-    public static PageFragment newInstance(int formNumber, int pageNumber, Page page, boolean isEditable, String mReceivedFormName) {
-        PageFragment fragment = new PageFragment();
+    public static FeedbackFragment newInstance(int formNumber, ArrayList<Field> fields, String formName/*, boolean isEditable*/, boolean isNew, String date) {
+        FeedbackFragment fragment = new FeedbackFragment();
+
         Bundle args = new Bundle();
+        args.putParcelableArrayList(FIELDS, fields);
         args.putInt(FORM_NUMBER, formNumber);
-        args.putInt(PAGE_NUMBER, pageNumber);
-        args.putBoolean(IS_EDITABLE, isEditable);
-        args.putParcelable(PAGE, page);
-        args.putString(FORM_NAME, mReceivedFormName);
+//        args.putBoolean(IS_EDITABLE, isEditable);
+        args.putBoolean(IS_NEW, isNew);
+        args.putString(FORM_NAME, formName);
         fragment.setArguments(args);
+
         return fragment;
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            page = getArguments().getParcelable(PAGE);
-            pageNumber = getArguments().getInt(PAGE_NUMBER);
+//            isEditable = getArguments().getBoolean(IS_EDITABLE);
+            isNew = getArguments().getBoolean(IS_NEW);
+            fields = getArguments().getParcelableArrayList(FIELDS);
             formNumber = getArguments().getInt(FORM_NUMBER);
-            isEditable = getArguments().getBoolean(IS_EDITABLE);
-
-            Calendar c = Calendar.getInstance();
-            SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
-            mReceivedDate = df.format(c.getTime());
-
             mReceivedFormName = getArguments().getString(FORM_NAME);
         }
     }
 
-    @SuppressWarnings("CheckResult")
     @Override
-    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_pages, container, false);
+        // Inflate the layout for this fragment
+        View rootView = inflater.inflate(R.layout.fragment_feedback, container, false);
+        LinearLayout fieldsContainer = rootView.findViewById(R.id.fieldsContainer);
 
-        mInflater = inflater;
-        mTitleTextView = rootView.findViewById(R.id.titleView);
-        mSectionsContainer = rootView.findViewById(R.id.sectionsContainer);
+        TextView mTitleTextView = rootView.findViewById(R.id.titleTextView);
+        mTitleTextView.setPaintFlags(mTitleTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        mTitleTextView.setText(getString(R.string.feedback));
 
-        initializeDataViews();
+        for (int fieldIndex = 0; fieldIndex < fields.size(); fieldIndex++) {
+            addField(fieldsContainer, fields, fields.get(fieldIndex), fieldIndex, inflater, -1);
+        }
+
         return rootView;
     }
 
-    private void addField(final View fieldsContainer, final int sectionIndex, final ArrayList<Field> fields, final Field field, final int fieldsIndex, final LayoutInflater inflater, int indexToAddView) {
+    private void addField(final View fieldsContainer, final ArrayList<Field> fields, final Field field, final int fieldsIndex, final LayoutInflater inflater, int indexToAddView) {
         switch (field.getType()) {
 
-            case TYPE.TEXTBOXGROUP: {
+            case PageFragment.TYPE.TEXTBOXGROUP: {
                 // Added Extended Layout
                 final View fieldLayout = inflater.inflate(R.layout.field_autocomplete_textbox_layout, (LinearLayout) fieldsContainer, false);
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
@@ -200,9 +142,9 @@ public class PageFragment extends Fragment {
 
                 for (int moreFieldIndex = 0; moreFieldIndex < moreFields.size(); moreFieldIndex++) {
                     if (indexToAddView != -1)
-                        addField(fieldsContainer, sectionIndex, fields, moreFields.get(moreFieldIndex), fieldsIndex, inflater, indexToAddView + moreFieldIndex + 1);
+                        addField(fieldsContainer, fields, moreFields.get(moreFieldIndex), fieldsIndex, inflater, indexToAddView + moreFieldIndex + 1);
                     else
-                        addField(fieldsContainer, sectionIndex, fields, moreFields.get(moreFieldIndex), fieldsIndex, inflater, -1);
+                        addField(fieldsContainer, fields, moreFields.get(moreFieldIndex), fieldsIndex, inflater, -1);
                 }
 
                 textBox.addTextChangedListener(new TextWatcher() {
@@ -248,7 +190,7 @@ public class PageFragment extends Fragment {
 
                             fieldGroupNew.setTextBoxGroup(clonedMoreFields);
 
-                            addField(fieldsContainer, sectionIndex, fields, fieldGroupNew, fieldsIndex, inflater, ((LinearLayout) fieldLayout.getParent()).indexOfChild(fieldLayout) + 1 + fieldGroupNew.getTextBoxGroup().size());
+                            addField(fieldsContainer, fields, fieldGroupNew, fieldsIndex, inflater, ((LinearLayout) fieldLayout.getParent()).indexOfChild(fieldLayout) + 1 + fieldGroupNew.getTextBoxGroup().size());
                         } catch (CloneNotSupportedException e) {
                             e.printStackTrace();
                         }
@@ -258,7 +200,7 @@ public class PageFragment extends Fragment {
                 break;
             }
 
-            case TYPE.TEXTBOX: {
+            case PageFragment.TYPE.TEXTBOX: {
                 View fieldLayout = inflater.inflate(R.layout.field_textbox_layout, (LinearLayout) fieldsContainer, false);
 
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
@@ -286,10 +228,10 @@ public class PageFragment extends Fragment {
                 }
 
                 switch (field.getInputType()) {
-                    case INPUT_TYPE.EMAIL:
+                    case PageFragment.INPUT_TYPE.EMAIL:
                         textBox.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                         break;
-                    case INPUT_TYPE.DATE:
+                    case PageFragment.INPUT_TYPE.DATE:
                         textBox.setCursorVisible(false);
                         textBoxParams.width = getResources().getDimensionPixelSize(R.dimen.date_size);
 
@@ -324,24 +266,25 @@ public class PageFragment extends Fragment {
                         });
 
                         break;
-                    case INPUT_TYPE.MOBILE:
+                    case PageFragment.INPUT_TYPE.MOBILE:
                         textBoxParams.width = getResources().getDimensionPixelSize(R.dimen.mobile_size);
                         textBox.setInputType(InputType.TYPE_CLASS_PHONE);
                         break;
-                    case INPUT_TYPE.NAME:
+                    case PageFragment.INPUT_TYPE.NAME:
                         textBox.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
                         break;
-                    case INPUT_TYPE.PIN_CODE:
+                    case PageFragment.INPUT_TYPE.PIN_CODE:
                         textBoxParams.width = getResources().getDimensionPixelSize(R.dimen.pincode_size);
                         textBox.setInputType(InputType.TYPE_CLASS_NUMBER);
                         break;
-                    case INPUT_TYPE.TEXTBOX_BIG:
+                    case PageFragment.INPUT_TYPE.TEXTBOX_BIG:
                         textBox.setSingleLine(false);
                         textBox.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
                         textBox.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                        textBox.setLines(3);
                         textBox.setMaxLines(10);
                         break;
-                    case INPUT_TYPE.NUMBER:
+                    case PageFragment.INPUT_TYPE.NUMBER:
                         textBox.setGravity(Gravity.END);
                         textBoxParams.width = getResources().getDimensionPixelSize(R.dimen.number_size);
                         textBox.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -355,7 +298,6 @@ public class PageFragment extends Fragment {
 
                     @Override
                     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
                     }
 
                     @Override
@@ -367,55 +309,40 @@ public class PageFragment extends Fragment {
                     }
                 });
 
-                if (indexToAddView != -1)
-                    ((LinearLayout) fieldsContainer).addView(fieldLayout, indexToAddView);
-                else ((LinearLayout) fieldsContainer).addView(fieldLayout);
-                break;
-            }
+                // Add Rating Bar
 
-            case TYPE.RADIOBUTTON: {
-                View fieldLayout = inflater.inflate(R.layout.field_radiobutton_layout, (LinearLayout) fieldsContainer, false);
-                TextView labelView = fieldLayout.findViewById(R.id.labelView);
-                labelView.setText(field.isMandatory() ? "*" + field.getName() : field.getName());
+                if (field.getMaxRating() > 0) {
+                    RatingBar ratingBar = fieldLayout.findViewById(R.id.ratingBar);
+                    ratingBar.setVisibility(View.VISIBLE);
+                    ratingBar.setRating(field.getRating());
+                    ratingBar.setMax(field.getMaxRating() * 2);
+                    ratingBar.setNumStars(field.getMaxRating());
 
-                final FlowRadioGroup radioGroup = fieldLayout.findViewById(R.id.radioGroup);
-                radioGroup.setId(CommonMethods.generateViewId());
-
-                final TextView radioGroupError = fieldLayout.findViewById(R.id.radioGroupError);
-                radioGroupError.setId(CommonMethods.generateViewId());
-                field.setErrorViewId(radioGroupError.getId());
-
-                ArrayList<String> dataList = field.getDataList();
-
-                for (int dataIndex = 0; dataIndex < dataList.size(); dataIndex++) {
-                    String data = dataList.get(dataIndex);
-                    RadioButton radioButton = (RadioButton) inflater.inflate(R.layout.radiobutton, radioGroup, false);
-                    radioButton.setId(CommonMethods.generateViewId());
-                    radioButton.setText(data);
-
-                    radioButton.setEnabled(isEditable);
-
-                    // set pre value
-                    if (field.getValue().equals(radioButton.getText().toString()))
-                        radioButton.setChecked(true);
-
-                    radioGroup.addView(radioButton);
+                    ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+                        @Override
+                        public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                            field.setRating(rating);
+                        }
+                    });
                 }
 
-                radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-                        field.setValue(((RadioButton) group.findViewById(checkedId)).getText().toString());
-                        radioGroupError.setText("");
-                    }
-                });
-
                 if (indexToAddView != -1)
                     ((LinearLayout) fieldsContainer).addView(fieldLayout, indexToAddView);
                 else ((LinearLayout) fieldsContainer).addView(fieldLayout);
                 break;
             }
-            case TYPE.CHECKBOX: {
+
+            case PageFragment.TYPE.RADIOBUTTON: {
+                addRadioButton(fieldsContainer, field, inflater, indexToAddView, /*mixed_group->*/false);
+                break;
+            }
+
+            case PageFragment.TYPE.MIXGROUP: {
+                addRadioButton(fieldsContainer, field, inflater, indexToAddView, /*mixed_group->*/true);
+                break;
+            }
+
+            case PageFragment.TYPE.CHECKBOX: {
                 View fieldLayout = inflater.inflate(R.layout.field_checkbox_layout, (LinearLayout) fieldsContainer, false);
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
                 labelView.setText(field.isMandatory() ? "*" + field.getName() : field.getName());
@@ -461,15 +388,32 @@ public class PageFragment extends Fragment {
                     checkBoxGroup.addView(checkBox);
                 }
 
+                // Add Rating Bar
+
+                if (field.getMaxRating() > 0) {
+                    RatingBar ratingBar = fieldLayout.findViewById(R.id.ratingBar);
+                    ratingBar.setVisibility(View.VISIBLE);
+                    ratingBar.setRating(field.getRating());
+                    ratingBar.setMax(field.getMaxRating() * 2);
+                    ratingBar.setNumStars(field.getMaxRating());
+
+                    ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+                        @Override
+                        public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                            field.setRating(rating);
+                        }
+                    });
+                }
+
                 if (indexToAddView != -1)
                     ((LinearLayout) fieldsContainer).addView(fieldLayout, indexToAddView);
                 else ((LinearLayout) fieldsContainer).addView(fieldLayout);
 
                 break;
             }
-            case TYPE.DROPDOWN: {
-                View fieldLayout = inflater.inflate(R.layout.field_dropdown_layout, (LinearLayout) fieldsContainer, false);
 
+            case PageFragment.TYPE.DROPDOWN: {
+                View fieldLayout = inflater.inflate(R.layout.field_dropdown_layout, (LinearLayout) fieldsContainer, false);
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
                 labelView.setText(field.isMandatory() ? "*" + field.getName() : field.getName());
 
@@ -521,118 +465,88 @@ public class PageFragment extends Fragment {
         }
     }
 
-    private void initializeDataViews() {
+    // Add Radio Button
 
-        if (formNumber == PERSONAL_INFO_FORM)
-            mTitleTextView.setText(page.getPageName());
-        else mTitleTextView.setText(mReceivedFormName + ": " + page.getPageName());
+    private void addRadioButton(final View fieldsContainer, final Field field, final LayoutInflater inflater, int indexToAddView, boolean isMixed) {
+        View fieldLayout = inflater.inflate(R.layout.field_radiobutton_layout, (LinearLayout) fieldsContainer, false);
+        TextView labelView = fieldLayout.findViewById(R.id.labelView);
+        labelView.setText(field.isMandatory() ? "*" + field.getName() : field.getName());
 
-        for (int sectionIndex = 0; sectionIndex < page.getSection().size(); sectionIndex++) {
-            View sectionLayout = mInflater.inflate(R.layout.section_layout, mSectionsContainer, false);
+        final FlowRadioGroup radioGroup = fieldLayout.findViewById(R.id.radioGroup);
+        radioGroup.setId(CommonMethods.generateViewId());
 
+        final TextView radioGroupError = fieldLayout.findViewById(R.id.radioGroupError);
+        radioGroupError.setId(CommonMethods.generateViewId());
+        field.setErrorViewId(radioGroupError.getId());
 
-            if (page.getSection().get(sectionIndex).getProfilePhoto() != null) {
-                View profilePhotoLayout = sectionLayout.findViewById(R.id.profilePhotoLayout);
-                profilePhoto = sectionLayout.findViewById(R.id.profilePhoto);
-                editButton = sectionLayout.findViewById(R.id.editButton);
+        ArrayList<String> dataList = field.getDataList();
 
-                editButton.setEnabled(isEditable);
+        for (int dataIndex = 0; dataIndex < dataList.size(); dataIndex++) {
+            String data = dataList.get(dataIndex);
+            RadioButton radioButton = (RadioButton) inflater.inflate(R.layout.radiobutton, radioGroup, false);
+            radioButton.setId(CommonMethods.generateViewId());
+            radioButton.setText(data);
 
-                editButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        PageFragmentPermissionsDispatcher.onPickPhotoWithCheck(PageFragment.this);
-                    }
-                });
+            radioButton.setEnabled(isEditable);
 
-                Drawable leftDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_photo_camera);
-                editButton.setCompoundDrawablesWithIntrinsicBounds(leftDrawable, null, null, null);
+            // set pre value
+            if (field.getValue().equals(radioButton.getText().toString()))
+                radioButton.setChecked(true);
 
-                TextView mobileText = sectionLayout.findViewById(R.id.mobileText);
-                mobileText.setText(PreferencesManager.getString(PreferencesManager.PREFERENCES_KEY.MOBILE, getContext()));
-                Drawable leftDrawablePhone = AppCompatResources.getDrawable(getContext(), R.drawable.ic_phone_iphone_24dp);
-                mobileText.setCompoundDrawablesWithIntrinsicBounds(leftDrawablePhone, null, null, null);
-                profilePhotoLayout.setVisibility(View.VISIBLE);
-
-                RequestOptions requestOptions = new RequestOptions();
-                requestOptions.dontAnimate();
-                requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
-                requestOptions.skipMemoryCache(true);
-//                requestOptions.error(R.drawable.ic_camera);
-//                requestOptions.placeholder(R.drawable.ic_camera);
-                Glide.with(getContext())
-                        .load(page.getSection().get(sectionIndex).getProfilePhoto())
-                        .into(profilePhoto);
-            } else {
-                View profilePhotoLayout = sectionLayout.findViewById(R.id.profilePhotoLayout);
-                profilePhotoLayout.setVisibility(View.GONE);
-            }
-
-            View fieldsContainer = sectionLayout.findViewById(R.id.fieldsContainer);
-
-            ArrayList<Field> fields = page.getSection().get(sectionIndex).getFields();
-
-            TextView sectionTitle = sectionLayout.findViewById(R.id.sectionTitleView);
-            sectionTitle.setText(page.getSection().get(sectionIndex).getSectionName());
-
-            for (int fieldsIndex = 0; fieldsIndex < fields.size(); fieldsIndex++) {
-                final Field field = fields.get(fieldsIndex);
-                addField(fieldsContainer, sectionIndex, fields, field, fieldsIndex, mInflater, -1);
-            }
-            mSectionsContainer.addView(sectionLayout);
+            radioGroup.addView(radioButton);
         }
 
-        //------ in case of undertaking comes----
-        // dont show header if it is undertaking content fragment.
-        if (page.getUndertakingContent() != null) {
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
 
-            UndertakingFragment newRegistrationFragment = UndertakingFragment.newInstance(mReceivedDate, page.getUndertakingContent(), page.getUndertakingImageUrl(), page.getName());
-            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-            transaction.replace(R.id.pageLayout, newRegistrationFragment, getResources().getString(R.string.undertaking));
-            transaction.commit();
+                String valueText = ((RadioButton) group.findViewById(checkedId)).getText().toString();
+                field.setValue(valueText);
+                radioGroupError.setText("");
+            }
+        });
 
-        }
-        //----------
-    }
+        // Add Extra edit text
 
-    @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
-    public void onPickPhoto() {
-        FilePickerBuilder.getInstance().setMaxCount(MAX_ATTACHMENT_COUNT)
-                .setSelectedFiles(new ArrayList<String>())
-                .setActivityTheme(R.style.AppTheme)
-                .enableVideoPicker(false)
-                .enableCameraSupport(true)
-                .showGifs(false)
-                .showFolderView(true)
-                .pickPhoto(this);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        PageFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == FilePickerConst.REQUEST_CODE_PHOTO) {
-                if (!data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA).isEmpty()) {
-                    RequestOptions requestOptions = new RequestOptions();
-                    requestOptions.dontAnimate();
-                    requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
-                    requestOptions.skipMemoryCache(true);
-//            requestOptions.error(R.drawable.ic_assignment);
-//            requestOptions.placeholder(R.drawable.ic_assignment);
-
-                    Glide.with(getContext())
-                            .load(data.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA).get(0))
-                            .apply(requestOptions)
-                            .thumbnail(.1f)
-                            .into(profilePhoto);
+        if (isMixed) {
+            final EditText otherTextBox = fieldLayout.findViewById(R.id.otherTextBox);
+            otherTextBox.setVisibility(View.VISIBLE);
+            otherTextBox.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 }
-            }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    field.setOthers(String.valueOf(s));
+                }
+            });
         }
+
+        // Add Rating Bar
+
+        if (field.getMaxRating() > 0) {
+            RatingBar ratingBar = fieldLayout.findViewById(R.id.ratingBar);
+            ratingBar.setVisibility(View.VISIBLE);
+            ratingBar.setRating(field.getRating());
+            ratingBar.setMax(field.getMaxRating() * 2);
+            ratingBar.setNumStars(field.getMaxRating());
+
+            ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+                @Override
+                public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                    field.setRating(rating);
+                }
+            });
+        }
+
+        if (indexToAddView != -1)
+            ((LinearLayout) fieldsContainer).addView(fieldLayout, indexToAddView);
+        else ((LinearLayout) fieldsContainer).addView(fieldLayout);
     }
+
 }

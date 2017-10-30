@@ -153,37 +153,42 @@ public class FormFragment extends Fragment {
             public void onClick(View v) {
                 if (isEditable) {
 
-                        View parentView = mSectionsPagerAdapter.getItem(mTabLayout.getSelectedTabPosition()).getView();
-                        Page page = pages.get(mTabLayout.getSelectedTabPosition());
+                    pageValidation(mTabLayout.getSelectedTabPosition(), true);
 
-                        isValid = true;
-                        for (int sectionIndex = 0; sectionIndex < page.getSection().size(); sectionIndex++) {
-                            Section section = page.getSection().get(sectionIndex);
-                            for (int fieldsIndex = 0; fieldsIndex < section.getFields().size(); fieldsIndex++) {
-                                Field field = section.getFields().get(fieldsIndex);
+                    if (isValid)
+                        mListener.submitClick(formNumber, isNew);
 
-                                fieldValidation(field, parentView);
-
-                                ArrayList<Field> moreFields = field.getTextBoxGroup();
-
-                                for (int moreFieldIndex = 0; moreFieldIndex < moreFields.size(); moreFieldIndex++) {
-                                    Field moreField = moreFields.get(moreFieldIndex);
-                                    fieldValidation(moreField, parentView);
-                                }
-                            }
-                        }
-
-                        if (isValid)
-                            mListener.submitClick(formNumber, isNew);
-
-                        // hide keyboard
-                        CommonMethods.hideKeyboard(getContext());
+                    // hide keyboard
+                    CommonMethods.hideKeyboard(getContext());
 
                 } else mListener.editClick(formNumber, isNew);
             }
         });
 
         return roolView;
+    }
+
+    private void pageValidation(int selectedTabPosition, boolean isShowError) {
+
+        View parentView = mSectionsPagerAdapter.getItem(selectedTabPosition).getView();
+        Page page = pages.get(selectedTabPosition);
+
+        isValid = true;
+        for (int sectionIndex = 0; sectionIndex < page.getSection().size(); sectionIndex++) {
+            Section section = page.getSection().get(sectionIndex);
+            for (int fieldsIndex = 0; fieldsIndex < section.getFields().size(); fieldsIndex++) {
+                Field field = section.getFields().get(fieldsIndex);
+
+                fieldValidation(field, parentView, isShowError);
+
+                ArrayList<Field> moreFields = field.getTextBoxGroup();
+
+                for (int moreFieldIndex = 0; moreFieldIndex < moreFields.size(); moreFieldIndex++) {
+                    Field moreField = moreFields.get(moreFieldIndex);
+                    fieldValidation(moreField, parentView, isShowError);
+                }
+            }
+        }
     }
 
     @SuppressWarnings("CheckResult")
@@ -254,7 +259,14 @@ public class FormFragment extends Fragment {
             public void onTabSelected(TabLayout.Tab tab) {
 
                 if (isTabSelectedListener) {
+
+                    if (unSelectedTab.getPosition() > tab.getPosition())
+                        isValid = true;
+                    else
+                        pageValidation(unSelectedTab.getPosition(), true);
+
                     if (isValid) {
+                        selectTab(unSelectedTab.getCustomView(), false);
                         selectTab(tab.getCustomView(), true);
                         mViewPager.setCurrentItem(tab.getPosition(), true);
                         handleButtons(tab.getPosition());
@@ -263,44 +275,16 @@ public class FormFragment extends Fragment {
                         unSelectedTab.select();
                     }
 
-                    // hide keyboard
-                    CommonMethods.hideKeyboard(getContext());
                 } else isTabSelectedListener = true;
+
+                // hide keyboard
+                CommonMethods.hideKeyboard(getContext());
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
-                if (isTabSelectedListener) {
-                    View parentView = mSectionsPagerAdapter.getItem(tab.getPosition()).getView();
-                    Page page = pages.get(tab.getPosition());
-
-                    isValid = true;
-                    for (int sectionIndex = 0; sectionIndex < page.getSection().size(); sectionIndex++) {
-                        Section section = page.getSection().get(sectionIndex);
-                        for (int fieldsIndex = 0; fieldsIndex < section.getFields().size(); fieldsIndex++) {
-                            Field field = section.getFields().get(fieldsIndex);
-
-                            fieldValidation(field, parentView);
-
-                            ArrayList<Field> moreFields = field.getTextBoxGroup();
-
-                            for (int moreFieldIndex = 0; moreFieldIndex < moreFields.size(); moreFieldIndex++) {
-                                Field moreField = moreFields.get(moreFieldIndex);
-                                fieldValidation(moreField, parentView);
-                            }
-                        }
-                    }
-
-                    if (isValid) {
-                        selectTab(tab.getCustomView(), false);
-                    } else {
-                        unSelectedTab = tab;
-                    }
-
-                    // hide keyboard
-                    CommonMethods.hideKeyboard(getContext());
-                }
+                if (isTabSelectedListener)
+                    unSelectedTab = tab;
             }
 
             @Override
@@ -411,7 +395,7 @@ public class FormFragment extends Fragment {
         void editClick(int formNumber, boolean isNew);
     }
 
-    private void fieldValidation(Field field, View roolView) {
+    private void fieldValidation(Field field, View roolView, boolean isShowError) {
 
         switch (field.getType()) {
 
@@ -422,8 +406,11 @@ public class FormFragment extends Fragment {
                     TextView errorTextView = roolView.findViewById(field.getErrorViewId());
 
                     if (field.getValue().equals("")) {
-                        errorTextView.setText("Please enter " + field.getName());
-                        editText.setBackgroundResource(R.drawable.edittext_error_selector);
+
+                        if (isShowError) {
+                            errorTextView.setText("Please enter " + field.getName());
+                            editText.setBackgroundResource(R.drawable.edittext_error_selector);
+                        }
                         isValid = false;
                         return;
                     }
@@ -440,8 +427,10 @@ public class FormFragment extends Fragment {
                 if (field.isMandatory()) {
 
                     if (field.getValue().equals("")) {
-                        errorTextView.setText("Please enter " + field.getName());
-                        editText.setBackgroundResource(R.drawable.edittext_error_selector);
+                        if (isShowError) {
+                            errorTextView.setText("Please enter " + field.getName());
+                            editText.setBackgroundResource(R.drawable.edittext_error_selector);
+                        }
                         isValid = false;
                         return;
                     }
@@ -451,8 +440,10 @@ public class FormFragment extends Fragment {
                     case PageFragment.INPUT_TYPE.EMAIL:
                         if (!field.getValue().equals("")) {
                             if (!Valid.validateEmail(field.getValue(), getContext(), false)) {
-                                errorTextView.setText("Please enter valid " + field.getName());
-                                editText.setBackgroundResource(R.drawable.edittext_error_selector);
+                                if (isShowError) {
+                                    errorTextView.setText("Please enter valid " + field.getName());
+                                    editText.setBackgroundResource(R.drawable.edittext_error_selector);
+                                }
                                 isValid = false;
                                 return;
                             }
@@ -461,8 +452,10 @@ public class FormFragment extends Fragment {
                     case PageFragment.INPUT_TYPE.MOBILE:
                         if (!field.getValue().equals("")) {
                             if (!Valid.validateMobileNo(field.getValue(), getContext(), false)) {
-                                errorTextView.setText("Please enter valid " + field.getName());
-                                editText.setBackgroundResource(R.drawable.edittext_error_selector);
+                                if (isShowError) {
+                                    errorTextView.setText("Please enter valid " + field.getName());
+                                    editText.setBackgroundResource(R.drawable.edittext_error_selector);
+                                }
                                 isValid = false;
                                 return;
                             }
@@ -471,8 +464,10 @@ public class FormFragment extends Fragment {
                     case PageFragment.INPUT_TYPE.PIN_CODE:
                         if (!field.getValue().equals("")) {
                             if (field.getValue().length() != 6) {
-                                errorTextView.setText("Please enter valid " + field.getName());
-                                editText.setBackgroundResource(R.drawable.edittext_error_selector);
+                                if (isShowError) {
+                                    errorTextView.setText("Please enter valid " + field.getName());
+                                    editText.setBackgroundResource(R.drawable.edittext_error_selector);
+                                }
                                 isValid = false;
                                 return;
                             }
@@ -489,7 +484,9 @@ public class FormFragment extends Fragment {
                     TextView errorTextView = roolView.findViewById(field.getErrorViewId());
 
                     if (field.getValue().equals("")) {
-                        errorTextView.setText("Please Select " + field.getName());
+                        if (isShowError) {
+                            errorTextView.setText("Please Select " + field.getName());
+                        }
                         isValid = false;
                         return;
                     }
@@ -502,7 +499,9 @@ public class FormFragment extends Fragment {
                     TextView errorTextView = roolView.findViewById(field.getErrorViewId());
 
                     if (field.getValues().size() == 0) {
-                        errorTextView.setText("Please Select " + field.getName());
+                        if (isShowError) {
+                            errorTextView.setText("Please Select " + field.getName());
+                        }
                         isValid = false;
                         return;
                     }
@@ -516,8 +515,10 @@ public class FormFragment extends Fragment {
                     TextView errorTextView = roolView.findViewById(field.getErrorViewId());
 
                     if (field.getValue().equals("")) {
-                        errorTextView.setText("Please Select " + field.getName());
-                        dropDown.setBackgroundResource(R.drawable.dropdown_error_selector);
+                        if (isShowError) {
+                            errorTextView.setText("Please Select " + field.getName());
+                            dropDown.setBackgroundResource(R.drawable.dropdown_error_selector);
+                        }
                         isValid = false;
                         return;
                     }

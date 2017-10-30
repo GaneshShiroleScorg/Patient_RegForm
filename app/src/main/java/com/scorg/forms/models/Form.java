@@ -23,6 +23,9 @@ public class Form implements Parcelable {
     @SerializedName("pages")
     @Expose
     private ArrayList<Page> pages = new ArrayList<Page>();
+    @SerializedName("fields")
+    @Expose
+    private ArrayList<Field> fields = new ArrayList<Field>();
     public final static Parcelable.Creator<Form> CREATOR = new Creator<Form>() {
 
 
@@ -44,6 +47,7 @@ public class Form implements Parcelable {
         this.formName = ((String) in.readValue((String.class.getClassLoader())));
         this.date = ((String) in.readValue((String.class.getClassLoader())));
         in.readList(this.pages, (Page.class.getClassLoader()));
+        in.readList(this.fields, (Field.class.getClassLoader()));
     }
 
     public Form() {
@@ -65,14 +69,6 @@ public class Form implements Parcelable {
         this.formName = formName;
     }
 
-    public ArrayList<Page> getPages() {
-        return pages;
-    }
-
-    public void setPages(ArrayList<Page> pages) {
-        this.pages = pages;
-    }
-
     public String getDate() {
         return date;
     }
@@ -81,11 +77,28 @@ public class Form implements Parcelable {
         this.date = date;
     }
 
+    public ArrayList<Page> getPages() {
+        return pages;
+    }
+
+    public void setPages(ArrayList<Page> pages) {
+        this.pages = pages;
+    }
+
+    public ArrayList<Field> getFields() {
+        return fields;
+    }
+
+    public void setFields(ArrayList<Field> fields) {
+        this.fields = fields;
+    }
+
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(formIcon);
         dest.writeValue(formName);
         dest.writeValue(date);
         dest.writeList(pages);
+        dest.writeList(fields);
     }
 
     public int describeContents() {
