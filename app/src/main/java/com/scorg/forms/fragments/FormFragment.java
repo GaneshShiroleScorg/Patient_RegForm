@@ -170,7 +170,11 @@ public class FormFragment extends Fragment {
 
     private void pageValidation(int selectedTabPosition, boolean isShowError) {
 
-        View parentView = mSectionsPagerAdapter.getItem(selectedTabPosition).getView();
+        View parentView = null;
+
+        if (isShowError)
+            parentView = mSectionsPagerAdapter.getItem(selectedTabPosition).getView();
+
         Page page = pages.get(selectedTabPosition);
 
         isValid = true;
@@ -262,8 +266,17 @@ public class FormFragment extends Fragment {
 
                     if (unSelectedTab.getPosition() > tab.getPosition())
                         isValid = true;
-                    else
-                        pageValidation(unSelectedTab.getPosition(), true);
+                    else {
+                        for (int pageIndex = unSelectedTab.getPosition(); pageIndex < tab.getPosition(); pageIndex++) {
+                            if (pageIndex == unSelectedTab.getPosition())
+                                pageValidation(pageIndex, true);
+                            else {
+                                pageValidation(pageIndex, false);
+                                if (!isValid)
+                                    break;
+                            }
+                        }
+                    }
 
                     if (isValid) {
                         selectTab(unSelectedTab.getCustomView(), false);
@@ -402,12 +415,10 @@ public class FormFragment extends Fragment {
             case PageFragment.TYPE.TEXTBOXGROUP: {
 
                 if (field.isMandatory()) {
-                    CustomAutoCompleteEditText editText = roolView.findViewById(field.getFieldId());
-                    TextView errorTextView = roolView.findViewById(field.getErrorViewId());
-
                     if (field.getValue().equals("")) {
-
                         if (isShowError) {
+                            CustomAutoCompleteEditText editText = roolView.findViewById(field.getFieldId());
+                            TextView errorTextView = roolView.findViewById(field.getErrorViewId());
                             errorTextView.setText("Please enter " + field.getName());
                             editText.setBackgroundResource(R.drawable.edittext_error_selector);
                         }
@@ -421,13 +432,11 @@ public class FormFragment extends Fragment {
 
             case PageFragment.TYPE.TEXTBOX: {
 
-                CustomEditText editText = roolView.findViewById(field.getFieldId());
-                TextView errorTextView = roolView.findViewById(field.getErrorViewId());
-
                 if (field.isMandatory()) {
-
                     if (field.getValue().equals("")) {
                         if (isShowError) {
+                            CustomEditText editText = roolView.findViewById(field.getFieldId());
+                            TextView errorTextView = roolView.findViewById(field.getErrorViewId());
                             errorTextView.setText("Please enter " + field.getName());
                             editText.setBackgroundResource(R.drawable.edittext_error_selector);
                         }
@@ -441,6 +450,8 @@ public class FormFragment extends Fragment {
                         if (!field.getValue().equals("")) {
                             if (!Valid.validateEmail(field.getValue(), getContext(), false)) {
                                 if (isShowError) {
+                                    CustomEditText editText = roolView.findViewById(field.getFieldId());
+                                    TextView errorTextView = roolView.findViewById(field.getErrorViewId());
                                     errorTextView.setText("Please enter valid " + field.getName());
                                     editText.setBackgroundResource(R.drawable.edittext_error_selector);
                                 }
@@ -453,6 +464,8 @@ public class FormFragment extends Fragment {
                         if (!field.getValue().equals("")) {
                             if (!Valid.validateMobileNo(field.getValue(), getContext(), false)) {
                                 if (isShowError) {
+                                    CustomEditText editText = roolView.findViewById(field.getFieldId());
+                                    TextView errorTextView = roolView.findViewById(field.getErrorViewId());
                                     errorTextView.setText("Please enter valid " + field.getName());
                                     editText.setBackgroundResource(R.drawable.edittext_error_selector);
                                 }
@@ -465,6 +478,8 @@ public class FormFragment extends Fragment {
                         if (!field.getValue().equals("")) {
                             if (field.getValue().length() != 6) {
                                 if (isShowError) {
+                                    CustomEditText editText = roolView.findViewById(field.getFieldId());
+                                    TextView errorTextView = roolView.findViewById(field.getErrorViewId());
                                     errorTextView.setText("Please enter valid " + field.getName());
                                     editText.setBackgroundResource(R.drawable.edittext_error_selector);
                                 }
@@ -481,10 +496,9 @@ public class FormFragment extends Fragment {
             case PageFragment.TYPE.RADIOBUTTON: {
 
                 if (field.isMandatory()) {
-                    TextView errorTextView = roolView.findViewById(field.getErrorViewId());
-
                     if (field.getValue().equals("")) {
                         if (isShowError) {
+                            TextView errorTextView = roolView.findViewById(field.getErrorViewId());
                             errorTextView.setText("Please Select " + field.getName());
                         }
                         isValid = false;
@@ -496,10 +510,9 @@ public class FormFragment extends Fragment {
             }
             case PageFragment.TYPE.CHECKBOX: {
                 if (field.isMandatory()) {
-                    TextView errorTextView = roolView.findViewById(field.getErrorViewId());
-
                     if (field.getValues().size() == 0) {
                         if (isShowError) {
+                            TextView errorTextView = roolView.findViewById(field.getErrorViewId());
                             errorTextView.setText("Please Select " + field.getName());
                         }
                         isValid = false;
@@ -511,11 +524,10 @@ public class FormFragment extends Fragment {
             case PageFragment.TYPE.DROPDOWN: {
 
                 if (field.isMandatory()) {
-                    Spinner dropDown = roolView.findViewById(field.getFieldId());
-                    TextView errorTextView = roolView.findViewById(field.getErrorViewId());
-
                     if (field.getValue().equals("")) {
                         if (isShowError) {
+                            Spinner dropDown = roolView.findViewById(field.getFieldId());
+                            TextView errorTextView = roolView.findViewById(field.getErrorViewId());
                             errorTextView.setText("Please Select " + field.getName());
                             dropDown.setBackgroundResource(R.drawable.dropdown_error_selector);
                         }
@@ -527,9 +539,4 @@ public class FormFragment extends Fragment {
             }
         }
     }
-
-   /* public void manageProfileFragmentViews() {
-        mTabLayout.setVisibility(View.GONE);
-        mAllButtonLayout.setVisibility(View.GONE);
-    }*/
 }

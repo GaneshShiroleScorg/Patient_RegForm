@@ -37,5 +37,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="feedback">Feedback</string>
     <string name="others">Others, please specify</string>
+    <string name="rating_reason">Would you like to specify the reason for low rating?</string>
 
 </resources>

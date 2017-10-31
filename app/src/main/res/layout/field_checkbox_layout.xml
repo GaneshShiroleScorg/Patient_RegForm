@@ -10,8 +10,9 @@
         android:id="@+id/labelView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
         android:layout_marginEnd="@dimen/view_margin"
+        android:paddingTop="@dimen/label_view_padding"
+        android:paddingBottom="@dimen/label_view_padding"
         android:layout_marginRight="@dimen/view_margin"
         android:layout_weight="0.6"
         android:textSize="@dimen/field_text_size"
@@ -40,17 +41,6 @@
             tools:visibility="visible"
             android:hint="@string/others"
             android:visibility="gone" />
-
-        <me.zhanghai.android.materialratingbar.MaterialRatingBar
-            android:id="@+id/ratingBar"
-            style="@style/Widget.MaterialRatingBar.RatingBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:rating="2.5"
-            android:visibility="gone"
-            tools:visibility="visible"
-            android:layout_marginTop="@dimen/dp5"
-            app:mrb_progressTint="@color/register_button"/>
 
         <com.scorg.forms.customui.CustomTextView
             android:id="@+id/checkBoxGroupError"

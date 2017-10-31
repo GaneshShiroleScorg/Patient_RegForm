@@ -84,8 +84,10 @@ public class PageFragment extends Fragment {
         String DROPDOWN = "dropdown";
         String RADIOBUTTON = "radiobutton";
         String CHECKBOX = "checkbox";
+        String RATINGBAR = "ratingbar";
         String TEXTBOXGROUP = "textboxgroup";
-        String MIXGROUP = "mixgroup";
+        String MIXRADIOBUTTON = "mixradiobutton";
+        String MIXCHECKBOX = "mixcheckbox";
     }
 
     interface INPUT_TYPE {
@@ -405,7 +407,8 @@ public class PageFragment extends Fragment {
                 radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-                        field.setValue(((RadioButton) group.findViewById(checkedId)).getText().toString());
+                        RadioButton radioButton = group.findViewById(checkedId);
+                        field.setValue(radioButton.getText().toString());
                         radioGroupError.setText("");
                     }
                 });

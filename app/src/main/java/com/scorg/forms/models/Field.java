@@ -55,6 +55,10 @@ public class Field implements Parcelable, Cloneable {
     @Expose
     private String others;
 
+    @SerializedName("showWhenSelect")
+    @Expose
+    private String showWhenSelect;
+
     private int fieldId;
     private int errorViewId;
 
@@ -89,6 +93,7 @@ public class Field implements Parcelable, Cloneable {
         this.maxRating = ((int) in.readValue((int.class.getClassLoader())));
         this.rating = ((float) in.readValue((float.class.getClassLoader())));
         this.others = ((String) in.readValue((String.class.getClassLoader())));
+        this.showWhenSelect = ((String) in.readValue((String.class.getClassLoader())));
         this.fieldId = ((int) in.readValue((int.class.getClassLoader())));
         this.errorViewId = ((int) in.readValue((int.class.getClassLoader())));
     }
@@ -208,6 +213,14 @@ public class Field implements Parcelable, Cloneable {
         this.others = others;
     }
 
+    public String getShowWhenSelect() {
+        return showWhenSelect;
+    }
+
+    public void setShowWhenSelect(String showWhenSelect) {
+        this.showWhenSelect = showWhenSelect;
+    }
+
     public int getFieldId() {
         return fieldId;
     }
@@ -239,6 +252,7 @@ public class Field implements Parcelable, Cloneable {
         dest.writeValue(maxRating);
         dest.writeValue(rating);
         dest.writeValue(others);
+        dest.writeValue(showWhenSelect);
         dest.writeValue(fieldId);
         dest.writeValue(errorViewId);
     }

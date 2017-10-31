@@ -101,13 +101,16 @@ public class FeedbackFragment extends Fragment {
     }
 
     private void addField(final View fieldsContainer, final ArrayList<Field> fields, final Field field, final int fieldsIndex, final LayoutInflater inflater, int indexToAddView) {
+
+        String questionNo = String.valueOf(fieldsIndex + 1) + ". ";
+
         switch (field.getType()) {
 
             case PageFragment.TYPE.TEXTBOXGROUP: {
                 // Added Extended Layout
                 final View fieldLayout = inflater.inflate(R.layout.field_autocomplete_textbox_layout, (LinearLayout) fieldsContainer, false);
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
-                labelView.setText(field.isMandatory() ? "*" + field.getName() : field.getName());
+                labelView.setText(questionNo + (field.isMandatory() ? "*" + field.getName() : field.getName()));
 
                 final AutoCompleteTextView textBox = fieldLayout.findViewById(R.id.editText);
                 textBox.setId(CommonMethods.generateViewId());
@@ -205,7 +208,7 @@ public class FeedbackFragment extends Fragment {
 
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
 
-                labelView.setText(field.isMandatory() ? "*" + field.getName() : field.getName());
+                labelView.setText(questionNo + (field.isMandatory() ? "*" + field.getName() : field.getName()));
 
                 final EditText textBox = fieldLayout.findViewById(R.id.editText);
                 LinearLayout.LayoutParams textBoxParams = (LinearLayout.LayoutParams) textBox.getLayoutParams();
@@ -309,23 +312,6 @@ public class FeedbackFragment extends Fragment {
                     }
                 });
 
-                // Add Rating Bar
-
-                if (field.getMaxRating() > 0) {
-                    RatingBar ratingBar = fieldLayout.findViewById(R.id.ratingBar);
-                    ratingBar.setVisibility(View.VISIBLE);
-                    ratingBar.setRating(field.getRating());
-                    ratingBar.setMax(field.getMaxRating() * 2);
-                    ratingBar.setNumStars(field.getMaxRating());
-
-                    ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-                        @Override
-                        public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                            field.setRating(rating);
-                        }
-                    });
-                }
-
                 if (indexToAddView != -1)
                     ((LinearLayout) fieldsContainer).addView(fieldLayout, indexToAddView);
                 else ((LinearLayout) fieldsContainer).addView(fieldLayout);
@@ -333,89 +319,29 @@ public class FeedbackFragment extends Fragment {
             }
 
             case PageFragment.TYPE.RADIOBUTTON: {
-                addRadioButton(fieldsContainer, field, inflater, indexToAddView, /*mixed_group->*/false);
+                addRadioButton(questionNo, fieldsContainer, field, inflater, indexToAddView, /*radio_button->*/false);
                 break;
             }
 
-            case PageFragment.TYPE.MIXGROUP: {
-                addRadioButton(fieldsContainer, field, inflater, indexToAddView, /*mixed_group->*/true);
+            case PageFragment.TYPE.MIXRADIOBUTTON: {
+                addRadioButton(questionNo, fieldsContainer, field, inflater, indexToAddView, /*mixed_group->*/true);
                 break;
             }
 
             case PageFragment.TYPE.CHECKBOX: {
-                View fieldLayout = inflater.inflate(R.layout.field_checkbox_layout, (LinearLayout) fieldsContainer, false);
-                TextView labelView = fieldLayout.findViewById(R.id.labelView);
-                labelView.setText(field.isMandatory() ? "*" + field.getName() : field.getName());
+                addCheckbox(questionNo, fieldsContainer, field, inflater, indexToAddView, /*mixed_group->*/false);
+                break;
+            }
 
-                FlowLayout checkBoxGroup = fieldLayout.findViewById(R.id.checkBoxGroup);
-                checkBoxGroup.setId(CommonMethods.generateViewId());
-
-                final TextView checkBoxGroupError = fieldLayout.findViewById(R.id.checkBoxGroupError);
-                checkBoxGroupError.setId(CommonMethods.generateViewId());
-                field.setErrorViewId(checkBoxGroupError.getId());
-
-                ArrayList<String> dataList = field.getDataList();
-                final ArrayList<String> values = field.getValues();
-
-                for (int dataIndex = 0; dataIndex < dataList.size(); dataIndex++) {
-                    String data = dataList.get(dataIndex);
-                    final CheckBox checkBox = (CheckBox) inflater.inflate(R.layout.checkbox, checkBoxGroup, false);
-
-                    checkBox.setEnabled(isEditable);
-
-                    // set pre value
-                    for (String value : values)
-                        if (value.equals(data))
-                            checkBox.setChecked(true);
-
-                    checkBox.setId(CommonMethods.generateViewId());
-                    checkBox.setText(data);
-                    checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                        @Override
-                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                            checkBoxGroupError.setText("");
-
-                            // set latest value
-
-                            if (isChecked) {
-                                values.add(checkBox.getText().toString());
-                            } else {
-                                values.remove(checkBox.getText().toString());
-                            }
-                        }
-                    });
-                    checkBoxGroup.addView(checkBox);
-                }
-
-                // Add Rating Bar
-
-                if (field.getMaxRating() > 0) {
-                    RatingBar ratingBar = fieldLayout.findViewById(R.id.ratingBar);
-                    ratingBar.setVisibility(View.VISIBLE);
-                    ratingBar.setRating(field.getRating());
-                    ratingBar.setMax(field.getMaxRating() * 2);
-                    ratingBar.setNumStars(field.getMaxRating());
-
-                    ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-                        @Override
-                        public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                            field.setRating(rating);
-                        }
-                    });
-                }
-
-                if (indexToAddView != -1)
-                    ((LinearLayout) fieldsContainer).addView(fieldLayout, indexToAddView);
-                else ((LinearLayout) fieldsContainer).addView(fieldLayout);
-
+            case PageFragment.TYPE.MIXCHECKBOX: {
+                addCheckbox(questionNo, fieldsContainer, field, inflater, indexToAddView, /*mixed_group->*/true);
                 break;
             }
 
             case PageFragment.TYPE.DROPDOWN: {
                 View fieldLayout = inflater.inflate(R.layout.field_dropdown_layout, (LinearLayout) fieldsContainer, false);
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
-                labelView.setText(field.isMandatory() ? "*" + field.getName() : field.getName());
+                labelView.setText(questionNo + (field.isMandatory() ? "*" + field.getName() : field.getName()));
 
                 final Spinner dropDown = fieldLayout.findViewById(R.id.dropDown);
                 dropDown.setId(CommonMethods.generateViewId());
@@ -462,55 +388,115 @@ public class FeedbackFragment extends Fragment {
                 else ((LinearLayout) fieldsContainer).addView(fieldLayout);
                 break;
             }
+
+            case PageFragment.TYPE.RATINGBAR: {
+
+                View fieldLayout = inflater.inflate(R.layout.field_ratingbar_layout, (LinearLayout) fieldsContainer, false);
+                TextView labelView = fieldLayout.findViewById(R.id.labelView);
+                labelView.setText(questionNo + (field.isMandatory() ? "*" + field.getName() : field.getName()));
+
+                // Add Rating Bar
+
+                RatingBar ratingBar = fieldLayout.findViewById(R.id.ratingBar);
+                ratingBar.setRating(field.getRating());
+                ratingBar.setMax(field.getMaxRating() * 2);
+                ratingBar.setNumStars(field.getMaxRating());
+
+                final EditText ratingReasonTextBox = fieldLayout.findViewById(R.id.ratingReasonTextBox);
+
+                ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+                    @Override
+                    public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                        field.setRating(rating);
+                        if (rating < 3f && rating != 0f)
+                            ratingReasonTextBox.setVisibility(View.VISIBLE);
+                        else ratingReasonTextBox.setVisibility(View.GONE);
+                    }
+                });
+
+                if (indexToAddView != -1)
+                    ((LinearLayout) fieldsContainer).addView(fieldLayout, indexToAddView);
+                else ((LinearLayout) fieldsContainer).addView(fieldLayout);
+                break;
+            }
         }
     }
 
-    // Add Radio Button
-
-    private void addRadioButton(final View fieldsContainer, final Field field, final LayoutInflater inflater, int indexToAddView, boolean isMixed) {
-        View fieldLayout = inflater.inflate(R.layout.field_radiobutton_layout, (LinearLayout) fieldsContainer, false);
+    private void addCheckbox(String questionNo, View fieldsContainer, final Field field, LayoutInflater inflater, int indexToAddView, boolean isMixed) {
+        View fieldLayout = inflater.inflate(R.layout.field_checkbox_layout, (LinearLayout) fieldsContainer, false);
         TextView labelView = fieldLayout.findViewById(R.id.labelView);
-        labelView.setText(field.isMandatory() ? "*" + field.getName() : field.getName());
+        labelView.setText(questionNo + (field.isMandatory() ? "*" + field.getName() : field.getName()));
 
-        final FlowRadioGroup radioGroup = fieldLayout.findViewById(R.id.radioGroup);
-        radioGroup.setId(CommonMethods.generateViewId());
+        FlowLayout checkBoxGroup = fieldLayout.findViewById(R.id.checkBoxGroup);
+        checkBoxGroup.setId(CommonMethods.generateViewId());
 
-        final TextView radioGroupError = fieldLayout.findViewById(R.id.radioGroupError);
-        radioGroupError.setId(CommonMethods.generateViewId());
-        field.setErrorViewId(radioGroupError.getId());
+        final EditText otherTextBox = fieldLayout.findViewById(R.id.otherTextBox);
+
+        final TextView checkBoxGroupError = fieldLayout.findViewById(R.id.checkBoxGroupError);
+        checkBoxGroupError.setId(CommonMethods.generateViewId());
+        field.setErrorViewId(checkBoxGroupError.getId());
 
         ArrayList<String> dataList = field.getDataList();
+        final ArrayList<String> values = field.getValues();
+
+        boolean isOthersThere = false;
 
         for (int dataIndex = 0; dataIndex < dataList.size(); dataIndex++) {
             String data = dataList.get(dataIndex);
-            RadioButton radioButton = (RadioButton) inflater.inflate(R.layout.radiobutton, radioGroup, false);
-            radioButton.setId(CommonMethods.generateViewId());
-            radioButton.setText(data);
 
-            radioButton.setEnabled(isEditable);
+            if (data.equalsIgnoreCase(field.getShowWhenSelect()))
+                isOthersThere = true;
+
+            final CheckBox checkBox = (CheckBox) inflater.inflate(R.layout.checkbox, checkBoxGroup, false);
+
+            checkBox.setEnabled(isEditable);
 
             // set pre value
-            if (field.getValue().equals(radioButton.getText().toString()))
-                radioButton.setChecked(true);
+            for (String value : values)
+                if (value.equals(data))
+                    checkBox.setChecked(true);
 
-            radioGroup.addView(radioButton);
+            checkBox.setId(CommonMethods.generateViewId());
+            checkBox.setText(data);
+            final boolean finalIsOthersThere = isOthersThere;
+            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                    String valueText = checkBox.getText().toString();
+
+                    if (finalIsOthersThere) {
+                        if (valueText.equalsIgnoreCase(field.getShowWhenSelect()) && isChecked)
+                            otherTextBox.setVisibility(View.VISIBLE);
+                        else if (valueText.equalsIgnoreCase(field.getShowWhenSelect()) && !isChecked) {
+                            otherTextBox.setText("");
+                            otherTextBox.setVisibility(View.GONE);
+                        }
+                    }
+
+                    checkBoxGroupError.setText("");
+
+                    // set latest value
+
+                    if (isChecked) {
+                        values.add(valueText);
+                    } else {
+                        values.remove(valueText);
+                    }
+                }
+            });
+            checkBoxGroup.addView(checkBox);
         }
-
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-
-                String valueText = ((RadioButton) group.findViewById(checkedId)).getText().toString();
-                field.setValue(valueText);
-                radioGroupError.setText("");
-            }
-        });
 
         // Add Extra edit text
 
         if (isMixed) {
-            final EditText otherTextBox = fieldLayout.findViewById(R.id.otherTextBox);
-            otherTextBox.setVisibility(View.VISIBLE);
+
+            if (isOthersThere) {
+                otherTextBox.setHint("Would you like to specify the " + field.getShowWhenSelect().toLowerCase() + "?");
+                otherTextBox.setVisibility(View.GONE);
+            } else otherTextBox.setVisibility(View.VISIBLE);
+
             otherTextBox.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -527,19 +513,92 @@ public class FeedbackFragment extends Fragment {
             });
         }
 
-        // Add Rating Bar
+        if (indexToAddView != -1)
+            ((LinearLayout) fieldsContainer).addView(fieldLayout, indexToAddView);
+        else ((LinearLayout) fieldsContainer).addView(fieldLayout);
+    }
 
-        if (field.getMaxRating() > 0) {
-            RatingBar ratingBar = fieldLayout.findViewById(R.id.ratingBar);
-            ratingBar.setVisibility(View.VISIBLE);
-            ratingBar.setRating(field.getRating());
-            ratingBar.setMax(field.getMaxRating() * 2);
-            ratingBar.setNumStars(field.getMaxRating());
+    // Add Radio Button
 
-            ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+    private void addRadioButton(String questionNo, final View fieldsContainer, final Field field, final LayoutInflater inflater, int indexToAddView, boolean isMixed) {
+        View fieldLayout = inflater.inflate(R.layout.field_radiobutton_layout, (LinearLayout) fieldsContainer, false);
+        TextView labelView = fieldLayout.findViewById(R.id.labelView);
+        labelView.setText(questionNo + (field.isMandatory() ? "*" + field.getName() : field.getName()));
+
+        final FlowRadioGroup radioGroup = fieldLayout.findViewById(R.id.radioGroup);
+        radioGroup.setId(CommonMethods.generateViewId());
+
+        final EditText otherTextBox = fieldLayout.findViewById(R.id.otherTextBox);
+
+        final TextView radioGroupError = fieldLayout.findViewById(R.id.radioGroupError);
+        radioGroupError.setId(CommonMethods.generateViewId());
+        field.setErrorViewId(radioGroupError.getId());
+
+        ArrayList<String> dataList = field.getDataList();
+
+        boolean isOthersThere = false;
+
+        for (int dataIndex = 0; dataIndex < dataList.size(); dataIndex++) {
+            String data = dataList.get(dataIndex);
+
+            if (data.equalsIgnoreCase(field.getShowWhenSelect()))
+                isOthersThere = true;
+
+            RadioButton radioButton = (RadioButton) inflater.inflate(R.layout.radiobutton, radioGroup, false);
+            radioButton.setId(CommonMethods.generateViewId());
+            radioButton.setText(data);
+
+            radioButton.setEnabled(isEditable);
+
+            // set pre value
+            if (field.getValue().equals(radioButton.getText().toString()))
+                radioButton.setChecked(true);
+
+            radioGroup.addView(radioButton);
+        }
+
+        final boolean finalIsOthersThere = isOthersThere;
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+
+                String valueText = ((RadioButton) group.findViewById(checkedId)).getText().toString();
+
+                if (finalIsOthersThere) {
+                    if (valueText.equalsIgnoreCase(field.getShowWhenSelect()))
+                        otherTextBox.setVisibility(View.VISIBLE);
+                    else {
+                        otherTextBox.setText("");
+                        otherTextBox.setVisibility(View.GONE);
+                    }
+                }
+
+                field.setValue(valueText);
+                radioGroupError.setText("");
+            }
+        });
+
+        // Add Extra edit text
+
+        if (isMixed) {
+
+            if (isOthersThere) {
+                otherTextBox.setHint("Would you like to specify the " + field.getShowWhenSelect().toLowerCase() + "?");
+                otherTextBox.setVisibility(View.GONE);
+            } else otherTextBox.setVisibility(View.VISIBLE);
+
+            otherTextBox.addTextChangedListener(new TextWatcher() {
                 @Override
-                public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                    field.setRating(rating);
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    field.setOthers(String.valueOf(s));
                 }
             });
         }

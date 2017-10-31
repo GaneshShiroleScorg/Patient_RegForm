@@ -332,7 +332,8 @@
                   "name": "Father's Name",
                   "type": "textbox",
                   "length": 30,
-                  "inputType": "name"
+                  "inputType": "name",
+                  "isMandatory": true
                 },
                 {
                   "name": "Age",
@@ -705,17 +706,16 @@
       "formName": "Feedback",
       "fields": [
         {
-          "type": "mixgroup",
+          "type": "mixradiobutton",
           "name": "How long was the wait time before you were seen by the doctor?",
           "isMandatory": false,
-          "maxRating": 5,
-          "rating": 0,
           "dataList": [
             "Less than 15 minutes",
             "Between 15 & 30 minutes",
             "Between 30 & 60 minutes",
             "Over an hour"
-          ]
+          ],
+          "showWhenSelect": "Over an hour"
         },
         {
           "type": "radiobutton",
@@ -730,11 +730,9 @@
           ]
         },
         {
-          "type": "mixgroup",
+          "type": "mixradiobutton",
           "name": "Did the doctor listen to what you had to say?",
           "isMandatory": false,
-          "maxRating": 5,
-          "rating": 0,
           "dataList": [
             "Yes, definitely",
             "Yes, to some extent",
@@ -743,11 +741,9 @@
           ]
         },
         {
-          "type": "mixgroup",
+          "type": "mixradiobutton",
           "name": "Did the doctor give you enough opportunity to ask queries?",
           "isMandatory": false,
-          "maxRating": 5,
-          "rating": 0,
           "dataList": [
             "Yes, definitely",
             "Yes, to some extent",
@@ -756,11 +752,9 @@
           ]
         },
         {
-          "type": "mixgroup",
+          "type": "radiobutton",
           "name": "Did the doctor explain about your condition in a way you could understand?",
           "isMandatory": false,
-          "maxRating": 5,
-          "rating": 0,
           "dataList": [
             "Yes, definitely",
             "Yes, to some extent",
@@ -769,11 +763,9 @@
           ]
         },
         {
-          "type": "mixgroup",
+          "type": "mixradiobutton",
           "name": "Before examining you, did the doctor",
           "isMandatory": false,
-          "maxRating": 5,
-          "rating": 0,
           "dataList": [
             "Ask your permission?",
             "Respect your privacy?",
@@ -781,11 +773,9 @@
           ]
         },
         {
-          "type": "mixgroup",
+          "type": "mixradiobutton",
           "name": "How would you rate the doctor’s bedside manners?",
           "isMandatory": false,
-          "maxRating": 5,
-          "rating": 0,
           "dataList": [
             "Excellent",
             "Good",
@@ -798,8 +788,6 @@
           "type": "radiobutton",
           "name": "By the end of the consultation, did you feel better able to manage / understand your condition?",
           "isMandatory": false,
-          "maxRating": 5,
-          "rating": 0,
           "dataList": [
             "Yes, definitely",
             "Yes, to some extent",
@@ -812,8 +800,6 @@
           "type": "radiobutton",
           "name": "Would you recommend the doctor to other patients?",
           "isMandatory": false,
-          "maxRating": 5,
-          "rating": 0,
           "dataList": [
             "Highly Recommend",
             "Probably",
@@ -821,6 +807,27 @@
             "Probable Not",
             "Never"
           ]
+        },
+        {
+          "type": "mixcheckbox",
+          "name": "What did you like in your overall clinic experience?",
+          "isMandatory": false,
+          "dataList": [
+            "Appointment Scheduling",
+            "Clinic Reception",
+            "Doctor Consultation",
+            "Nursing Staff",
+            "Cleanliness",
+            "Others"
+          ],
+          "showWhenSelect": "Others"
+        },
+        {
+          "type": "ratingbar",
+          "name": "Test Rating",
+          "isMandatory": false,
+          "maxRating": 5,
+          "rating": 0
         },
         {
           "type": "textbox",
