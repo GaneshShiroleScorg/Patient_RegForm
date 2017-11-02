@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Forms.iml" filepath="$PROJECT_DIR$/Forms.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Patient_RegForm.iml" filepath="$PROJECT_DIR$/Patient_RegForm.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/filepicker/filepicker.iml" filepath="$PROJECT_DIR$/filepicker/filepicker.iml" />
       <module fileurl="file://$PROJECT_DIR$/ratingbar/ratingbar.iml" filepath="$PROJECT_DIR$/ratingbar/ratingbar.iml" />

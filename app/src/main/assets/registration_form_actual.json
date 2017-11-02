@@ -389,7 +389,8 @@
                   "name": "Mother's Name",
                   "type": "textbox",
                   "length": 30,
-                  "inputType": "name"
+                  "inputType": "name",
+                  "isMandatory": true
                 },
                 {
                   "name": "Age",
@@ -420,7 +421,7 @@
         {
           "pageIcon": "http://www.iconsdb.com/icons/preview/black/pages-1-xxl.png",
           "pageName": "Undertaking",
-          "name":"Sandeep Bahalkar",
+          "name": "Sandeep Bahalkar",
           "undertakingImageUrl": "https://image.ibb.co/hNRyO6/male_user_shadow.png",
           "undertakingContent": " I/We Mr./Ms. <b> Sandeep Bahalkar </b> solemnly agree and accept following terms and conditions at <b> Antarnad Counselling Center </b>.<p>a) It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p><p>b) Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p><p>c) Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>"
         }
@@ -603,7 +604,7 @@
         {
           "pageIcon": "http://www.iconsdb.com/icons/preview/black/pages-1-xxl.png",
           "pageName": "Undertaking",
-          "name":"Sandeep Bahalkar",
+          "name": "Sandeep Bahalkar",
           "undertakingImageUrl": "https://image.ibb.co/hNRyO6/male_user_shadow.png",
           "undertakingContent": " I/We Mr./Ms. <b> Sandeep Bahalkar </b> solemnly agree and accept following terms and conditions at <b> Antarnad Counselling Center </b>.<p>a) It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p><p>b) Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p><p>c) Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>"
         }
@@ -724,139 +725,306 @@
     {
       "formIcon": "http://www.iconsdb.com/icons/preview/white/pages-1-xxl.png",
       "formName": "Feedback",
-      "fields": [
+      "pages": [
         {
-          "type": "mixradiobutton",
-          "name": "How long was the wait time before you were seen by the doctor?",
-          "isMandatory": false,
-          "dataList": [
-            "Less than 15 minutes",
-            "Between 15 & 30 minutes",
-            "Between 30 & 60 minutes",
-            "Over an hour"
-          ],
-          "showWhenSelect": "Over an hour"
-        },
-        {
-          "type": "radiobutton",
-          "name": "Was the doctor polite and considerate?",
-          "isMandatory": false,
-          "dataList": [
-            "More than expectation",
-            "Yes, definitely",
-            "Yes, to some extent",
-            "Not really",
-            "Definitely not"
+          "pageIcon": "http://www.iconsdb.com/icons/preview/black/pages-1-xxl.png",
+          "pageName": "Undertaking",
+          "fields": [
+            {
+              "type": "radiobuttonwithtext",
+              "name": "How long was the wait time before you were seen by the doctor?",
+              "isMandatory": false,
+              "dataList": [
+                "Less than 15 minutes",
+                "Between 15 & 30 minutes",
+                "Between 30 & 60 minutes",
+                "Over an hour"
+              ],
+              "showWhenSelect": "Over an hour",
+              "hint": "Specify the wait time? Ex: 2 hours",
+              "inputType": "number",
+              "unit": "Hours"
+            },
+            {
+              "type": "radiobutton",
+              "name": "Was the doctor polite and considerate?",
+              "isMandatory": false,
+              "dataList": [
+                "More than expectation",
+                "Yes, definitely",
+                "Yes, to some extent",
+                "Not really",
+                "Definitely not"
+              ]
+            },
+            {
+              "type": "radiobuttonwithtext",
+              "name": "Did the doctor listen to what you had to say?",
+              "isMandatory": false,
+              "dataList": [
+                "Yes, definitely",
+                "Yes, to some extent",
+                "Not really",
+                "Definitely not",
+                "Others"
+              ],
+              "showWhenSelect": "Others"
+            },
+            {
+              "type": "radiobuttonwithtext",
+              "name": "Did the doctor give you enough opportunity to ask queries?",
+              "isMandatory": false,
+              "dataList": [
+                "Yes, definitely",
+                "Yes, to some extent",
+                "Not really",
+                "Definitely not",
+                "Others"
+              ],
+              "showWhenSelect": "Others"
+            },
+            {
+              "type": "radiobutton",
+              "name": "Did the doctor explain about your condition in a way you could understand?",
+              "isMandatory": false,
+              "dataList": [
+                "Yes, definitely",
+                "Yes, to some extent",
+                "Not really",
+                "Definitely not"
+              ]
+            },
+            {
+              "type": "radiobuttonwithtext",
+              "name": "Before examining you, did the doctor",
+              "isMandatory": false,
+              "dataList": [
+                "Ask your permission?",
+                "Respect your privacy?",
+                "Does not apply",
+                "Others"
+              ],
+              "showWhenSelect": "Others"
+            },
+            {
+              "type": "radiobuttonwithtext",
+              "name": "How would you rate the doctor’s bedside manners?",
+              "isMandatory": false,
+              "dataList": [
+                "Excellent",
+                "Good",
+                "Satisfactory",
+                "Unsatisfactory",
+                "Does not apply",
+                "Others"
+              ],
+              "showWhenSelect": "Others"
+            },
+            {
+              "type": "radiobutton",
+              "name": "By the end of the consultation, did you feel better able to manage / understand your condition?",
+              "isMandatory": false,
+              "dataList": [
+                "Yes, definitely",
+                "Yes, to some extent",
+                "Not really",
+                "Definitely not",
+                "Does not reply"
+              ]
+            },
+            {
+              "type": "radiobutton",
+              "name": "Would you recommend the doctor to other patients?",
+              "isMandatory": false,
+              "dataList": [
+                "Highly Recommend",
+                "Probably",
+                "Maybe",
+                "Probable Not",
+                "Never"
+              ]
+            },
+            {
+              "type": "checkboxwithtext",
+              "name": "What did you like in your overall clinic experience?",
+              "isMandatory": false,
+              "dataList": [
+                "Appointment Scheduling",
+                "Clinic Reception",
+                "Doctor Consultation",
+                "Nursing Staff",
+                "Cleanliness",
+                "Others"
+              ],
+              "showWhenSelect": "Others",
+              "matrix" : 3
+            },
+            {
+              "type": "ratingbar",
+              "name": "Test Rating",
+              "isMandatory": false,
+              "maxRating": 5,
+              "rating": 0
+            },
+            {
+              "type": "textbox",
+              "inputType": "textboxbig",
+              "name": "Would you like to give any suggestions to improve your clinic experience?",
+              "isMandatory": false,
+              "length": 100
+            }
           ]
         },
         {
-          "type": "mixradiobutton",
-          "name": "Did the doctor listen to what you had to say?",
-          "isMandatory": false,
-          "dataList": [
-            "Yes, definitely",
-            "Yes, to some extent",
-            "Not really",
-            "Definitely not"
+          "pageIcon": "http://www.iconsdb.com/icons/preview/black/pages-1-xxl.png",
+          "pageName": "Undertaking",
+          "fields": [
+            {
+              "type": "radiobuttonwithtext",
+              "name": "How long was the wait time before you were seen by the doctor?",
+              "isMandatory": false,
+              "dataList": [
+                "Less than 15 minutes",
+                "Between 15 & 30 minutes",
+                "Between 30 & 60 minutes",
+                "Over an hour"
+              ],
+              "showWhenSelect": "Over an hour",
+              "hint": "Specify the wait time? Ex: 2 hours",
+              "inputType": "number",
+              "unit": "Hours"
+            },
+            {
+              "type": "radiobutton",
+              "name": "Was the doctor polite and considerate?",
+              "isMandatory": false,
+              "dataList": [
+                "More than expectation",
+                "Yes, definitely",
+                "Yes, to some extent",
+                "Not really",
+                "Definitely not"
+              ]
+            },
+            {
+              "type": "radiobuttonwithtext",
+              "name": "Did the doctor listen to what you had to say?",
+              "isMandatory": false,
+              "dataList": [
+                "Yes, definitely",
+                "Yes, to some extent",
+                "Not really",
+                "Definitely not",
+                "Others"
+              ],
+              "showWhenSelect": "Others"
+            },
+            {
+              "type": "radiobuttonwithtext",
+              "name": "Did the doctor give you enough opportunity to ask queries?",
+              "isMandatory": false,
+              "dataList": [
+                "Yes, definitely",
+                "Yes, to some extent",
+                "Not really",
+                "Definitely not",
+                "Others"
+              ],
+              "showWhenSelect": "Others"
+            },
+            {
+              "type": "radiobutton",
+              "name": "Did the doctor explain about your condition in a way you could understand?",
+              "isMandatory": false,
+              "dataList": [
+                "Yes, definitely",
+                "Yes, to some extent",
+                "Not really",
+                "Definitely not"
+              ]
+            },
+            {
+              "type": "radiobuttonwithtext",
+              "name": "Before examining you, did the doctor",
+              "isMandatory": false,
+              "dataList": [
+                "Ask your permission?",
+                "Respect your privacy?",
+                "Does not apply",
+                "Others"
+              ],
+              "showWhenSelect": "Others"
+            },
+            {
+              "type": "radiobuttonwithtext",
+              "name": "How would you rate the doctor’s bedside manners?",
+              "isMandatory": false,
+              "dataList": [
+                "Excellent",
+                "Good",
+                "Satisfactory",
+                "Unsatisfactory",
+                "Does not apply",
+                "Others"
+              ],
+              "showWhenSelect": "Others"
+            },
+            {
+              "type": "radiobutton",
+              "name": "By the end of the consultation, did you feel better able to manage / understand your condition?",
+              "isMandatory": false,
+              "dataList": [
+                "Yes, definitely",
+                "Yes, to some extent",
+                "Not really",
+                "Definitely not",
+                "Does not reply"
+              ]
+            },
+            {
+              "type": "radiobutton",
+              "name": "Would you recommend the doctor to other patients?",
+              "isMandatory": false,
+              "dataList": [
+                "Highly Recommend",
+                "Probably",
+                "Maybe",
+                "Probable Not",
+                "Never"
+              ]
+            },
+            {
+              "type": "checkboxwithtext",
+              "name": "What did you like in your overall clinic experience?",
+              "isMandatory": false,
+              "dataList": [
+                "Appointment Scheduling",
+                "Clinic Reception",
+                "Doctor Consultation",
+                "Nursing Staff",
+                "Cleanliness",
+                "Others"
+              ],
+              "showWhenSelect": "Others",
+              "matrix" : 3
+            },
+            {
+              "type": "ratingbar",
+              "name": "Test Rating",
+              "isMandatory": false,
+              "maxRating": 5,
+              "rating": 0
+            },
+            {
+              "type": "textbox",
+              "inputType": "textboxbig",
+              "name": "Would you like to give any suggestions to improve your clinic experience?",
+              "isMandatory": false,
+              "length": 100
+            }
           ]
-        },
-        {
-          "type": "mixradiobutton",
-          "name": "Did the doctor give you enough opportunity to ask queries?",
-          "isMandatory": false,
-          "dataList": [
-            "Yes, definitely",
-            "Yes, to some extent",
-            "Not really",
-            "Definitely not"
-          ]
-        },
-        {
-          "type": "radiobutton",
-          "name": "Did the doctor explain about your condition in a way you could understand?",
-          "isMandatory": false,
-          "dataList": [
-            "Yes, definitely",
-            "Yes, to some extent",
-            "Not really",
-            "Definitely not"
-          ]
-        },
-        {
-          "type": "mixradiobutton",
-          "name": "Before examining you, did the doctor",
-          "isMandatory": false,
-          "dataList": [
-            "Ask your permission?",
-            "Respect your privacy?",
-            "Does not apply"
-          ]
-        },
-        {
-          "type": "mixradiobutton",
-          "name": "How would you rate the doctor’s bedside manners?",
-          "isMandatory": false,
-          "dataList": [
-            "Excellent",
-            "Good",
-            "Satisfactory",
-            "Unsatisfactory",
-            "Does not apply"
-          ]
-        },
-        {
-          "type": "radiobutton",
-          "name": "By the end of the consultation, did you feel better able to manage / understand your condition?",
-          "isMandatory": false,
-          "dataList": [
-            "Yes, definitely",
-            "Yes, to some extent",
-            "Not really",
-            "Definitely not",
-            "Does not reply"
-          ]
-        },
-        {
-          "type": "radiobutton",
-          "name": "Would you recommend the doctor to other patients?",
-          "isMandatory": false,
-          "dataList": [
-            "Highly Recommend",
-            "Probably",
-            "Maybe",
-            "Probable Not",
-            "Never"
-          ]
-        },
-        {
-          "type": "mixcheckbox",
-          "name": "What did you like in your overall clinic experience?",
-          "isMandatory": false,
-          "dataList": [
-            "Appointment Scheduling",
-            "Clinic Reception",
-            "Doctor Consultation",
-            "Nursing Staff",
-            "Cleanliness",
-            "Others"
-          ],
-          "showWhenSelect": "Others"
-        },
-        {
-          "type": "ratingbar",
-          "name": "Test Rating",
-          "isMandatory": false,
-          "maxRating": 5,
-          "rating": 0
-        },
-        {
-          "type": "textbox",
-          "inputType": "textboxbig",
-          "name": "Would you like to give any suggestions to improve your clinic experience?",
-          "isMandatory": false,
-          "length": 100
         }
-      ]
+  ]
     }
   ]
 }

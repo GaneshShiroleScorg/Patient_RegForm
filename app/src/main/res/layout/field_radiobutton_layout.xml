@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal">
 
     <com.scorg.forms.customui.CustomTextView
@@ -33,14 +32,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:orientation="horizontal" />
-
-        <com.scorg.forms.customui.CustomEditText
-            android:id="@+id/otherTextBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:visibility="visible"
-            android:hint="@string/others"
-            android:visibility="gone" />
 
         <com.scorg.forms.customui.CustomTextView
             android:id="@+id/radioGroupError"

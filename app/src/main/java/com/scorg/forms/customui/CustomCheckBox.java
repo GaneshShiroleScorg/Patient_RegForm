@@ -23,6 +23,7 @@ public class CustomCheckBox extends AppCompatCheckBox {
     private void setCustomFont(Context ctx, AttributeSet attrs) {
         TypedArray a = ctx.obtainStyledAttributes(attrs, R.styleable.CustomTextView);
         String customFont = a.getString(R.styleable.CustomTextView_customFont);
+        setTextColor(getResources().getColor(R.color.text_color));
         setCustomFont(ctx, customFont == null ? ctx.getResources().getString(R.string.roboto_regular) : customFont);
         a.recycle();
     }

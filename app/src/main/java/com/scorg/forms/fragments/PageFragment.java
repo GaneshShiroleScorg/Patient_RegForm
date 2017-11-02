@@ -17,6 +17,7 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -30,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -79,91 +81,10 @@ public class PageFragment extends Fragment {
     private ImageView profilePhoto;
     private TextView editButton;
 
-    interface TYPE {
-        String TEXTBOX = "textbox";
-        String DROPDOWN = "dropdown";
-        String RADIOBUTTON = "radiobutton";
-        String CHECKBOX = "checkbox";
-        String RATINGBAR = "ratingbar";
-        String TEXTBOXGROUP = "textboxgroup";
-        String MIXRADIOBUTTON = "mixradiobutton";
-        String MIXCHECKBOX = "mixcheckbox";
-    }
-
-    interface INPUT_TYPE {
-        String NAME = "name";
-        String MOBILE = "mobile";
-        String DATE = "date";
-        String EMAIL = "email";
-        String PIN_CODE = "pincode";
-        String NUMBER = "number";
-        String TEXTBOX_BIG = "textboxbig";
-    }
-
-    /**
-     * The fragment argument representing the section number for this
-     * fragment.
-     */
-    private static final String PAGE_NUMBER = "section_number";
-    private static final String PAGE = "page";
-    private int pageNumber;
-    private int formNumber;
-    private Page page;
-
-    public PageFragment() {
-    }
-
-    /**
-     * Returns a new instance of this fragment for the given section
-     * number.
-     */
-    public static PageFragment newInstance(int formNumber, int pageNumber, Page page, boolean isEditable, String mReceivedFormName) {
-        PageFragment fragment = new PageFragment();
-        Bundle args = new Bundle();
-        args.putInt(FORM_NUMBER, formNumber);
-        args.putInt(PAGE_NUMBER, pageNumber);
-        args.putBoolean(IS_EDITABLE, isEditable);
-        args.putParcelable(PAGE, page);
-        args.putString(FORM_NAME, mReceivedFormName);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            page = getArguments().getParcelable(PAGE);
-            pageNumber = getArguments().getInt(PAGE_NUMBER);
-            formNumber = getArguments().getInt(FORM_NUMBER);
-            isEditable = getArguments().getBoolean(IS_EDITABLE);
-
-            Calendar c = Calendar.getInstance();
-            SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
-            mReceivedDate = df.format(c.getTime());
-
-            mReceivedFormName = getArguments().getString(FORM_NAME);
-        }
-    }
-
-    @SuppressWarnings("CheckResult")
-    @Override
-    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_pages, container, false);
-
-        mInflater = inflater;
-        mTitleTextView = rootView.findViewById(R.id.titleView);
-        mSectionsContainer = rootView.findViewById(R.id.sectionsContainer);
-
-        initializeDataViews();
-        return rootView;
-    }
-
     private void addField(final View fieldsContainer, final int sectionIndex, final ArrayList<Field> fields, final Field field, final int fieldsIndex, final LayoutInflater inflater, int indexToAddView) {
         switch (field.getType()) {
 
-            case TYPE.TEXTBOXGROUP: {
+            case TYPE.TEXTBOX_GROUP: {
                 // Added Extended Layout
                 final View fieldLayout = inflater.inflate(R.layout.field_autocomplete_textbox_layout, (LinearLayout) fieldsContainer, false);
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
@@ -172,6 +93,9 @@ public class PageFragment extends Fragment {
                 final AutoCompleteTextView textBox = fieldLayout.findViewById(R.id.editText);
                 textBox.setId(CommonMethods.generateViewId());
                 field.setFieldId(textBox.getId());
+
+                if (!field.getHint().equals(""))
+                    textBox.setHint(field.getHint());
 
                 final TextView editTextError = fieldLayout.findViewById(R.id.editTextError);
                 editTextError.setId(CommonMethods.generateViewId());
@@ -222,7 +146,7 @@ public class PageFragment extends Fragment {
                         editTextError.setText("");
                         textBox.setBackgroundResource(R.drawable.edittext_selector);
                         // set latest value
-                        field.setValue(String.valueOf(editable));
+                        field.setValue(String.valueOf(editable).trim());
                     }
                 });
 
@@ -271,6 +195,9 @@ public class PageFragment extends Fragment {
                 LinearLayout.LayoutParams textBoxParams = (LinearLayout.LayoutParams) textBox.getLayoutParams();
                 textBox.setId(CommonMethods.generateViewId());
                 textBox.setEnabled(isEditable);
+
+                if (!field.getHint().equals(""))
+                    textBox.setHint(field.getHint());
 
                 field.setFieldId(textBox.getId());
 
@@ -365,7 +292,7 @@ public class PageFragment extends Fragment {
                         editTextError.setText("");
                         textBox.setBackgroundResource(R.drawable.edittext_selector);
                         // set latest value
-                        field.setValue(String.valueOf(editable));
+                        field.setValue(String.valueOf(editable).trim());
                     }
                 });
 
@@ -407,6 +334,9 @@ public class PageFragment extends Fragment {
                 radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+
+                        CommonMethods.hideKeyboard(getContext());
+
                         RadioButton radioButton = group.findViewById(checkedId);
                         field.setValue(radioButton.getText().toString());
                         radioGroupError.setText("");
@@ -450,6 +380,7 @@ public class PageFragment extends Fragment {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
+                            CommonMethods.hideKeyboard(getContext());
                             checkBoxGroupError.setText("");
 
                             // set latest value
@@ -495,6 +426,15 @@ public class PageFragment extends Fragment {
 
                 dropDown.setEnabled(isEditable);
 
+                dropDown.setOnTouchListener(new View.OnTouchListener() {
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_UP) {
+                            CommonMethods.hideKeyboard(getContext());
+                        }
+                        return false;
+                    }
+                });
+
                 // set pre value
                 dropDown.setSelection(dataList.indexOf(field.getValue()));
 
@@ -521,7 +461,124 @@ public class PageFragment extends Fragment {
                 else ((LinearLayout) fieldsContainer).addView(fieldLayout);
                 break;
             }
+
+            case PageFragment.TYPE.RATINGBAR: {
+
+                View fieldLayout = inflater.inflate(R.layout.field_ratingbar_layout, (LinearLayout) fieldsContainer, false);
+                TextView labelView = fieldLayout.findViewById(R.id.labelView);
+                labelView.setText(field.isMandatory() ? "*" + field.getName() : field.getName());
+
+                // Add Rating Bar
+
+                RatingBar ratingBar = fieldLayout.findViewById(R.id.ratingBar);
+                ratingBar.setRating(field.getRating());
+                ratingBar.setMax(field.getMaxRating() * 2);
+                ratingBar.setNumStars(field.getMaxRating());
+
+                final EditText ratingReasonTextBox = fieldLayout.findViewById(R.id.ratingReasonTextBox);
+                if (!field.getHint().equals(""))
+                    ratingReasonTextBox.setHint(field.getHint());
+
+                ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+                    @Override
+                    public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                        field.setRating(rating);
+                        if (rating < 3f && rating != 0f)
+                            ratingReasonTextBox.setVisibility(View.VISIBLE);
+                        else ratingReasonTextBox.setVisibility(View.GONE);
+                    }
+                });
+
+                if (indexToAddView != -1)
+                    ((LinearLayout) fieldsContainer).addView(fieldLayout, indexToAddView);
+                else ((LinearLayout) fieldsContainer).addView(fieldLayout);
+                break;
+            }
         }
+    }
+
+    interface INPUT_TYPE {
+        String NAME = "name";
+        String MOBILE = "mobile";
+        String DATE = "date";
+        String EMAIL = "email";
+        String PIN_CODE = "pincode";
+        String NUMBER = "number";
+        String TEXTBOX_BIG = "textboxbig";
+    }
+
+    /**
+     * The fragment argument representing the section number for this
+     * fragment.
+     */
+    private static final String PAGE_NUMBER = "section_number";
+    private static final String PAGE = "page";
+    private int pageNumber;
+    private int formNumber;
+    private Page page;
+
+    public PageFragment() {
+    }
+
+    /**
+     * Returns a new instance of this fragment for the given section
+     * number.
+     */
+    public static PageFragment newInstance(int formNumber, int pageNumber, Page page, boolean isEditable, String mReceivedFormName) {
+        PageFragment fragment = new PageFragment();
+        Bundle args = new Bundle();
+        args.putInt(FORM_NUMBER, formNumber);
+        args.putInt(PAGE_NUMBER, pageNumber);
+        args.putBoolean(IS_EDITABLE, isEditable);
+        args.putParcelable(PAGE, page);
+        args.putString(FORM_NAME, mReceivedFormName);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            page = getArguments().getParcelable(PAGE);
+            pageNumber = getArguments().getInt(PAGE_NUMBER);
+            formNumber = getArguments().getInt(FORM_NUMBER);
+            isEditable = getArguments().getBoolean(IS_EDITABLE);
+
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+            mReceivedDate = df.format(c.getTime());
+
+            mReceivedFormName = getArguments().getString(FORM_NAME);
+        }
+    }
+
+    @SuppressWarnings("CheckResult")
+    @Override
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_pages, container, false);
+
+        mInflater = inflater;
+        mTitleTextView = rootView.findViewById(R.id.titleView);
+        mSectionsContainer = rootView.findViewById(R.id.sectionsContainer);
+
+        initializeDataViews();
+        return rootView;
+    }
+
+    interface TYPE {
+        String TEXTBOX = "textbox";
+        String DROPDOWN = "dropdown";
+        String RADIOBUTTON = "radiobutton";
+        String CHECKBOX = "checkbox";
+        String RATINGBAR = "ratingbar";
+
+        String TEXTBOX_GROUP = "textboxgroup";
+
+        String RADIOBUTTON_WITH_TEXT = "radiobuttonwithtext";
+        String CHECKBOX_WITH_TEXT = "checkboxwithtext";
+        String DROPDOWN_WITH_TEXT = "dropdownwithtext";
     }
 
     private void initializeDataViews() {

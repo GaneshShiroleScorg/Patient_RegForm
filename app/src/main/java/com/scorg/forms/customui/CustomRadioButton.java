@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.support.v7.widget.AppCompatRadioButton;
-import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 
 import com.scorg.forms.R;
@@ -23,6 +22,7 @@ public class CustomRadioButton extends AppCompatRadioButton {
     private void setCustomFont(Context ctx, AttributeSet attrs) {
         TypedArray a = ctx.obtainStyledAttributes(attrs, R.styleable.CustomTextView);
         String customFont = a.getString(R.styleable.CustomTextView_customFont);
+        setTextColor(getResources().getColor(R.color.text_color));
         setCustomFont(ctx, customFont == null ? ctx.getResources().getString(R.string.roboto_regular) : customFont);
         a.recycle();
     }

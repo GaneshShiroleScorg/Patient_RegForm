@@ -51,13 +51,25 @@ public class Field implements Parcelable, Cloneable {
     @Expose
     private float rating;
 
-    @SerializedName("others")
+    @SerializedName("textValue")
     @Expose
-    private String others;
+    private String textValue;
 
     @SerializedName("showWhenSelect")
     @Expose
     private String showWhenSelect;
+
+    @SerializedName("hint")
+    @Expose
+    private String hint = "";
+
+    @SerializedName("unit")
+    @Expose
+    private String unit = "";
+
+    @SerializedName("matrix")
+    @Expose
+    private int matrix;
 
     private int fieldId;
     private int errorViewId;
@@ -92,8 +104,12 @@ public class Field implements Parcelable, Cloneable {
         this.isIncludeInShortDescription = ((boolean) in.readValue((boolean.class.getClassLoader())));
         this.maxRating = ((int) in.readValue((int.class.getClassLoader())));
         this.rating = ((float) in.readValue((float.class.getClassLoader())));
-        this.others = ((String) in.readValue((String.class.getClassLoader())));
+        this.textValue = ((String) in.readValue((String.class.getClassLoader())));
         this.showWhenSelect = ((String) in.readValue((String.class.getClassLoader())));
+        this.hint = ((String) in.readValue((String.class.getClassLoader())));
+        this.unit = ((String) in.readValue((String.class.getClassLoader())));
+        this.matrix = ((int) in.readValue((int.class.getClassLoader())));
+
         this.fieldId = ((int) in.readValue((int.class.getClassLoader())));
         this.errorViewId = ((int) in.readValue((int.class.getClassLoader())));
     }
@@ -205,12 +221,12 @@ public class Field implements Parcelable, Cloneable {
         this.rating = rating;
     }
 
-    public String getOthers() {
-        return others;
+    public String getTextValue() {
+        return textValue;
     }
 
-    public void setOthers(String others) {
-        this.others = others;
+    public void setTextValue(String others) {
+        this.textValue = others;
     }
 
     public String getShowWhenSelect() {
@@ -219,6 +235,30 @@ public class Field implements Parcelable, Cloneable {
 
     public void setShowWhenSelect(String showWhenSelect) {
         this.showWhenSelect = showWhenSelect;
+    }
+
+    public String getHint() {
+        return hint;
+    }
+
+    public void setHint(String hint) {
+        this.hint = hint;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public int getMatrix() {
+        return matrix;
+    }
+
+    public void setMatrix(int matrix) {
+        this.matrix = matrix;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 
     public int getFieldId() {
@@ -251,8 +291,11 @@ public class Field implements Parcelable, Cloneable {
         dest.writeValue(isIncludeInShortDescription);
         dest.writeValue(maxRating);
         dest.writeValue(rating);
-        dest.writeValue(others);
+        dest.writeValue(textValue);
         dest.writeValue(showWhenSelect);
+        dest.writeValue(hint);
+        dest.writeValue(unit);
+        dest.writeValue(matrix);
         dest.writeValue(fieldId);
         dest.writeValue(errorViewId);
     }

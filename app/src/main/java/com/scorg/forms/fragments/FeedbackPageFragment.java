@@ -1,7 +1,6 @@
 package com.scorg.forms.fragments;
 
 
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
@@ -11,6 +10,7 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -25,14 +25,16 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.philliphsu.bottomsheetpickers.date.DatePickerDialog;
 import com.scorg.forms.R;
-import com.scorg.forms.customui.FlowLayout;
-import com.scorg.forms.customui.FlowRadioGroup;
 import com.scorg.forms.models.Field;
+import com.scorg.forms.models.Page;
 import com.scorg.forms.util.CommonMethods;
 
 import java.util.ArrayList;
@@ -40,31 +42,26 @@ import java.util.Calendar;
 
 import static com.scorg.forms.fragments.FormFragment.FORM_NAME;
 import static com.scorg.forms.fragments.FormFragment.FORM_NUMBER;
-import static com.scorg.forms.fragments.FormFragment.IS_NEW;
 
-public class FeedbackFragment extends Fragment {
+public class FeedbackPageFragment extends Fragment {
 
     private static final String FIELDS = "fields";
-    private boolean isNew;
     private ArrayList<Field> fields;
     private int formNumber;
     private String mReceivedFormName;
     private boolean isEditable = true;
     private DatePickerDialog datePickerDialog;
 
-    public FeedbackFragment() {
+    public FeedbackPageFragment() {
         // Required empty public constructor
     }
 
-    public static FeedbackFragment newInstance(int formNumber, ArrayList<Field> fields, String formName/*, boolean isEditable*/, boolean isNew, String date) {
-        FeedbackFragment fragment = new FeedbackFragment();
+    public static FeedbackPageFragment newInstance(int formNumber, int position, Page page, boolean isEditable, String mReceivedFormName) {
+        FeedbackPageFragment fragment = new FeedbackPageFragment();
 
         Bundle args = new Bundle();
-        args.putParcelableArrayList(FIELDS, fields);
+        args.putParcelableArrayList(FIELDS, page.getFields());
         args.putInt(FORM_NUMBER, formNumber);
-//        args.putBoolean(IS_EDITABLE, isEditable);
-        args.putBoolean(IS_NEW, isNew);
-        args.putString(FORM_NAME, formName);
         fragment.setArguments(args);
 
         return fragment;
@@ -74,8 +71,6 @@ public class FeedbackFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-//            isEditable = getArguments().getBoolean(IS_EDITABLE);
-            isNew = getArguments().getBoolean(IS_NEW);
             fields = getArguments().getParcelableArrayList(FIELDS);
             formNumber = getArguments().getInt(FORM_NUMBER);
             mReceivedFormName = getArguments().getString(FORM_NAME);
@@ -86,12 +81,8 @@ public class FeedbackFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_feedback, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_feedback_page, container, false);
         LinearLayout fieldsContainer = rootView.findViewById(R.id.fieldsContainer);
-
-        TextView mTitleTextView = rootView.findViewById(R.id.titleTextView);
-        mTitleTextView.setPaintFlags(mTitleTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        mTitleTextView.setText(getString(R.string.feedback));
 
         for (int fieldIndex = 0; fieldIndex < fields.size(); fieldIndex++) {
             addField(fieldsContainer, fields, fields.get(fieldIndex), fieldIndex, inflater, -1);
@@ -106,9 +97,9 @@ public class FeedbackFragment extends Fragment {
 
         switch (field.getType()) {
 
-            case PageFragment.TYPE.TEXTBOXGROUP: {
+            case PageFragment.TYPE.TEXTBOX_GROUP: {
                 // Added Extended Layout
-                final View fieldLayout = inflater.inflate(R.layout.field_autocomplete_textbox_layout, (LinearLayout) fieldsContainer, false);
+                final View fieldLayout = inflater.inflate(R.layout.feedback_autocomplete_textbox_layout, (LinearLayout) fieldsContainer, false);
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
                 labelView.setText(questionNo + (field.isMandatory() ? "*" + field.getName() : field.getName()));
 
@@ -165,7 +156,7 @@ public class FeedbackFragment extends Fragment {
                         editTextError.setText("");
                         textBox.setBackgroundResource(R.drawable.edittext_selector);
                         // set latest value
-                        field.setValue(String.valueOf(editable));
+                        field.setValue(String.valueOf(editable).trim());
                     }
                 });
 
@@ -204,14 +195,13 @@ public class FeedbackFragment extends Fragment {
             }
 
             case PageFragment.TYPE.TEXTBOX: {
-                View fieldLayout = inflater.inflate(R.layout.field_textbox_layout, (LinearLayout) fieldsContainer, false);
+                View fieldLayout = inflater.inflate(R.layout.feedback_textbox_layout, (LinearLayout) fieldsContainer, false);
 
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
 
                 labelView.setText(questionNo + (field.isMandatory() ? "*" + field.getName() : field.getName()));
 
                 final EditText textBox = fieldLayout.findViewById(R.id.editText);
-                LinearLayout.LayoutParams textBoxParams = (LinearLayout.LayoutParams) textBox.getLayoutParams();
                 textBox.setId(CommonMethods.generateViewId());
                 textBox.setEnabled(isEditable);
 
@@ -230,69 +220,7 @@ public class FeedbackFragment extends Fragment {
                     textBox.setFilters(fArray);
                 }
 
-                switch (field.getInputType()) {
-                    case PageFragment.INPUT_TYPE.EMAIL:
-                        textBox.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-                        break;
-                    case PageFragment.INPUT_TYPE.DATE:
-                        textBox.setCursorVisible(false);
-                        textBoxParams.width = getResources().getDimensionPixelSize(R.dimen.date_size);
-
-                        textBox.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                            @Override
-                            public void onFocusChange(View v, boolean hasFocus) {
-                                if (hasFocus) {
-                                    textBox.clearFocus();
-                                    Calendar now = Calendar.getInstance();
-                                    // As of version 2.3.0, `BottomSheetDatePickerDialog` is deprecated.
-                                    datePickerDialog = DatePickerDialog.newInstance(
-                                            null,
-                                            now.get(Calendar.YEAR),
-                                            now.get(Calendar.MONTH),
-                                            now.get(Calendar.DAY_OF_MONTH));
-                                    datePickerDialog.setAccentColor(getResources().getColor(R.color.colorPrimary));
-                                    datePickerDialog.setMaxDate(Calendar.getInstance());
-                                    if (!datePickerDialog.isAdded()) {
-                                        datePickerDialog.show(getChildFragmentManager(), getResources().getString(R.string.select_date));
-                                        datePickerDialog.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
-                                            @Override
-                                            public void onDateSet(DatePickerDialog dialog, int year, int monthOfYear, int dayOfMonth) {
-                                                if (field.getName().equalsIgnoreCase("age") || field.getName().toLowerCase().contains("age"))
-                                                    textBox.setText(CommonMethods.calculateAge((monthOfYear + 1) + "-" + dayOfMonth + "-" + year, "MM-dd-yyyy"));
-                                                else
-                                                    textBox.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
-                                            }
-                                        });
-                                    }
-                                }
-                            }
-                        });
-
-                        break;
-                    case PageFragment.INPUT_TYPE.MOBILE:
-                        textBoxParams.width = getResources().getDimensionPixelSize(R.dimen.mobile_size);
-                        textBox.setInputType(InputType.TYPE_CLASS_PHONE);
-                        break;
-                    case PageFragment.INPUT_TYPE.NAME:
-                        textBox.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
-                        break;
-                    case PageFragment.INPUT_TYPE.PIN_CODE:
-                        textBoxParams.width = getResources().getDimensionPixelSize(R.dimen.pincode_size);
-                        textBox.setInputType(InputType.TYPE_CLASS_NUMBER);
-                        break;
-                    case PageFragment.INPUT_TYPE.TEXTBOX_BIG:
-                        textBox.setSingleLine(false);
-                        textBox.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
-                        textBox.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-                        textBox.setLines(3);
-                        textBox.setMaxLines(10);
-                        break;
-                    case PageFragment.INPUT_TYPE.NUMBER:
-                        textBox.setGravity(Gravity.END);
-                        textBoxParams.width = getResources().getDimensionPixelSize(R.dimen.number_size);
-                        textBox.setInputType(InputType.TYPE_CLASS_NUMBER);
-                        break;
-                }
+                setInputType(field, textBox);
 
                 textBox.addTextChangedListener(new TextWatcher() {
                     @Override
@@ -308,7 +236,7 @@ public class FeedbackFragment extends Fragment {
                         editTextError.setText("");
                         textBox.setBackgroundResource(R.drawable.edittext_selector);
                         // set latest value
-                        field.setValue(String.valueOf(editable));
+                        field.setValue(String.valueOf(editable).trim());
                     }
                 });
 
@@ -323,7 +251,7 @@ public class FeedbackFragment extends Fragment {
                 break;
             }
 
-            case PageFragment.TYPE.MIXRADIOBUTTON: {
+            case PageFragment.TYPE.RADIOBUTTON_WITH_TEXT: {
                 addRadioButton(questionNo, fieldsContainer, field, inflater, indexToAddView, /*mixed_group->*/true);
                 break;
             }
@@ -333,65 +261,24 @@ public class FeedbackFragment extends Fragment {
                 break;
             }
 
-            case PageFragment.TYPE.MIXCHECKBOX: {
+            case PageFragment.TYPE.CHECKBOX_WITH_TEXT: {
                 addCheckbox(questionNo, fieldsContainer, field, inflater, indexToAddView, /*mixed_group->*/true);
                 break;
             }
 
             case PageFragment.TYPE.DROPDOWN: {
-                View fieldLayout = inflater.inflate(R.layout.field_dropdown_layout, (LinearLayout) fieldsContainer, false);
-                TextView labelView = fieldLayout.findViewById(R.id.labelView);
-                labelView.setText(questionNo + (field.isMandatory() ? "*" + field.getName() : field.getName()));
+                addDropDown(questionNo, fieldsContainer, field, inflater, indexToAddView, /*mixed_group->*/false);
+                break;
+            }
 
-                final Spinner dropDown = fieldLayout.findViewById(R.id.dropDown);
-                dropDown.setId(CommonMethods.generateViewId());
-
-                field.setFieldId(dropDown.getId());
-
-                final TextView dropDownError = fieldLayout.findViewById(R.id.dropDownError);
-                dropDownError.setId(CommonMethods.generateViewId());
-                field.setErrorViewId(dropDownError.getId());
-
-                final ArrayList<String> dataList = field.getDataList();
-                if (dataList.size() > 0)
-                    if (!dataList.get(0).equals("Select"))
-                        dataList.add(0, "Select");
-
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(dropDown.getContext(), R.layout.dropdown_item, dataList);
-                dropDown.setAdapter(adapter);
-
-                dropDown.setEnabled(isEditable);
-
-                // set pre value
-                dropDown.setSelection(dataList.indexOf(field.getValue()));
-
-                dropDown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                        if (position != 0) {
-                            // set latest value
-                            field.setValue(dataList.get(position));
-                            dropDownError.setText("");
-                            dropDown.setBackgroundResource(R.drawable.dropdown_selector);
-
-                        } else field.setValue("");
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-                    }
-                });
-
-                if (indexToAddView != -1)
-                    ((LinearLayout) fieldsContainer).addView(fieldLayout, indexToAddView);
-                else ((LinearLayout) fieldsContainer).addView(fieldLayout);
+            case PageFragment.TYPE.DROPDOWN_WITH_TEXT: {
+                addDropDown(questionNo, fieldsContainer, field, inflater, indexToAddView, /*mixed_group->*/true);
                 break;
             }
 
             case PageFragment.TYPE.RATINGBAR: {
 
-                View fieldLayout = inflater.inflate(R.layout.field_ratingbar_layout, (LinearLayout) fieldsContainer, false);
+                View fieldLayout = inflater.inflate(R.layout.feedback_ratingbar_layout, (LinearLayout) fieldsContainer, false);
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
                 labelView.setText(questionNo + (field.isMandatory() ? "*" + field.getName() : field.getName()));
 
@@ -403,6 +290,9 @@ public class FeedbackFragment extends Fragment {
                 ratingBar.setNumStars(field.getMaxRating());
 
                 final EditText ratingReasonTextBox = fieldLayout.findViewById(R.id.ratingReasonTextBox);
+
+                if (!field.getHint().equals(""))
+                    ratingReasonTextBox.setHint(field.getHint());
 
                 ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
                     @Override
@@ -422,15 +312,199 @@ public class FeedbackFragment extends Fragment {
         }
     }
 
-    private void addCheckbox(String questionNo, View fieldsContainer, final Field field, LayoutInflater inflater, int indexToAddView, boolean isMixed) {
-        View fieldLayout = inflater.inflate(R.layout.field_checkbox_layout, (LinearLayout) fieldsContainer, false);
+    private void addDropDown(String questionNo, View fieldsContainer, final Field field, LayoutInflater inflater, int indexToAddView, boolean isMixed) {
+
+        View fieldLayout = inflater.inflate(R.layout.feedback_dropdown_layout, (LinearLayout) fieldsContainer, false);
         TextView labelView = fieldLayout.findViewById(R.id.labelView);
         labelView.setText(questionNo + (field.isMandatory() ? "*" + field.getName() : field.getName()));
 
-        FlowLayout checkBoxGroup = fieldLayout.findViewById(R.id.checkBoxGroup);
+        final Spinner dropDown = fieldLayout.findViewById(R.id.dropDown);
+        dropDown.setId(CommonMethods.generateViewId());
+
+        field.setFieldId(dropDown.getId());
+
+        final EditText otherTextBox = fieldLayout.findViewById(R.id.otherTextBox);
+        final TextView unitTextView = fieldLayout.findViewById(R.id.unitTextView);
+        if (!field.getUnit().equals(""))
+            unitTextView.setText(field.getUnit());
+        final LinearLayout otherTextBoxParent = fieldLayout.findViewById(R.id.otherTextBoxParent);
+
+        final TextView dropDownError = fieldLayout.findViewById(R.id.dropDownError);
+        dropDownError.setId(CommonMethods.generateViewId());
+        field.setErrorViewId(dropDownError.getId());
+
+        boolean isOthersThere = false;
+
+        final ArrayList<String> dataList = field.getDataList();
+        if (dataList.size() > 0)
+            if (!dataList.get(0).equals("Select"))
+                dataList.add(0, "Select");
+
+        if (dataList.contains(field.getShowWhenSelect()))
+            isOthersThere = true;
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(dropDown.getContext(), R.layout.dropdown_item, dataList);
+        dropDown.setAdapter(adapter);
+
+        dropDown.setEnabled(isEditable);
+
+        // set pre value
+        dropDown.setSelection(dataList.indexOf(field.getValue()));
+
+        dropDown.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    CommonMethods.hideKeyboard(getContext());
+                }
+                return false;
+            }
+        });
+
+        final boolean finalIsOthersThere = isOthersThere;
+        dropDown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                if (position != 0) {
+
+                    if (finalIsOthersThere) {
+                        if (dataList.get(position).equalsIgnoreCase(field.getShowWhenSelect()))
+                            otherTextBoxParent.setVisibility(View.VISIBLE);
+                        else {
+                            otherTextBox.setText("");
+                            otherTextBoxParent.setVisibility(View.GONE);
+                        }
+                    }
+
+                    // set latest value
+                    field.setValue(dataList.get(position));
+                    dropDownError.setText("");
+                    dropDown.setBackgroundResource(R.drawable.dropdown_selector);
+
+                } else field.setValue("");
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        // Add Extra edit text
+
+        if (isMixed) {
+
+            if (isOthersThere)
+                otherTextBoxParent.setVisibility(View.GONE);
+            else otherTextBoxParent.setVisibility(View.VISIBLE);
+
+            if (!field.getHint().equals(""))
+                otherTextBox.setHint(field.getHint());
+            setInputType(field, otherTextBox);
+            otherTextBox.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    field.setTextValue(String.valueOf(s));
+                }
+            });
+        }
+
+        if (indexToAddView != -1)
+            ((LinearLayout) fieldsContainer).addView(fieldLayout, indexToAddView);
+        else ((LinearLayout) fieldsContainer).addView(fieldLayout);
+    }
+
+    private void setInputType(final Field field, final EditText textBox) {
+
+//        LinearLayout.LayoutParams textBoxParams = (LinearLayout.LayoutParams) textBox.getLayoutParams();
+
+        switch (field.getInputType()) {
+            case PageFragment.INPUT_TYPE.EMAIL:
+                textBox.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                break;
+            case PageFragment.INPUT_TYPE.DATE:
+                textBox.setCursorVisible(false);
+//                textBoxParams.width = getResources().getDimensionPixelSize(R.dimen.date_size);
+
+                textBox.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View v, boolean hasFocus) {
+                        if (hasFocus) {
+                            textBox.clearFocus();
+                            Calendar now = Calendar.getInstance();
+                            // As of version 2.3.0, `BottomSheetDatePickerDialog` is deprecated.
+                            datePickerDialog = DatePickerDialog.newInstance(
+                                    null,
+                                    now.get(Calendar.YEAR),
+                                    now.get(Calendar.MONTH),
+                                    now.get(Calendar.DAY_OF_MONTH));
+                            datePickerDialog.setAccentColor(getResources().getColor(R.color.colorPrimary));
+                            datePickerDialog.setMaxDate(Calendar.getInstance());
+                            if (!datePickerDialog.isAdded()) {
+                                datePickerDialog.show(getChildFragmentManager(), getResources().getString(R.string.select_date));
+                                datePickerDialog.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
+                                    @Override
+                                    public void onDateSet(DatePickerDialog dialog, int year, int monthOfYear, int dayOfMonth) {
+                                        if (field.getName().equalsIgnoreCase("age") || field.getName().toLowerCase().contains("age"))
+                                            textBox.setText(CommonMethods.calculateAge((monthOfYear + 1) + "-" + dayOfMonth + "-" + year, "MM-dd-yyyy"));
+                                        else
+                                            textBox.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+
+                break;
+            case PageFragment.INPUT_TYPE.MOBILE:
+//                textBoxParams.width = getResources().getDimensionPixelSize(R.dimen.mobile_size);
+                textBox.setInputType(InputType.TYPE_CLASS_PHONE);
+                break;
+            case PageFragment.INPUT_TYPE.NAME:
+                textBox.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
+                break;
+            case PageFragment.INPUT_TYPE.PIN_CODE:
+//                textBoxParams.width = getResources().getDimensionPixelSize(R.dimen.pincode_size);
+                textBox.setInputType(InputType.TYPE_CLASS_NUMBER);
+                break;
+            case PageFragment.INPUT_TYPE.TEXTBOX_BIG:
+                textBox.setSingleLine(false);
+                textBox.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+                textBox.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                textBox.setLines(6);
+                textBox.setGravity(Gravity.TOP);
+                textBox.setMaxLines(10);
+                break;
+            case PageFragment.INPUT_TYPE.NUMBER:
+                textBox.setSingleLine(false);
+//                textBox.setGravity(Gravity.END);
+//                textBoxParams.width = getResources().getDimensionPixelSize(R.dimen.number_size);
+                textBox.setInputType(InputType.TYPE_CLASS_NUMBER);
+                break;
+        }
+    }
+
+    private void addCheckbox(String questionNo, View fieldsContainer, final Field field, LayoutInflater inflater, int indexToAddView, boolean isMixed) {
+        View fieldLayout = inflater.inflate(R.layout.feedback_checkbox_layout, (LinearLayout) fieldsContainer, false);
+        TextView labelView = fieldLayout.findViewById(R.id.labelView);
+        labelView.setText(questionNo + (field.isMandatory() ? "*" + field.getName() : field.getName()));
+
+        TableLayout checkBoxGroup = fieldLayout.findViewById(R.id.checkBoxGroup);
         checkBoxGroup.setId(CommonMethods.generateViewId());
 
         final EditText otherTextBox = fieldLayout.findViewById(R.id.otherTextBox);
+        final TextView unitTextView = fieldLayout.findViewById(R.id.unitTextView);
+        if (!field.getUnit().equals(""))
+            unitTextView.setText(field.getUnit());
+        final LinearLayout otherTextBoxParent = fieldLayout.findViewById(R.id.otherTextBoxParent);
 
         final TextView checkBoxGroupError = fieldLayout.findViewById(R.id.checkBoxGroupError);
         checkBoxGroupError.setId(CommonMethods.generateViewId());
@@ -441,6 +515,8 @@ public class FeedbackFragment extends Fragment {
 
         boolean isOthersThere = false;
 
+        int matrix = field.getMatrix() == 0 ? 2 : field.getMatrix();
+
         for (int dataIndex = 0; dataIndex < dataList.size(); dataIndex++) {
             String data = dataList.get(dataIndex);
 
@@ -448,6 +524,11 @@ public class FeedbackFragment extends Fragment {
                 isOthersThere = true;
 
             final CheckBox checkBox = (CheckBox) inflater.inflate(R.layout.checkbox, checkBoxGroup, false);
+            checkBox.setLayoutParams(new TableRow.LayoutParams(
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    TableRow.LayoutParams.WRAP_CONTENT
+            ));
+            checkBox.setId(CommonMethods.generateViewId());
 
             checkBox.setEnabled(isEditable);
 
@@ -456,21 +537,22 @@ public class FeedbackFragment extends Fragment {
                 if (value.equals(data))
                     checkBox.setChecked(true);
 
-            checkBox.setId(CommonMethods.generateViewId());
             checkBox.setText(data);
             final boolean finalIsOthersThere = isOthersThere;
             checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
+                    CommonMethods.hideKeyboard(getContext());
+
                     String valueText = checkBox.getText().toString();
 
                     if (finalIsOthersThere) {
                         if (valueText.equalsIgnoreCase(field.getShowWhenSelect()) && isChecked)
-                            otherTextBox.setVisibility(View.VISIBLE);
+                            otherTextBoxParent.setVisibility(View.VISIBLE);
                         else if (valueText.equalsIgnoreCase(field.getShowWhenSelect()) && !isChecked) {
                             otherTextBox.setText("");
-                            otherTextBox.setVisibility(View.GONE);
+                            otherTextBoxParent.setVisibility(View.GONE);
                         }
                     }
 
@@ -485,18 +567,32 @@ public class FeedbackFragment extends Fragment {
                     }
                 }
             });
-            checkBoxGroup.addView(checkBox);
+
+            if (dataIndex % matrix == 0) {
+
+                TableRow tableRow = new TableRow(getContext());
+                tableRow.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
+                        TableLayout.LayoutParams.WRAP_CONTENT));
+
+                tableRow.addView(checkBox);
+                checkBoxGroup.addView(tableRow);
+            } else {
+                TableRow tableRow = (TableRow) checkBoxGroup.getChildAt(checkBoxGroup.getChildCount() - 1);
+                tableRow.addView(checkBox);
+            }
         }
 
         // Add Extra edit text
 
         if (isMixed) {
 
-            if (isOthersThere) {
-                otherTextBox.setHint("Would you like to specify the " + field.getShowWhenSelect().toLowerCase() + "?");
-                otherTextBox.setVisibility(View.GONE);
-            } else otherTextBox.setVisibility(View.VISIBLE);
+            if (isOthersThere)
+                otherTextBoxParent.setVisibility(View.GONE);
+            else otherTextBoxParent.setVisibility(View.VISIBLE);
 
+            if (!field.getHint().equals(""))
+                otherTextBox.setHint(field.getHint());
+            setInputType(field, otherTextBox);
             otherTextBox.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -508,7 +604,7 @@ public class FeedbackFragment extends Fragment {
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    field.setOthers(String.valueOf(s));
+                    field.setTextValue(String.valueOf(s));
                 }
             });
         }
@@ -521,14 +617,18 @@ public class FeedbackFragment extends Fragment {
     // Add Radio Button
 
     private void addRadioButton(String questionNo, final View fieldsContainer, final Field field, final LayoutInflater inflater, int indexToAddView, boolean isMixed) {
-        View fieldLayout = inflater.inflate(R.layout.field_radiobutton_layout, (LinearLayout) fieldsContainer, false);
+        View fieldLayout = inflater.inflate(R.layout.feedback_radiobutton_layout, (LinearLayout) fieldsContainer, false);
         TextView labelView = fieldLayout.findViewById(R.id.labelView);
         labelView.setText(questionNo + (field.isMandatory() ? "*" + field.getName() : field.getName()));
 
-        final FlowRadioGroup radioGroup = fieldLayout.findViewById(R.id.radioGroup);
+        final RadioGroup radioGroup = fieldLayout.findViewById(R.id.radioGroup);
         radioGroup.setId(CommonMethods.generateViewId());
 
         final EditText otherTextBox = fieldLayout.findViewById(R.id.otherTextBox);
+        final TextView unitTextView = fieldLayout.findViewById(R.id.unitTextView);
+        if (!field.getUnit().equals(""))
+            unitTextView.setText(field.getUnit());
+        final LinearLayout otherTextBoxParent = fieldLayout.findViewById(R.id.otherTextBoxParent);
 
         final TextView radioGroupError = fieldLayout.findViewById(R.id.radioGroupError);
         radioGroupError.setId(CommonMethods.generateViewId());
@@ -562,14 +662,16 @@ public class FeedbackFragment extends Fragment {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
 
+                CommonMethods.hideKeyboard(getContext());
+
                 String valueText = ((RadioButton) group.findViewById(checkedId)).getText().toString();
 
                 if (finalIsOthersThere) {
                     if (valueText.equalsIgnoreCase(field.getShowWhenSelect()))
-                        otherTextBox.setVisibility(View.VISIBLE);
+                        otherTextBoxParent.setVisibility(View.VISIBLE);
                     else {
                         otherTextBox.setText("");
-                        otherTextBox.setVisibility(View.GONE);
+                        otherTextBoxParent.setVisibility(View.GONE);
                     }
                 }
 
@@ -582,10 +684,13 @@ public class FeedbackFragment extends Fragment {
 
         if (isMixed) {
 
-            if (isOthersThere) {
-                otherTextBox.setHint("Would you like to specify the " + field.getShowWhenSelect().toLowerCase() + "?");
-                otherTextBox.setVisibility(View.GONE);
-            } else otherTextBox.setVisibility(View.VISIBLE);
+            if (isOthersThere)
+                otherTextBoxParent.setVisibility(View.GONE);
+            else otherTextBoxParent.setVisibility(View.VISIBLE);
+
+            if (!field.getHint().equals(""))
+                otherTextBox.setHint(field.getHint());
+            setInputType(field, otherTextBox);
 
             otherTextBox.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -598,7 +703,7 @@ public class FeedbackFragment extends Fragment {
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    field.setOthers(String.valueOf(s));
+                    field.setTextValue(String.valueOf(s));
                 }
             });
         }
@@ -607,5 +712,4 @@ public class FeedbackFragment extends Fragment {
             ((LinearLayout) fieldsContainer).addView(fieldLayout, indexToAddView);
         else ((LinearLayout) fieldsContainer).addView(fieldLayout);
     }
-
 }

@@ -7,25 +7,20 @@
     android:orientation="vertical"
     tools:context="com.scorg.forms.fragments.NewRegistrationFragment">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <LinearLayout
+        <android.support.v4.widget.Space
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp0"
-            android:layout_weight="1"></LinearLayout>
+            android:layout_weight="1"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <LinearLayout
+            <android.support.v4.widget.Space
                 android:layout_width="@dimen/dp0"
                 android:layout_height="match_parent"
-                android:layout_weight="1"></LinearLayout>
+                android:layout_weight="1"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -58,22 +53,6 @@
                         android:textSize="@dimen/section_title_text_size"
                         app:customFont="@string/roboto_medium" />
 
-                    <!--     NOT USING CURRENTLY : START -->
-                    <com.scorg.forms.customui.CustomTextView
-                        android:id="@+id/mobileTextLabelView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/dp0"
-                        android:layout_gravity="center"
-                        android:layout_marginBottom="@dimen/dp10"
-                        android:layout_marginLeft="@dimen/view_margin"
-                        android:layout_marginStart="@dimen/view_margin"
-                        android:layout_weight="1"
-                        android:padding="@dimen/view_margin"
-                        android:textSize="22sp"
-                        android:visibility="gone"
-                        app:customFont="@string/roboto_medium" />
-                    <!--     NOT USING CURRENTLY : END -->
-
                     <com.scorg.forms.customui.CustomEditText
                         android:id="@+id/mobileText"
                         android:layout_width="match_parent"
@@ -100,49 +79,19 @@
                         android:textColor="@android:color/white"
                         app:srcCompat="@drawable/ic_navigate_next_24dp" />
 
-                    <LinearLayout
-                        android:id="@+id/newRegistrationLayout"
-                        android:layout_width="130dp"
-                        android:layout_height="120dp"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/dp50"
-                        android:background="@drawable/button_register"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:visibility="invisible">
-
-                        <ImageView
-                            android:id="@+id/formIcon"
-                            android:layout_width="@dimen/icon_size"
-                            android:layout_height="@dimen/icon_size"
-                            android:layout_gravity="center_horizontal"
-                            android:src="@drawable/registration_icon" />
-
-                        <com.scorg.forms.customui.CustomButton
-                            android:id="@+id/newRegistrationButton"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/button_register"
-                            android:padding="@dimen/dp5"
-                            android:text="@string/new_registration"
-                            android:textColor="@android:color/white"
-                            android:visibility="visible" />
-
-                    </LinearLayout>
                 </LinearLayout>
 
             </LinearLayout>
 
-            <LinearLayout
+            <android.support.v4.widget.Space
                 android:layout_width="@dimen/dp0"
                 android:layout_height="match_parent"
-                android:layout_weight="1"></LinearLayout>
+                android:layout_weight="1"/>
         </LinearLayout>
 
-        <LinearLayout
+        <android.support.v4.widget.Space
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp0"
-            android:layout_weight="1"></LinearLayout>
-    </LinearLayout>
+            android:layout_weight="1.4"/>
 
-</LinearLayout>
+    </LinearLayout>

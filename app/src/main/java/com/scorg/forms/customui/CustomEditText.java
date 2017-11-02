@@ -19,7 +19,7 @@ public class CustomEditText extends AppCompatEditText {
         setCustomFont(context, attrs);
         setBackgroundResource(R.drawable.edittext_selector);
         int padding = context.getResources().getDimensionPixelSize(R.dimen.textbox_padding);
-        setPadding(padding, 0, padding, 0);
+        setPadding(padding, padding, padding, padding);
     }
 
     private void setCustomFont(Context ctx, AttributeSet attrs) {

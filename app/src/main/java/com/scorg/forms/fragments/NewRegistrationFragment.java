@@ -30,11 +30,8 @@ public class NewRegistrationFragment extends Fragment {
 
     private String registeredMobile = "8208127880";
     private EditText mobileText;
-    private TextView mobileTextLabelView;
     private Button getInfoButton;
-    private Button newRegistration;
     private boolean isNewRegistrationVisible = false;
-    private LinearLayout mNewRegistrationLayout;
 
     public NewRegistrationFragment() {
         // Required empty public constructor
@@ -58,28 +55,6 @@ public class NewRegistrationFragment extends Fragment {
 
         mobileText = (EditText) rootView.findViewById(R.id.mobileText);
         getInfoButton = (Button) rootView.findViewById(R.id.getInfoButton);
-        newRegistration = (Button) rootView.findViewById(R.id.newRegistrationButton);
-        mNewRegistrationLayout = rootView.findViewById(R.id.newRegistrationLayout);
-
-        mobileTextLabelView = (TextView) rootView.findViewById(R.id.mobileTextLabelView);
-
-        mNewRegistrationLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String mobile = mobileText.getText().toString().trim();
-
-                if (Valid.validateMobileNo(mobile, getContext(), true)) {
-
-                    PreferencesManager.putString(PreferencesManager.PREFERENCES_KEY.MOBILE, mobile, getContext());
-
-                    if (mobile.equals(registeredMobile)) {
-                        Toast.makeText(getActivity(), "Number already registered", Toast.LENGTH_SHORT).show();
-                    } else {
-                        mListener.onClickRegister();
-                    }
-                }
-            }
-        });
 
         getInfoButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,10 +88,6 @@ public class NewRegistrationFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-
-                if (isNewRegistrationVisible) {
-                    mNewRegistrationLayout.setVisibility(View.INVISIBLE);
-                }
             }
         });
 
@@ -137,22 +108,6 @@ public class NewRegistrationFragment extends Fragment {
                 mListener.onClickGetInfo(mobile);
             } else {
                 CommonMethods.hideKeyboard(getActivity());
-                //------ Ritesh commented :: start
-                /*mobileTextLabelView.setText(mobile);
-                mobileTextLabelView.setVisibility(View.VISIBLE);
-                getInfoButton.setVisibility(View.INVISIBLE);
-                mobileText.setVisibility(View.INVISIBLE);
-                newRegistration.setVisibility(View.VISIBLE);
-                newRegistration.requestFocus();*/
-                //----   //------ Ritesh commented :: start
-
-               /* mobileTextLabelView.setText(mobile);
-                mobileTextLabelView.setVisibility(View.GONE);
-                getInfoButton.setVisibility(View.VISIBLE);
-                mobileText.setVisibility(View.VISIBLE);
-                newRegistration.setText(getString(R.string.new_registration));
-                mNewRegistrationLayout.setVisibility(View.VISIBLE);
-                isNewRegistrationVisible = true;*/
 
                 CommonMethods.setAlreadyRegisteredUser(false); // this means user is newly registered.
 
@@ -193,7 +148,6 @@ public class NewRegistrationFragment extends Fragment {
     public interface OnRegistrationListener {
         // TODO: Update argument type and name
         void onClickRegister();
-
         void onClickGetInfo(String mobileText);
     }
 }

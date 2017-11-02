@@ -20,6 +20,9 @@ public class Page implements Parcelable {
     @SerializedName("section")
     @Expose
     private ArrayList<Section> section = new ArrayList<Section>();
+    @SerializedName("fields")
+    @Expose
+    private ArrayList<Field> fields = new ArrayList<Field>();
 
     @SerializedName("name")
     @Expose
@@ -52,6 +55,7 @@ public class Page implements Parcelable {
         this.pageIcon = ((String) in.readValue((String.class.getClassLoader())));
         this.pageName = ((String) in.readValue((String.class.getClassLoader())));
         in.readList(this.section, (Section.class.getClassLoader()));
+        in.readList(this.fields, (Section.class.getClassLoader()));
         this.name = ((String) in.readValue((String.class.getClassLoader())));
         this.undertakingContent = ((String) in.readValue((String.class.getClassLoader())));
         this.undertakingImageUrl = ((String) in.readValue((String.class.getClassLoader())));
@@ -85,6 +89,14 @@ public class Page implements Parcelable {
         this.section = section;
     }
 
+    public ArrayList<Field> getFields() {
+        return fields;
+    }
+
+    public void setFields(ArrayList<Field> fields) {
+        this.fields = fields;
+    }
+
     public String getName() {
         return name;
     }
@@ -113,6 +125,7 @@ public class Page implements Parcelable {
         dest.writeValue(pageIcon);
         dest.writeValue(pageName);
         dest.writeList(section);
+        dest.writeList(fields);
         dest.writeValue(name);
         dest.writeValue(undertakingContent);
         dest.writeValue(undertakingImageUrl);

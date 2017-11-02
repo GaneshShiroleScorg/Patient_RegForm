@@ -345,13 +345,6 @@ public class FormFragment extends Fragment {
         }
     }
 
-    private void fillTab(TextView indicatorText, boolean isFilled) {
-        if (isFilled)
-            indicatorText.setBackgroundResource(R.drawable.badge);
-        else
-            indicatorText.setBackgroundResource(R.drawable.unfilled_badge);
-    }
-
     private class SectionsPagerAdapter extends FragmentPagerAdapter {
         private final ArrayList<PageFragment> pageFragments;
 
@@ -412,7 +405,7 @@ public class FormFragment extends Fragment {
 
         switch (field.getType()) {
 
-            case PageFragment.TYPE.TEXTBOXGROUP: {
+            case PageFragment.TYPE.TEXTBOX_GROUP: {
 
                 if (field.isMandatory()) {
                     if (field.getValue().equals("")) {
