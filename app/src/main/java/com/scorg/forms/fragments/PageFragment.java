@@ -81,6 +81,162 @@ public class PageFragment extends Fragment {
     private ImageView profilePhoto;
     private TextView editButton;
 
+    interface INPUT_TYPE {
+        String NAME = "name";
+        String MOBILE = "mobile";
+        String DATE = "date";
+        String EMAIL = "email";
+        String PIN_CODE = "pincode";
+        String NUMBER = "number";
+        String TEXTBOX_BIG = "textboxbig";
+    }
+
+    interface TYPE {
+        String TEXTBOX = "textbox";
+        String DROPDOWN = "dropdown";
+        String RADIOBUTTON = "radiobutton";
+        String CHECKBOX = "checkbox";
+        String RATINGBAR = "ratingbar";
+        String TEXTBOX_GROUP = "textboxgroup";
+        String RADIOBUTTON_WITH_TEXT = "radiobuttonwithtext";
+        String CHECKBOX_WITH_TEXT = "checkboxwithtext";
+        String DROPDOWN_WITH_TEXT = "dropdownwithtext";
+    }
+
+    /**
+     * The fragment argument representing the section number for this
+     * fragment.
+     */
+    private static final String PAGE_NUMBER = "section_number";
+    private static final String PAGE = "page";
+    private int pageNumber;
+    private int formNumber;
+    private Page page;
+
+    public PageFragment() {
+    }
+
+    /**
+     * Returns a new instance of this fragment for the given section
+     * number.
+     */
+    public static PageFragment newInstance(int formNumber, int pageNumber, Page page, boolean isEditable, String mReceivedFormName) {
+        PageFragment fragment = new PageFragment();
+        Bundle args = new Bundle();
+        args.putInt(FORM_NUMBER, formNumber);
+        args.putInt(PAGE_NUMBER, pageNumber);
+        args.putBoolean(IS_EDITABLE, isEditable);
+        args.putParcelable(PAGE, page);
+        args.putString(FORM_NAME, mReceivedFormName);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            page = getArguments().getParcelable(PAGE);
+            pageNumber = getArguments().getInt(PAGE_NUMBER);
+            formNumber = getArguments().getInt(FORM_NUMBER);
+            isEditable = getArguments().getBoolean(IS_EDITABLE);
+
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+            mReceivedDate = df.format(c.getTime());
+
+            mReceivedFormName = getArguments().getString(FORM_NAME);
+        }
+    }
+
+    @SuppressWarnings("CheckResult")
+    @Override
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_pages, container, false);
+
+        mInflater = inflater;
+        mTitleTextView = rootView.findViewById(R.id.titleView);
+        mSectionsContainer = rootView.findViewById(R.id.sectionsContainer);
+
+        initializeDataViews();
+        return rootView;
+    }
+
+    private void initializeDataViews() {
+
+        if (formNumber == PERSONAL_INFO_FORM)
+            mTitleTextView.setText(page.getPageName());
+        else mTitleTextView.setText(mReceivedFormName + ": " + page.getPageName());
+
+        for (int sectionIndex = 0; sectionIndex < page.getSection().size(); sectionIndex++) {
+            View sectionLayout = mInflater.inflate(R.layout.section_layout, mSectionsContainer, false);
+
+
+            if (page.getSection().get(sectionIndex).getProfilePhoto() != null) {
+                View profilePhotoLayout = sectionLayout.findViewById(R.id.profilePhotoLayout);
+                profilePhoto = sectionLayout.findViewById(R.id.profilePhoto);
+                editButton = sectionLayout.findViewById(R.id.editButton);
+
+                editButton.setEnabled(isEditable);
+
+                editButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        PageFragmentPermissionsDispatcher.onPickPhotoWithCheck(PageFragment.this);
+                    }
+                });
+
+                Drawable leftDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_photo_camera);
+                editButton.setCompoundDrawablesWithIntrinsicBounds(leftDrawable, null, null, null);
+
+                TextView mobileText = sectionLayout.findViewById(R.id.mobileText);
+                mobileText.setText(PreferencesManager.getString(PreferencesManager.PREFERENCES_KEY.MOBILE, getContext()));
+                Drawable leftDrawablePhone = AppCompatResources.getDrawable(getContext(), R.drawable.ic_phone_iphone_24dp);
+                mobileText.setCompoundDrawablesWithIntrinsicBounds(leftDrawablePhone, null, null, null);
+                profilePhotoLayout.setVisibility(View.VISIBLE);
+
+                RequestOptions requestOptions = new RequestOptions();
+                requestOptions.dontAnimate();
+                requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
+                requestOptions.skipMemoryCache(true);
+//                requestOptions.error(R.drawable.ic_camera);
+//                requestOptions.placeholder(R.drawable.ic_camera);
+                Glide.with(getContext())
+                        .load(page.getSection().get(sectionIndex).getProfilePhoto())
+                        .into(profilePhoto);
+            } else {
+                View profilePhotoLayout = sectionLayout.findViewById(R.id.profilePhotoLayout);
+                profilePhotoLayout.setVisibility(View.GONE);
+            }
+
+            View fieldsContainer = sectionLayout.findViewById(R.id.fieldsContainer);
+
+            ArrayList<Field> fields = page.getSection().get(sectionIndex).getFields();
+
+            TextView sectionTitle = sectionLayout.findViewById(R.id.sectionTitleView);
+            sectionTitle.setText(page.getSection().get(sectionIndex).getSectionName());
+
+            for (int fieldsIndex = 0; fieldsIndex < fields.size(); fieldsIndex++) {
+                final Field field = fields.get(fieldsIndex);
+                addField(fieldsContainer, sectionIndex, fields, field, fieldsIndex, mInflater, -1);
+            }
+            mSectionsContainer.addView(sectionLayout);
+        }
+
+        //------ in case of undertaking comes----
+        // dont show header if it is undertaking content fragment.
+        if (page.getUndertakingContent() != null) {
+
+            UndertakingFragment newRegistrationFragment = UndertakingFragment.newInstance(mReceivedDate, page.getUndertakingContent(), page.getUndertakingImageUrl(), page.getName());
+            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+            transaction.replace(R.id.pageLayout, newRegistrationFragment, getResources().getString(R.string.undertaking));
+            transaction.commit();
+
+        }
+        //----------
+    }
+
     private void addField(final View fieldsContainer, final int sectionIndex, final ArrayList<Field> fields, final Field field, final int fieldsIndex, final LayoutInflater inflater, int indexToAddView) {
         switch (field.getType()) {
 
@@ -495,164 +651,6 @@ public class PageFragment extends Fragment {
                 break;
             }
         }
-    }
-
-    interface INPUT_TYPE {
-        String NAME = "name";
-        String MOBILE = "mobile";
-        String DATE = "date";
-        String EMAIL = "email";
-        String PIN_CODE = "pincode";
-        String NUMBER = "number";
-        String TEXTBOX_BIG = "textboxbig";
-    }
-
-    /**
-     * The fragment argument representing the section number for this
-     * fragment.
-     */
-    private static final String PAGE_NUMBER = "section_number";
-    private static final String PAGE = "page";
-    private int pageNumber;
-    private int formNumber;
-    private Page page;
-
-    public PageFragment() {
-    }
-
-    /**
-     * Returns a new instance of this fragment for the given section
-     * number.
-     */
-    public static PageFragment newInstance(int formNumber, int pageNumber, Page page, boolean isEditable, String mReceivedFormName) {
-        PageFragment fragment = new PageFragment();
-        Bundle args = new Bundle();
-        args.putInt(FORM_NUMBER, formNumber);
-        args.putInt(PAGE_NUMBER, pageNumber);
-        args.putBoolean(IS_EDITABLE, isEditable);
-        args.putParcelable(PAGE, page);
-        args.putString(FORM_NAME, mReceivedFormName);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            page = getArguments().getParcelable(PAGE);
-            pageNumber = getArguments().getInt(PAGE_NUMBER);
-            formNumber = getArguments().getInt(FORM_NUMBER);
-            isEditable = getArguments().getBoolean(IS_EDITABLE);
-
-            Calendar c = Calendar.getInstance();
-            SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
-            mReceivedDate = df.format(c.getTime());
-
-            mReceivedFormName = getArguments().getString(FORM_NAME);
-        }
-    }
-
-    @SuppressWarnings("CheckResult")
-    @Override
-    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_pages, container, false);
-
-        mInflater = inflater;
-        mTitleTextView = rootView.findViewById(R.id.titleView);
-        mSectionsContainer = rootView.findViewById(R.id.sectionsContainer);
-
-        initializeDataViews();
-        return rootView;
-    }
-
-    interface TYPE {
-        String TEXTBOX = "textbox";
-        String DROPDOWN = "dropdown";
-        String RADIOBUTTON = "radiobutton";
-        String CHECKBOX = "checkbox";
-        String RATINGBAR = "ratingbar";
-
-        String TEXTBOX_GROUP = "textboxgroup";
-
-        String RADIOBUTTON_WITH_TEXT = "radiobuttonwithtext";
-        String CHECKBOX_WITH_TEXT = "checkboxwithtext";
-        String DROPDOWN_WITH_TEXT = "dropdownwithtext";
-    }
-
-    private void initializeDataViews() {
-
-        if (formNumber == PERSONAL_INFO_FORM)
-            mTitleTextView.setText(page.getPageName());
-        else mTitleTextView.setText(mReceivedFormName + ": " + page.getPageName());
-
-        for (int sectionIndex = 0; sectionIndex < page.getSection().size(); sectionIndex++) {
-            View sectionLayout = mInflater.inflate(R.layout.section_layout, mSectionsContainer, false);
-
-
-            if (page.getSection().get(sectionIndex).getProfilePhoto() != null) {
-                View profilePhotoLayout = sectionLayout.findViewById(R.id.profilePhotoLayout);
-                profilePhoto = sectionLayout.findViewById(R.id.profilePhoto);
-                editButton = sectionLayout.findViewById(R.id.editButton);
-
-                editButton.setEnabled(isEditable);
-
-                editButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        PageFragmentPermissionsDispatcher.onPickPhotoWithCheck(PageFragment.this);
-                    }
-                });
-
-                Drawable leftDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_photo_camera);
-                editButton.setCompoundDrawablesWithIntrinsicBounds(leftDrawable, null, null, null);
-
-                TextView mobileText = sectionLayout.findViewById(R.id.mobileText);
-                mobileText.setText(PreferencesManager.getString(PreferencesManager.PREFERENCES_KEY.MOBILE, getContext()));
-                Drawable leftDrawablePhone = AppCompatResources.getDrawable(getContext(), R.drawable.ic_phone_iphone_24dp);
-                mobileText.setCompoundDrawablesWithIntrinsicBounds(leftDrawablePhone, null, null, null);
-                profilePhotoLayout.setVisibility(View.VISIBLE);
-
-                RequestOptions requestOptions = new RequestOptions();
-                requestOptions.dontAnimate();
-                requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
-                requestOptions.skipMemoryCache(true);
-//                requestOptions.error(R.drawable.ic_camera);
-//                requestOptions.placeholder(R.drawable.ic_camera);
-                Glide.with(getContext())
-                        .load(page.getSection().get(sectionIndex).getProfilePhoto())
-                        .into(profilePhoto);
-            } else {
-                View profilePhotoLayout = sectionLayout.findViewById(R.id.profilePhotoLayout);
-                profilePhotoLayout.setVisibility(View.GONE);
-            }
-
-            View fieldsContainer = sectionLayout.findViewById(R.id.fieldsContainer);
-
-            ArrayList<Field> fields = page.getSection().get(sectionIndex).getFields();
-
-            TextView sectionTitle = sectionLayout.findViewById(R.id.sectionTitleView);
-            sectionTitle.setText(page.getSection().get(sectionIndex).getSectionName());
-
-            for (int fieldsIndex = 0; fieldsIndex < fields.size(); fieldsIndex++) {
-                final Field field = fields.get(fieldsIndex);
-                addField(fieldsContainer, sectionIndex, fields, field, fieldsIndex, mInflater, -1);
-            }
-            mSectionsContainer.addView(sectionLayout);
-        }
-
-        //------ in case of undertaking comes----
-        // dont show header if it is undertaking content fragment.
-        if (page.getUndertakingContent() != null) {
-
-            UndertakingFragment newRegistrationFragment = UndertakingFragment.newInstance(mReceivedDate, page.getUndertakingContent(), page.getUndertakingImageUrl(), page.getName());
-            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-            transaction.replace(R.id.pageLayout, newRegistrationFragment, getResources().getString(R.string.undertaking));
-            transaction.commit();
-
-        }
-        //----------
     }
 
     @NeedsPermission({Manifest.permission.WRITE_EXTERNAL_STORAGE})
