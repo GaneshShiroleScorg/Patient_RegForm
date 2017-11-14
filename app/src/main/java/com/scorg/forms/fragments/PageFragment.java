@@ -42,9 +42,9 @@ import com.philliphsu.bottomsheetpickers.date.DatePickerDialog;
 import com.scorg.forms.R;
 import com.scorg.forms.customui.FlowLayout;
 import com.scorg.forms.customui.FlowRadioGroup;
-import com.scorg.forms.models.Field;
-import com.scorg.forms.models.Page;
-import com.scorg.forms.preference.PreferencesManager;
+import com.scorg.forms.models.form.Field;
+import com.scorg.forms.models.form.Page;
+import com.scorg.forms.preference.AppPreferencesManager;
 import com.scorg.forms.util.CommonMethods;
 
 import java.text.SimpleDateFormat;
@@ -191,7 +191,7 @@ public class PageFragment extends Fragment {
                 editButton.setCompoundDrawablesWithIntrinsicBounds(leftDrawable, null, null, null);
 
                 TextView mobileText = sectionLayout.findViewById(R.id.mobileText);
-                mobileText.setText(PreferencesManager.getString(PreferencesManager.PREFERENCES_KEY.MOBILE, getContext()));
+                mobileText.setText(AppPreferencesManager.getString(AppPreferencesManager.PREFERENCES_KEY.MOBILE, getContext()));
                 Drawable leftDrawablePhone = AppCompatResources.getDrawable(getContext(), R.drawable.ic_phone_iphone_24dp);
                 mobileText.setCompoundDrawablesWithIntrinsicBounds(leftDrawablePhone, null, null, null);
                 profilePhotoLayout.setVisibility(View.VISIBLE);

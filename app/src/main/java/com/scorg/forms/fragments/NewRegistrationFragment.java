@@ -12,13 +12,10 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.scorg.forms.R;
-import com.scorg.forms.preference.PreferencesManager;
+import com.scorg.forms.preference.AppPreferencesManager;
 import com.scorg.forms.util.CommonMethods;
 import com.scorg.forms.util.Valid;
 
@@ -101,7 +98,7 @@ public class NewRegistrationFragment extends Fragment {
 
         if (Valid.validateMobileNo(mobile, getContext(), true)) {
 
-            PreferencesManager.putString(PreferencesManager.PREFERENCES_KEY.MOBILE, mobile, getContext());
+            AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.MOBILE, mobile, getContext());
 
             if (mobile.equals(registeredMobile)) {
                 CommonMethods.setAlreadyRegisteredUser(true);

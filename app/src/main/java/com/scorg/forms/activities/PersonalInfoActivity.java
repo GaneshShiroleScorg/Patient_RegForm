@@ -22,8 +22,9 @@ import com.scorg.forms.customui.CustomProgressDialog;
 import com.scorg.forms.fragments.FormFragment;
 import com.scorg.forms.fragments.NewRegistrationFragment;
 import com.scorg.forms.fragments.ProfilePageFragment;
-import com.scorg.forms.models.Form;
-import com.scorg.forms.models.FormsModel;
+import com.scorg.forms.models.form.Form;
+import com.scorg.forms.models.form.FormsModel;
+import com.scorg.forms.singleton.Device;
 import com.scorg.forms.util.CommonMethods;
 
 import java.io.IOException;
@@ -38,6 +39,7 @@ import static com.scorg.forms.activities.FormsActivity.CLINIC_NAME;
 import static com.scorg.forms.activities.FormsActivity.FORM;
 import static com.scorg.forms.activities.FormsActivity.FORM_INDEX;
 import static com.scorg.forms.fragments.ProfilePageFragment.PERSONAL_INFO_FORM;
+import static com.scorg.forms.util.Constants.PHONE;
 
 public class PersonalInfoActivity extends AppCompatActivity implements FormFragment.ButtonClickListener, NewRegistrationFragment.OnRegistrationListener, ProfilePageFragment.ButtonClickListener {
 
@@ -57,7 +59,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_info);
 
-        if (!getResources().getBoolean(R.bool.isTab)) {
+        if (Device.getInstance(this).getDeviceType().equals(PHONE)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(getResources().getString(R.string.tablet_message))
                     .setCancelable(false)

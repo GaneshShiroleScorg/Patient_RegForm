@@ -1,4 +1,4 @@
-package com.scorg.forms.models;
+package com.scorg.forms.models.form;
 
 import android.os.Parcel;
 import android.os.Parcelable;

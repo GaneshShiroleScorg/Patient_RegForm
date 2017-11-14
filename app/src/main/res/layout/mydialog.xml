@@ -16,7 +16,6 @@
             android:src="@mipmap/ic_launcher" />
 
         <ProgressBar
-            android:id="@+id/customProgressBar"
             android:layout_width="68dp"
             android:layout_height="68dp"
             android:layout_centerInParent="true"

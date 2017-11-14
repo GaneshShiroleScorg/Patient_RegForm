@@ -14,9 +14,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.scorg.forms.R;
 import com.scorg.forms.fragments.FeedbackFormFragment;
-import com.scorg.forms.fragments.FeedbackPageFragment;
 import com.scorg.forms.fragments.FormFragment;
-import com.scorg.forms.models.Form;
+import com.scorg.forms.models.form.Form;
 
 public class FormsActivity extends AppCompatActivity implements FormFragment.ButtonClickListener {
 

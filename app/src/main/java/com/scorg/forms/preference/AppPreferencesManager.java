@@ -20,7 +20,7 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * Created by Sandeep Bahalkar
  */
-public class PreferencesManager {
+public class AppPreferencesManager {
 
     private static SharedPreferences sharedPreferences = null;
     private static byte[] sKey;
@@ -47,14 +47,14 @@ public class PreferencesManager {
 
     public static String getString(String key, Context context) {
         //String mKey = encrypt(key);
-//        CommonMethods.Log(TAG, "getString--mKey--->" + key + "<----mValue-------->" + getSharedPreference(context).getString(key, ""));
+//        CommonMethods.log(TAG, "getString--mKey--->" + key + "<----mValue-------->" + getSharedPreference(context).getString(key, ""));
         return getSharedPreference(context).getString(key, "");
 
     }
 
     public static boolean getBoolean(String key, Context context) {
         //String mKey = encrypt(key);
-        /*CommonMethods.Log("value", "value--getBoolean----->" + mKey);
+        /*CommonMethods.log("value", "value--getBoolean----->" + mKey);
         final String encryptedValue = getSharedPreference(context).getString(mKey, "");
         if (encryptedValue == null || encryptedValue.equals("")) {
             return false;
@@ -71,7 +71,7 @@ public class PreferencesManager {
     public static boolean putBoolean(String key, boolean value, Context context) {
         //String mKey = encrypt(key);
         // String mValue = encrypt(Boolean.toString(value));
-//        CommonMethods.Log(TAG, "--------------------------" + Boolean.toString(value));
+//        CommonMethods.log(TAG, "--------------------------" + Boolean.toString(value));
         //getSharedPreference(context).edit().putString(mKey, encrypt(mValue)).commit();
         getSharedPreference(context).edit().putBoolean(key, value).apply();
         return value;
@@ -80,7 +80,7 @@ public class PreferencesManager {
     public static void putString(String key, String value, Context context) {
         //String mKey = encrypt(key);
         //String mValue = encrypt(value);
-//        CommonMethods.Log(TAG, "putString--mKey--->" + key + "<----mValue-------->" + value);
+//        CommonMethods.log(TAG, "putString--mKey--->" + key + "<----mValue-------->" + value);
         getSharedPreference(context).edit().putString(key, value).apply();
     }
 
@@ -98,7 +98,7 @@ public class PreferencesManager {
 
     public static int getInt(String key, Context context) {
 //        String mKey = encrypt(key);
-        /*CommonMethods.Log("value", "value--getBoolean----->" + mKey);
+        /*CommonMethods.log("value", "value--getBoolean----->" + mKey);
         final String encryptedValue = getSharedPreference(context).getString(mKey, "");
         if (encryptedValue == null || encryptedValue.equals("")) {
             return 0;
@@ -115,7 +115,7 @@ public class PreferencesManager {
 
     public static long getLong(String key, Context context) {
        /* String mKey = encrypt(key);
-        CommonMethods.Log("value", "value--getBoolean----->" + mKey);
+        CommonMethods.log("value", "value--getBoolean----->" + mKey);
         final String encryptedValue = getSharedPreference(context).getLong(mKey, "");
         if (encryptedValue == null || encryptedValue.equals("")) {
             return 0;
@@ -149,10 +149,10 @@ public class PreferencesManager {
         }
         try {
             final Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(PreferencesManager.sKey, "AES"));
+            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(AppPreferencesManager.sKey, "AES"));
             return encode(cipher.doFinal(cleartext.getBytes("UTF-8")));
         } catch (Exception e) {
-            Log.e(PreferencesManager.class.getName(), "encrypt", e);
+            Log.e(AppPreferencesManager.class.getName(), "encrypt", e);
             return null;
         }
     }
@@ -163,10 +163,10 @@ public class PreferencesManager {
         }
         try {
             final Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(PreferencesManager.sKey, "AES"));
-            return new String(cipher.doFinal(PreferencesManager.decode(ciphertext)), "UTF-8");
+            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(AppPreferencesManager.sKey, "AES"));
+            return new String(cipher.doFinal(AppPreferencesManager.decode(ciphertext)), "UTF-8");
         } catch (Exception e) {
-            Log.e(PreferencesManager.class.getName(), "decrypt", e);
+            Log.e(AppPreferencesManager.class.getName(), "decrypt", e);
             return null;
         }
     }
@@ -210,6 +210,26 @@ public class PreferencesManager {
 
 
     public interface PREFERENCES_KEY {
-        String MOBILE = "mobile";
+        String USER_GENDER = "user_gender";
+        String EMAIL = "email";
+        String SERVER_CONNECTION_SUCCESS = "success";
+        String IS_VALID_IP_CONFIG = "isvalidipconfig";
+        String AUTHTOKEN = "authToken";
+        String DOC_ID = "docId";
+        String LOGIN_STATUS = "login_status";
+        String MOBILE = "mobileNumber";
+        String PASSWORD = "password";
+        String LOGIN_OR_SIGNUP = "signup_login";
+        String COACHMARK = "coachmark";
+        String NOTIFY_DATE = "notify_date";
+        String MOBILE_NUMBER_GMAIL = "mobile_number_gmail" ;
+        String PASSWORD_GMAIL = "password_gmail";
+        String MOBILE_NUMBER_FACEBOOK = "mobile_number_facebook";
+        String PASSWORD_FACEBOOK = "password_facebook";
+        String IS_SEARCHABLE = "";
+        String USER_NAME = "doctorname";
+        String PROFILE_PHOTO = "doctorprofile";
+        String SPECIALITY = "speciality";
+        String ADDRESS = "address";
     }
 }

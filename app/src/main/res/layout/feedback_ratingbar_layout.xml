@@ -23,7 +23,6 @@
         android:orientation="horizontal">
 
         <LinearLayout
-            android:id="@+id/ratingBarParent"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"

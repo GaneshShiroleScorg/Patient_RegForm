@@ -26,9 +26,9 @@ import com.scorg.forms.R;
 import com.scorg.forms.customui.CustomAutoCompleteEditText;
 import com.scorg.forms.customui.CustomEditText;
 import com.scorg.forms.customui.CustomViewPager;
-import com.scorg.forms.models.Field;
-import com.scorg.forms.models.Page;
-import com.scorg.forms.models.Section;
+import com.scorg.forms.models.form.Field;
+import com.scorg.forms.models.form.Page;
+import com.scorg.forms.models.form.Section;
 import com.scorg.forms.util.CommonMethods;
 import com.scorg.forms.util.Valid;
 

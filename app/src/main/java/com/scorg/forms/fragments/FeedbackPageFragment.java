@@ -25,7 +25,6 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -33,8 +32,8 @@ import android.widget.TextView;
 
 import com.philliphsu.bottomsheetpickers.date.DatePickerDialog;
 import com.scorg.forms.R;
-import com.scorg.forms.models.Field;
-import com.scorg.forms.models.Page;
+import com.scorg.forms.models.form.Field;
+import com.scorg.forms.models.form.Page;
 import com.scorg.forms.util.CommonMethods;
 
 import java.util.ArrayList;

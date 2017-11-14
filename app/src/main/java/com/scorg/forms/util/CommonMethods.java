@@ -5,11 +5,13 @@ import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -30,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class CommonMethods {
 
     private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
+    private static final String TAG = "CommonMethods";
 
     private static boolean alreadyRegisteredUser = false;
 
@@ -154,7 +157,21 @@ public class CommonMethods {
         CommonMethods.alreadyRegisteredUser = alreadyRegisteredUser;
     }
 
-    public static boolean isAlreadyRegisteredUser() {
-        return CommonMethods.alreadyRegisteredUser;
+    public static void log(String tag, String message) {
+        Log.e(tag, "PatientRegApp" + message);
+    }
+
+    public static void showToast(Context context, String error) {
+        Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+    }
+
+
+    public static void showSnack(View mViewById, String msg) {
+        if (mViewById != null) {
+            Snackbar.make(mViewById, msg, Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        } else {
+            Log.d(TAG, "null snacbar view" + msg);
+        }
     }
 }
