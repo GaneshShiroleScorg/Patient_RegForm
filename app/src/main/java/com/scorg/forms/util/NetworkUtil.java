@@ -10,9 +10,9 @@ import android.net.NetworkInfo;
 
 public class NetworkUtil {
 
-    public static int TYPE_WIFI = 1;
-    public static int TYPE_MOBILE = 2;
-    public static int TYPE_NOT_CONNECTED = 0;
+    private static int TYPE_WIFI = 1;
+    private static int TYPE_MOBILE = 2;
+    private static int TYPE_NOT_CONNECTED = 0;
 
     /**
      * @param context : Context of activity.
@@ -22,17 +22,13 @@ public class NetworkUtil {
 
 
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if ((connectivityManager
+        return (connectivityManager
                 .getNetworkInfo(ConnectivityManager.TYPE_MOBILE) != null && connectivityManager
                 .getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED)
                 || (connectivityManager
                 .getNetworkInfo(ConnectivityManager.TYPE_WIFI) != null && connectivityManager
                 .getNetworkInfo(ConnectivityManager.TYPE_WIFI)
-                .getState() == NetworkInfo.State.CONNECTED)) {
-            return true;
-        } else {
-            return false;
-        }
+                .getState() == NetworkInfo.State.CONNECTED);
 
     }
 

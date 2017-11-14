@@ -43,5 +43,13 @@
     <string name="forgot_password">Forgot  password?</string>
     <string name="sign_up">Signup</string>
     <string name="enter_patient_mobile_no">Enter patient mobile number</string>
+    <string name="err_email_invalid">Enter valid email</string>
+    <string name="logout">Logout</string>
+    <string name="logout_message">Are you sure you want to logout</string>
+    <string name="cancel">Cancel</string>
+    <string name="error_in_ip">Please enter valid IP address</string>
+    <string name="for_example_server_path">e.g. 192.168.0.182:3003</string>
+    <string name="server_path">Enter the server path</string>
+    <string name="wrong_server_path">Re-enter correct server path</string>
 
 </resources>

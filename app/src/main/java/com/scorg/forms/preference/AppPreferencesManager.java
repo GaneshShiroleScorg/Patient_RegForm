@@ -210,6 +210,7 @@ public class AppPreferencesManager {
 
 
     public interface PREFERENCES_KEY {
+        String SERVER_PATH = "server_path";
         String USER_GENDER = "user_gender";
         String EMAIL = "email";
         String SERVER_CONNECTION_SUCCESS = "success";

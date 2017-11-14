@@ -50,8 +50,8 @@ public class NewRegistrationFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_new_registration, container, false);
 
-        mobileText = (EditText) rootView.findViewById(R.id.mobileText);
-        getInfoButton = (Button) rootView.findViewById(R.id.getInfoButton);
+        mobileText = rootView.findViewById(R.id.mobileText);
+        getInfoButton = rootView.findViewById(R.id.getInfoButton);
 
         getInfoButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,7 +61,6 @@ public class NewRegistrationFragment extends Fragment {
         });
 
         mobileText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-
             @Override
             public boolean onEditorAction(TextView arg0, int arg1, KeyEvent arg2) {
                 if (arg1 == EditorInfo.IME_ACTION_GO)

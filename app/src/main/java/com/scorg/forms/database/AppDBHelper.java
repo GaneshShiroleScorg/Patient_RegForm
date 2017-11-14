@@ -17,22 +17,21 @@ import java.io.OutputStream;
 
 public class AppDBHelper extends SQLiteOpenHelper {
 
-    private final String TAG = "Dr/AppDBHelper";
+    private final String TAG = "Patient/AppDBHelper";
 
     private static final String DATABASE_NAME = "PatientRegistration.sqlite";
     private static final String DB_PATH_SUFFIX = "/data/data/com.scorg.forms/databases/"; // Change
     private static final int DB_VERSION = 1;
-    public static final String APP_DATA_TABLE = "PrescriptionData";
+    private static final String APP_DATA_TABLE = "ApiData";
     public static final String COLUMN_ID = "dataId";
     public static final String COLUMN_DATA = "data";
 
-    static AppDBHelper instance = null;
+    private static AppDBHelper instance = null;
     private Context mContext;
 
     public AppDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DB_VERSION);
         this.mContext = context;
-        checkDatabase();
     }
 
     @Override
@@ -94,52 +93,6 @@ public class AppDBHelper extends SQLiteOpenHelper {
         return db.delete(APP_DATA_TABLE,
                 "dataId = ? ",
                 new String[]{Integer.toString(dataId)});
-    }
-
-    private void copyDataBase() {
-        CommonMethods.log(TAG,
-                "New database is being copied to device!");
-        byte[] buffer = new byte[1024];
-        OutputStream myOutput = null;
-        int length;
-        // Open your local db as the input stream
-        InputStream myInput = null;
-        try {
-            myInput = mContext.getAssets().open(DATABASE_NAME);
-            // transfer bytes from the inputfile to the
-            // outputfile
-
-            // check if databases folder exists, if not create one and its subfolders
-            File databaseFile = new File(DB_PATH_SUFFIX);
-            if (!databaseFile.exists()) {
-                databaseFile.mkdir();
-            }
-
-            String path = databaseFile.getAbsolutePath() + "/" + DATABASE_NAME;
-
-            myOutput = new FileOutputStream(path);
-
-            CommonMethods.log(TAG,
-                    "New database is being copied to device!" + path);
-            while ((length = myInput.read(buffer)) > 0) {
-                myOutput.write(buffer, 0, length);
-            }
-            myOutput.close();
-            myOutput.flush();
-            myInput.close();
-            CommonMethods.log(TAG,
-                    "New database has been copied to device!");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void checkDatabase() {
-        File dbFile = mContext.getDatabasePath(DATABASE_NAME);
-        CommonMethods.log(TAG, "FILENAME " + dbFile.getAbsolutePath() + "|" + dbFile.getName());
-        if (!dbFile.exists()) {
-            copyDataBase();
-        }
     }
 
     public void deleteDatabase() {

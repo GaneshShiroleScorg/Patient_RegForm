@@ -32,6 +32,7 @@ import com.scorg.forms.interfaces.Connector;
 import com.scorg.forms.interfaces.CustomResponse;
 import com.scorg.forms.models.Common;
 import com.scorg.forms.models.login.ActiveStatusModel;
+import com.scorg.forms.models.login.IpTestResponseModel;
 import com.scorg.forms.models.login.LoginModel;
 import com.scorg.forms.models.login.SignUpModel;
 import com.scorg.forms.models.login.requestmodel.login.LoginRequestModel;
@@ -39,8 +40,8 @@ import com.scorg.forms.preference.AppPreferencesManager;
 import com.scorg.forms.singleton.Device;
 import com.scorg.forms.util.CommonMethods;
 import com.scorg.forms.util.Config;
-import com.scorg.forms.util.NetworkUtil;
 import com.scorg.forms.util.Constants;
+import com.scorg.forms.util.NetworkUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -439,7 +440,10 @@ public class RequestManager extends ConnectRequest implements Connector, Request
                     case Constants.TASK_VERIFY_SIGN_UP_OTP: //This is for to verify sign-up otp
                         this.mConnectionListener.onResponse(ConnectionListener.RESPONSE_OK, new Gson().fromJson(data, LoginModel.class), mOldDataTag);
                         break;
-
+                    case Constants.TASK_CHECK_SERVER_CONNECTION: //This is for get archived list
+                        IpTestResponseModel ipTestResponseModel = gson.fromJson(data, IpTestResponseModel.class);
+                        this.mConnectionListener.onResponse(ConnectionListener.RESPONSE_OK, ipTestResponseModel, mOldDataTag);
+                        break;
                     case Constants.LOGOUT: //This is for get archived list
                         ActiveStatusModel activeStatusLogout = new Gson().fromJson(data, ActiveStatusModel.class);
                         this.mConnectionListener.onResponse(ConnectionListener.RESPONSE_OK, activeStatusLogout, mOldDataTag);
@@ -523,7 +527,7 @@ public class RequestManager extends ConnectRequest implements Connector, Request
 
     private void loginRequest() {
         CommonMethods.log(TAG, "Refresh token while sending refresh token api: ");
-        String url = Config.BASE_URL + Config.LOGIN_URL;
+        String url = AppPreferencesManager.getString(AppPreferencesManager.PREFERENCES_KEY.SERVER_PATH, mContext) + Config.LOGIN_URL;
 
         LoginRequestModel loginRequestModel = new LoginRequestModel();
 

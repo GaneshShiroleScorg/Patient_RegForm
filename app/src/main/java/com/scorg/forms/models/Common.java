@@ -9,9 +9,9 @@ import com.scorg.forms.interfaces.CustomResponse;
 
 public class Common implements Parcelable, CustomResponse {
 
-    @SerializedName("success")
+    /*@SerializedName("success")
     @Expose
-    private Boolean success;
+    private Boolean success;*/
     @SerializedName("statusCode")
     @Expose
     private Integer statusCode;
@@ -20,13 +20,12 @@ public class Common implements Parcelable, CustomResponse {
     private String statusMessage;
     public final static Creator<Common> CREATOR = new Creator<Common>() {
 
-
         @SuppressWarnings({
                 "unchecked"
         })
         public Common createFromParcel(Parcel in) {
             Common instance = new Common();
-            instance.success = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
+//            instance.success = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
             instance.statusCode = ((Integer) in.readValue((Integer.class.getClassLoader())));
             instance.statusMessage = ((String) in.readValue((String.class.getClassLoader())));
             return instance;
@@ -38,13 +37,13 @@ public class Common implements Parcelable, CustomResponse {
 
     };
 
-    public Boolean isSuccess() {
+   /* public Boolean isSuccess() {
         return success;
     }
 
     public void setSuccess(Boolean success) {
         this.success = success;
-    }
+    }*/
 
     public Integer getStatusCode() {
         return statusCode;
@@ -63,7 +62,7 @@ public class Common implements Parcelable, CustomResponse {
     }
 
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeValue(success);
+//        dest.writeValue(success);
         dest.writeValue(statusCode);
         dest.writeValue(statusMessage);
     }

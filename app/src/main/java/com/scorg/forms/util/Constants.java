@@ -73,24 +73,13 @@ public class Constants {
     //Click codes
 
     public static final String TASK_LOGIN = Constants.BLANK + 1;
-
     public static final String TASK_SIGN_UP = Constants.BLANK + 2;
     public static final String TASK_VERIFY_SIGN_UP_OTP = Constants.BLANK + 3;
-
-
     public static final String TASK_LOGIN_WITH_PASSWORD = Constants.BLANK + 4;
     public static final String TASK_LOGIN_WITH_OTP = Constants.BLANK + 5;
-    public static final String TASK_DOCTOR_CONNECT_CHAT = Constants.BLANK + 6;
-    public static final String TASK_DOCTOR_CONNECT = Constants.BLANK + 7;
-    public static final String TASK_DOCTOR_FILTER_DOCTOR_SPECIALITY_LIST = Constants.BLANK + 8;
-    public static final String TASK_GET_PATIENT_LIST = Constants.BLANK + 9;
-    public static final String SEND_MESSAGE = Constants.BLANK + 10;
-    public static final String CHAT_HISTORY = Constants.BLANK + 11;
-    public static final String CHAT_USERS = Constants.BLANK + 12;
-    public static final String GET_PATIENT_CHAT_LIST = Constants.BLANK + 13;
-
-    public static final String ACTIVE_STATUS = Constants.BLANK + 14;
-    public static final String LOGOUT = Constants.BLANK + 15;
+    public static final String TASK_CHECK_SERVER_CONNECTION = Constants.BLANK + 6;
+    public static final String ACTIVE_STATUS = Constants.BLANK + 7;
+    public static final String LOGOUT = Constants.BLANK + 8;
 
     public static final String DATA = "DATA";
     public static final Integer SUCCESS = 200;

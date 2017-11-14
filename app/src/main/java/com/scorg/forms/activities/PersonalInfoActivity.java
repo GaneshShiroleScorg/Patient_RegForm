@@ -1,5 +1,6 @@
 package com.scorg.forms.activities;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,11 +20,13 @@ import com.bumptech.glide.request.RequestOptions;
 import com.google.gson.Gson;
 import com.scorg.forms.R;
 import com.scorg.forms.customui.CustomProgressDialog;
+import com.scorg.forms.database.AppDBHelper;
 import com.scorg.forms.fragments.FormFragment;
 import com.scorg.forms.fragments.NewRegistrationFragment;
 import com.scorg.forms.fragments.ProfilePageFragment;
 import com.scorg.forms.models.form.Form;
 import com.scorg.forms.models.form.FormsModel;
+import com.scorg.forms.preference.AppPreferencesManager;
 import com.scorg.forms.singleton.Device;
 import com.scorg.forms.util.CommonMethods;
 
@@ -52,6 +55,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
     private CustomProgressDialog customProgressDialog;
     private Timer timer = new Timer();
     private TabLayout formTabLayout;
+    private Context mContext;
 
     @SuppressWarnings("CheckResult")
     @Override
@@ -59,8 +63,10 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_info);
 
-        if (Device.getInstance(this).getDeviceType().equals(PHONE)) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        mContext = PersonalInfoActivity.this;
+
+        if (Device.getInstance(mContext).getDeviceType().equals(PHONE)) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
             builder.setMessage(getResources().getString(R.string.tablet_message))
                     .setCancelable(false)
                     .setPositiveButton(getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
@@ -72,10 +78,18 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
             alert.show();
         }
 
-        customProgressDialog = new CustomProgressDialog(PersonalInfoActivity.this);
+        ImageView logoutView = findViewById(R.id.logoutView);
+        logoutView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logoutDialog();
+            }
+        });
+
+        customProgressDialog = new CustomProgressDialog(mContext);
         customProgressDialog.setCancelable(false);
 
-        bottomTabLayout = (RelativeLayout) findViewById(R.id.bottomTabLayout);
+        bottomTabLayout = findViewById(R.id.bottomTabLayout);
 
 
 //        CommonMethods.setEditTextLineColor(mobileText, getResources().getColor(android.R.color.white));
@@ -109,7 +123,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
             ImageView formIcon = tabView.findViewById(R.id.formIcon);
             TextView titleTextView = tabView.findViewById(R.id.titleTextView);
 
-            Glide.with(PersonalInfoActivity.this)
+            Glide.with(mContext)
                     .load(form.getFormIcon())
                     .apply(requestOptions)
                     .into(formIcon);
@@ -138,9 +152,37 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
 
     }
 
+    private void logoutDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setMessage(getResources().getString(R.string.logout_message))
+                .setCancelable(false)
+                .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        logout();
+                    }
+                })
+                .setNegativeButton(getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void logout() {
+        AppDBHelper appDBHelper = new AppDBHelper(mContext);
+        appDBHelper.deleteDatabase();
+        AppPreferencesManager.clearSharedPref(mContext);
+
+        Intent intentObj = new Intent(mContext, LoginActivity.class);
+        startActivity(intentObj);
+        finish();
+    }
+
     @Override
     public void onBackPressed() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setMessage(getResources().getString(R.string.exit_message))
                 .setCancelable(false)
                 .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
@@ -163,7 +205,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         transaction.replace(R.id.container, newRegistrationFragment, getResources().getString(R.string.new_registration));
         transaction.commit();
 
-        CommonMethods.hideKeyboard(PersonalInfoActivity.this);
+        CommonMethods.hideKeyboard(mContext);
     }
 
     private void addProfileFragment(boolean isEditable, boolean isNew) {
@@ -184,12 +226,12 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
             transaction.commit();
         }
 
-        CommonMethods.hideKeyboard(PersonalInfoActivity.this);
+        CommonMethods.hideKeyboard(mContext);
     }
 
     @Override
     public void openForm(TabLayout.Tab tab, Form form) {
-        Intent intent = new Intent(PersonalInfoActivity.this, FormsActivity.class);
+        Intent intent = new Intent(mContext, FormsActivity.class);
         intent.putExtra(FORM, form);
         intent.putExtra(FORM_INDEX, tab.getPosition());
         intent.putExtra(CLINIC_NAME, formsModel.getClinicName());
@@ -266,7 +308,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         TextView headerName = findViewById(R.id.titleTextView);
         headerName.setText(formsModel.getClinicName());
         ImageView headerLogo = findViewById(R.id.logo);
-        Glide.with(PersonalInfoActivity.this)
+        Glide.with(mContext)
                 .load(formsModel.getClinicLogoUrl())
                 .into(headerLogo);
         //-------
@@ -285,7 +327,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         TextView headerName = findViewById(R.id.titleTextView);
         headerName.setText(formsModel.getClinicName());
         ImageView headerLogo = findViewById(R.id.logo);
-        Glide.with(PersonalInfoActivity.this)
+        Glide.with(mContext)
                 .load(formsModel.getClinicLogoUrl())
                 .into(headerLogo);
         //-------

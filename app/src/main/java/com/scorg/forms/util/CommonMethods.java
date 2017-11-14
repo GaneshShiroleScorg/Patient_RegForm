@@ -1,17 +1,24 @@
 package com.scorg.forms.util;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.scorg.forms.R;
+import com.scorg.forms.interfaces.CheckIpConnection;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -24,6 +31,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by ganeshshirole on 9/10/17.
@@ -35,6 +44,7 @@ public class CommonMethods {
     private static final String TAG = "CommonMethods";
 
     private static boolean alreadyRegisteredUser = false;
+    private static CheckIpConnection mCheckIpConnection;
 
     public static int getAge(int year, int month, int day) {
 
@@ -173,5 +183,53 @@ public class CommonMethods {
         } else {
             Log.d(TAG, "null snacbar view" + msg);
         }
+    }
+
+    //this alert is shown for input of serverpath
+    public static Dialog showAlertDialog(Context activity, String dialogHeader, CheckIpConnection checkIpConnection) {
+        final Context mContext = activity;
+        mCheckIpConnection = checkIpConnection;
+        final Dialog dialog = new Dialog(activity);
+
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.ip_dialog_ok_cancel);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setCancelable(false);
+        if (dialogHeader != null)
+            ((TextView) dialog.findViewById(R.id.textView_dialog_heading)).setText(dialogHeader);
+
+        dialog.findViewById(R.id.button_ok).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                EditText etServerPath = dialog.findViewById(R.id.et_server_path);
+
+                if (isValidIP(etServerPath.getText().toString())) {
+                    String mServerPath = Config.HTTP + etServerPath.getText().toString() + Config.API;
+                    Log.e(TAG, "SERVER PATH===" + mServerPath);
+                    mCheckIpConnection.onOkButtonClickListener(mServerPath, mContext, dialog);
+                } else {
+                    Toast.makeText(mContext, R.string.error_in_ip, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        dialog.findViewById(R.id.button_cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                ((Activity) mContext).finish();
+            }
+        });
+        dialog.show();
+
+        return dialog;
+    }
+
+    private static boolean isValidIP(String ipAddr) {
+
+        Pattern ptn = Pattern.compile("(\\b(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])\\b)\\.(\\b(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])\\b)\\.(\\b(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])\\b)\\.(\\b(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])\\b)\\:(\\d{1,4})$");
+        Matcher mtch = ptn.matcher(ipAddr);
+        return mtch.find();
     }
 }

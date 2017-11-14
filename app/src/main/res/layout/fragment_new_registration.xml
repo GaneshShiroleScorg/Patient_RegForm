@@ -44,10 +44,9 @@
 
                 <com.scorg.forms.customui.CustomTextView
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp0"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginBottom="@dimen/dp12"
-                    android:layout_weight="1"
                     android:gravity="center"
                     android:text="@string/enter_patient_mobile_no"
                     android:textSize="@dimen/section_title_text_size"
@@ -56,9 +55,8 @@
                 <com.scorg.forms.customui.CustomEditText
                     android:id="@+id/mobileText"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp0"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/view_margin"
-                    android:layout_weight="1"
                     android:gravity="center"
                     android:imeOptions="actionGo"
                     android:inputType="phone"
@@ -68,10 +66,9 @@
                 <com.scorg.forms.customui.CustomButton
                     android:id="@+id/getInfoButton"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp0"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginBottom="@dimen/dp12"
-                    android:layout_weight="1"
                     android:background="@drawable/button_register"
                     android:text="@string/submit"
                     android:textColor="@android:color/white"

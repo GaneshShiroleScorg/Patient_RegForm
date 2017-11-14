@@ -51,4 +51,5 @@
     <dimen name="sp22">22sp</dimen>
     <dimen name="sp20">20sp</dimen>
     <dimen name="sp18">18sp</dimen>
+    <dimen name="dp15">15dp</dimen>
 </resources>

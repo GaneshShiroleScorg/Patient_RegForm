@@ -8,5 +8,5 @@ import android.content.Context;
  */
 
 public interface CheckIpConnection {
-    public void onOkButtonClickListner(String serverPath, Context context, Dialog dialog);
+    public void onOkButtonClickListener(String serverPath, Context context, Dialog dialog);
 }

@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/toolbar_height">
 
-            <ImageView
+            <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/logo"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -42,9 +42,21 @@
                 android:textSize="@dimen/toolbar_title_size"
                 app:customFont="@string/roboto_bold" />
 
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/logoutView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/dp10"
+                android:layout_marginEnd="@dimen/dp10"
+                android:padding="@dimen/dp10"
+                android:layout_alignParentEnd="true"
+                app:srcCompat="@drawable/ic_logout"
+                android:layout_alignParentRight="true" />
+
         </RelativeLayout>
 
-        <ImageView
+        <android.support.v7.widget.AppCompatImageView
             android:layout_width="match_parent"
             android:layout_height="6dp"
             android:background="@color/tab_unfilled_color"
