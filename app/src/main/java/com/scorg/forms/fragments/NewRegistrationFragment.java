@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.scorg.forms.R;
+import com.scorg.forms.activities.PersonalInfoActivity;
 import com.scorg.forms.preference.AppPreferencesManager;
 import com.scorg.forms.util.CommonMethods;
 import com.scorg.forms.util.Valid;
@@ -24,11 +25,9 @@ public class NewRegistrationFragment extends Fragment {
     private OnRegistrationListener mListener;
 
     // hard coded
-
     private String registeredMobile = "8208127880";
     private EditText mobileText;
     private Button getInfoButton;
-    private boolean isNewRegistrationVisible = false;
 
     public NewRegistrationFragment() {
         // Required empty public constructor
@@ -117,6 +116,7 @@ public class NewRegistrationFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
         if (context instanceof OnRegistrationListener) {
             mListener = (OnRegistrationListener) context;
         } else {
@@ -128,6 +128,8 @@ public class NewRegistrationFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        if (getActivity() instanceof PersonalInfoActivity)
+            ((PersonalInfoActivity) getActivity()).setMenuVisibility(false);
         mListener = null;
     }
 

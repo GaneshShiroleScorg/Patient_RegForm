@@ -30,17 +30,9 @@ public class SplashScreenActivity extends AppCompatActivity implements HelperRes
         mContext = SplashScreenActivity.this;
         mLoginHelper = new LoginHelper(mContext);
 
-        // Hard Coded
-       /* RescribePreferencesManager.putString(RescribePreferencesManager.PREFERENCES_KEY.AUTHTOKEN, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtb2JpbGVOdW1iZXIiOjc3Mzg0NzczMDYsInBhc3N3b3JkIjoidGVzdDEyMzQiLCJpYXQiOjE1MDY0OTgxNjgsImV4cCI6MTUwNjU4NDU2OH0.-RDHe-fXjjDW6PQQfglnlxY2k03siwsyaUOIwGj_TjI", mContext);
-        RescribePreferencesManager.putString(RescribePreferencesManager.PREFERENCES_KEY.DOC_ID, "10", mContext);
-        RescribePreferencesManager.putString(RescribePreferencesManager.PREFERENCES_KEY.USER_NAME, "Dr. Shalu Gupta", mContext);
-        RescribePreferencesManager.putString(RescribePreferencesManager.PREFERENCES_KEY.PROFILE_PHOTO, "", mContext);
-        RescribePreferencesManager.putString(RescribePreferencesManager.PREFERENCES_KEY.EMAIL, "shalu.gupta@scorgtechnologies.com", mContext);
-        RescribePreferencesManager.putString(RescribePreferencesManager.PREFERENCES_KEY.SPECIALITY, "General Physician", mContext);
-        RescribePreferencesManager.putString(RescribePreferencesManager.PREFERENCES_KEY.ADDRESS, "Pune", mContext);
-        RescribePreferencesManager.putString(RescribePreferencesManager.PREFERENCES_KEY.LOGIN_STATUS, RescribeConstants.YES, mContext);
-        RescribePreferencesManager.putString(RescribePreferencesManager.PREFERENCES_KEY.PASSWORD, "1234", mContext);*/
-        // End Hard Coded
+        // hardcoded
+        AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.SERVER_PATH, "192.168.0.182:3003", mContext);
+        AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.IS_VALID_IP_CONFIG, Constants.TRUE, mContext);
 
         doNext();
 
@@ -65,7 +57,7 @@ public class SplashScreenActivity extends AppCompatActivity implements HelperRes
                                 mLoginHelper.checkConnectionToServer(serverPath);
                                 dialog.dismiss();
                             }
-                        });
+                        }, true);
                     } else {
                         Intent intentObj = new Intent(SplashScreenActivity.this, LoginActivity.class);
                         startActivity(intentObj);
@@ -92,7 +84,7 @@ public class SplashScreenActivity extends AppCompatActivity implements HelperRes
                     AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.SERVER_PATH, serverPath, context);
                     mLoginHelper.checkConnectionToServer(serverPath);
                 }
-            });
+            }, true);
         }
     }
 
@@ -105,7 +97,7 @@ public class SplashScreenActivity extends AppCompatActivity implements HelperRes
                 AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.SERVER_PATH, serverPath, context);
                 mLoginHelper.checkConnectionToServer(serverPath);
             }
-        });
+        }, true);
     }
 
     @Override
@@ -117,7 +109,7 @@ public class SplashScreenActivity extends AppCompatActivity implements HelperRes
                 AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.SERVER_PATH, serverPath, context);
                 mLoginHelper.checkConnectionToServer(serverPath);
             }
-        });
+        }, true);
     }
 
     @Override
@@ -129,7 +121,6 @@ public class SplashScreenActivity extends AppCompatActivity implements HelperRes
                 AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.SERVER_PATH, serverPath, context);
                 mLoginHelper.checkConnectionToServer(serverPath);
             }
-        });
-
+        }, true);
     }
 }

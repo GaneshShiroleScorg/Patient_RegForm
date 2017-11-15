@@ -1,7 +1,6 @@
 {
-  "clinicLogoUrl": "http://www.antarnadcounselling.com/Images/antarnad-office.jpg",
-  "clinicName": "Antarnad Counselling Center",
-  "isNewUser" : true,
+  "isRegisteredUser": true,
+  "isClinicReg": true,
   "personalInfo": {
     "pages": [
       {

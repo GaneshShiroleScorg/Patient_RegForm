@@ -1,28 +1,45 @@
 package com.scorg.forms.activities;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.scorg.forms.R;
 import com.scorg.forms.customui.CustomButton;
 import com.scorg.forms.customui.CustomEditText;
 import com.scorg.forms.helpers.LoginHelper;
+import com.scorg.forms.interfaces.CheckIpConnection;
 import com.scorg.forms.interfaces.CustomResponse;
 import com.scorg.forms.interfaces.HelperResponse;
 import com.scorg.forms.models.login.DocDetail;
 import com.scorg.forms.models.login.LoginModel;
 import com.scorg.forms.preference.AppPreferencesManager;
 import com.scorg.forms.util.CommonMethods;
+import com.scorg.forms.util.Config;
 import com.scorg.forms.util.Constants;
 import com.scorg.forms.util.Valid;
+
+import java.util.ArrayList;
 
 import static com.scorg.forms.util.Constants.SUCCESS;
 
@@ -72,11 +89,29 @@ public class LoginActivity extends AppCompatActivity implements HelperResponse {
     }
 
     private void go() {
+
+        // hardcoded
+        ArrayList<String> location =new ArrayList<String>();//Creating arraylist
+        location.add("Pune");//Adding object in arraylist
+        location.add("Mumbai");
+        location.add("Delhi");
+        location.add("Ahmednagar");
+
+        // hardcoded
+        ArrayList<String> clinic =new ArrayList<String>();//Creating arraylist
+        clinic.add("Apollo");//Adding object in arraylist
+        clinic.add("Sahyadri");
+        clinic.add("Sasun");
+        clinic.add("Sanjivani");
+
         String email = mEmailEditText.getText().toString();
         String password = mPasswordEditText.getText().toString();
-        if (!validate(email, password)) {
-            LoginHelper loginHelper = new LoginHelper(mContext);
-            loginHelper.doLogin(email, password);
+        if (validate(email, password)) {
+            /*LoginHelper loginHelper = new LoginHelper(mContext);
+            loginHelper.doLogin(email, password);*/
+
+            // hardcoded
+            showLocationDialog(clinic, location);
         }
     }
 
@@ -94,7 +129,7 @@ public class LoginActivity extends AppCompatActivity implements HelperResponse {
         if (message != null)
             CommonMethods.showToast(mContext, message);
 
-        return message != null;
+        return message == null;
     }
 
     @Override
@@ -160,5 +195,75 @@ public class LoginActivity extends AppCompatActivity implements HelperResponse {
                 });
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    //this alert is shown for input of serverpath
+    public void showLocationDialog(final ArrayList<String> clinicList, final ArrayList<String> locationList) {
+        final Dialog dialog = new Dialog(LoginActivity.this);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.clinic_location_dialog);
+
+        // bindview
+        Button okButton = dialog.findViewById(R.id.okButton);
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentObj = new Intent(LoginActivity.this, PersonalInfoActivity.class);
+                startActivity(intentObj);
+                dialog.dismiss();
+                finish();
+            }
+        });
+
+        Spinner dropDownClinic = dialog.findViewById(R.id.dropDownClinic);
+
+        if (clinicList.size() > 0)
+            if (!clinicList.get(0).equals("Select Clinic"))
+                clinicList.add(0, "Select Clinic");
+
+        ArrayAdapter<String> adapterClinic = new ArrayAdapter<>(dropDownClinic.getContext(), R.layout.dropdown_item, clinicList);
+        dropDownClinic.setAdapter(adapterClinic);
+
+        dropDownClinic.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                if (position != 0) {
+                    // set latest value
+
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        Spinner dropDownLocation = dialog.findViewById(R.id.dropDownLocation);
+
+        if (locationList.size() > 0)
+            if (!locationList.get(0).equals("Select Location"))
+                locationList.add(0, "Select Location");
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(dropDownLocation.getContext(), R.layout.dropdown_item, locationList);
+        dropDownLocation.setAdapter(adapter);
+
+        dropDownLocation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                if (position != 0) {
+                    // set latest value
+
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        dialog.show();
     }
 }

@@ -186,7 +186,7 @@ public class CommonMethods {
     }
 
     //this alert is shown for input of serverpath
-    public static Dialog showAlertDialog(Context activity, String dialogHeader, CheckIpConnection checkIpConnection) {
+    public static Dialog showAlertDialog(Context activity, String dialogHeader, CheckIpConnection checkIpConnection, final boolean isFinishActivity) {
         final Context mContext = activity;
         mCheckIpConnection = checkIpConnection;
         final Dialog dialog = new Dialog(activity);
@@ -218,9 +218,11 @@ public class CommonMethods {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                ((Activity) mContext).finish();
+                if (isFinishActivity)
+                    ((Activity) mContext).finish();
             }
         });
+
         dialog.show();
 
         return dialog;

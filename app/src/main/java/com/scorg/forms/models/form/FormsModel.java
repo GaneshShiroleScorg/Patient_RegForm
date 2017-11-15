@@ -10,12 +10,13 @@ import java.util.ArrayList;
 
 public class FormsModel implements Parcelable {
 
-    @SerializedName("clinicLogoUrl")
+    @SerializedName("isRegisteredUser")
     @Expose
-    private String clinicLogoUrl;
-    @SerializedName("clinicName")
+    private boolean isRegisteredUser;
+    @SerializedName("isClinicReg")
     @Expose
-    private String clinicName;
+    private boolean isClinicReg;
+
     @SerializedName("personalInfo")
     @Expose
     private PersonalInfo personalInfo;
@@ -40,12 +41,10 @@ public class FormsModel implements Parcelable {
     };
 
     protected FormsModel(Parcel in) {
-        this.clinicLogoUrl = ((String) in.readValue((String.class.getClassLoader())));
-        this.clinicName = ((String) in.readValue((String.class.getClassLoader())));
-
+        this.isRegisteredUser = ((boolean) in.readValue((String.class.getClassLoader())));
+        this.isClinicReg = ((boolean) in.readValue((String.class.getClassLoader())));
         this.personalInfo = ((PersonalInfo) in.readValue((PersonalInfo.class.getClassLoader())));
         in.readList(this.forms, (Form.class.getClassLoader()));
-
     }
 
     public FormsModel() {
@@ -67,26 +66,25 @@ public class FormsModel implements Parcelable {
         this.forms = forms;
     }
 
-    public String getClinicLogoUrl() {
-        return clinicLogoUrl;
+    public boolean isRegisteredUser() {
+        return isRegisteredUser;
     }
 
-    public void setClinicLogoUrl(String clinicLogoUrl) {
-        this.clinicLogoUrl = clinicLogoUrl;
+    public void setRegisteredUser(boolean registeredUser) {
+        isRegisteredUser = registeredUser;
     }
 
-    public String getClinicName() {
-        return clinicName;
+    public boolean isClinicReg() {
+        return isClinicReg;
     }
 
-    public void setClinicName(String clinicName) {
-        this.clinicName = clinicName;
+    public void setClinicReg(boolean clinicReg) {
+        isClinicReg = clinicReg;
     }
 
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeValue(clinicLogoUrl);
-        dest.writeValue(clinicName);
-
+        dest.writeValue(isRegisteredUser);
+        dest.writeValue(isClinicReg);
         dest.writeValue(personalInfo);
         dest.writeList(forms);
     }

@@ -1,5 +1,7 @@
 package com.scorg.forms.activities;
 
+import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,6 +10,10 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.MenuBuilder;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,11 +30,17 @@ import com.scorg.forms.database.AppDBHelper;
 import com.scorg.forms.fragments.FormFragment;
 import com.scorg.forms.fragments.NewRegistrationFragment;
 import com.scorg.forms.fragments.ProfilePageFragment;
+import com.scorg.forms.helpers.LoginHelper;
+import com.scorg.forms.interfaces.CheckIpConnection;
+import com.scorg.forms.interfaces.CustomResponse;
+import com.scorg.forms.interfaces.HelperResponse;
 import com.scorg.forms.models.form.Form;
 import com.scorg.forms.models.form.FormsModel;
+import com.scorg.forms.models.login.IpTestResponseModel;
 import com.scorg.forms.preference.AppPreferencesManager;
 import com.scorg.forms.singleton.Device;
 import com.scorg.forms.util.CommonMethods;
+import com.scorg.forms.util.Constants;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,26 +56,33 @@ import static com.scorg.forms.activities.FormsActivity.FORM_INDEX;
 import static com.scorg.forms.fragments.ProfilePageFragment.PERSONAL_INFO_FORM;
 import static com.scorg.forms.util.Constants.PHONE;
 
-public class PersonalInfoActivity extends AppCompatActivity implements FormFragment.ButtonClickListener, NewRegistrationFragment.OnRegistrationListener, ProfilePageFragment.ButtonClickListener {
+public class PersonalInfoActivity extends AppCompatActivity implements FormFragment.ButtonClickListener, NewRegistrationFragment.OnRegistrationListener, ProfilePageFragment.ButtonClickListener, HelperResponse {
 
     private FormsModel formsModel;
     private FormsModel newFormsModel;
     private RelativeLayout bottomTabLayout;
 
     // show
-
     private CustomProgressDialog customProgressDialog;
     private Timer timer = new Timer();
     private TabLayout formTabLayout;
     private Context mContext;
+    private LoginHelper mLoginHelper;
+
+    private String clinicLogo = "";
+    private String clinicName = "";
+    private Menu menu;
 
     @SuppressWarnings("CheckResult")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_info);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         mContext = PersonalInfoActivity.this;
+        mLoginHelper = new LoginHelper(mContext);
 
         if (Device.getInstance(mContext).getDeviceType().equals(PHONE)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -77,14 +96,6 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
             AlertDialog alert = builder.create();
             alert.show();
         }
-
-        ImageView logoutView = findViewById(R.id.logoutView);
-        logoutView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logoutDialog();
-            }
-        });
 
         customProgressDialog = new CustomProgressDialog(mContext);
         customProgressDialog.setCancelable(false);
@@ -234,8 +245,8 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         Intent intent = new Intent(mContext, FormsActivity.class);
         intent.putExtra(FORM, form);
         intent.putExtra(FORM_INDEX, tab.getPosition());
-        intent.putExtra(CLINIC_NAME, formsModel.getClinicName());
-        intent.putExtra(CLINIC_LOGO, formsModel.getClinicLogoUrl());
+        intent.putExtra(CLINIC_NAME, clinicName);
+        intent.putExtra(CLINIC_LOGO, clinicLogo);
 
         startActivity(intent);
     }
@@ -306,10 +317,10 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         int iconSize = getResources().getDimensionPixelSize(R.dimen.icon_size);
 
         TextView headerName = findViewById(R.id.titleTextView);
-        headerName.setText(formsModel.getClinicName());
+        headerName.setText(clinicName);
         ImageView headerLogo = findViewById(R.id.logo);
         Glide.with(mContext)
-                .load(formsModel.getClinicLogoUrl())
+                .load(clinicLogo)
                 .into(headerLogo);
         //-------
 
@@ -325,10 +336,10 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         int iconSize = getResources().getDimensionPixelSize(R.dimen.icon_size);
 
         TextView headerName = findViewById(R.id.titleTextView);
-        headerName.setText(formsModel.getClinicName());
+        headerName.setText(clinicName);
         ImageView headerLogo = findViewById(R.id.logo);
         Glide.with(mContext)
-                .load(formsModel.getClinicLogoUrl())
+                .load(clinicLogo)
                 .into(headerLogo);
         //-------
 
@@ -354,5 +365,106 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         }, 300);
     }
 
+    // Menu
 
+    @SuppressLint("RestrictedApi")
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.setting_menu, menu);
+
+        if (menu instanceof MenuBuilder) {
+            MenuBuilder m = (MenuBuilder) menu;
+            m.setOptionalIconsVisible(true);
+        }
+
+        this.menu = menu;
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        switch (item.getItemId()) {
+            case R.id.change_ip:
+                CommonMethods.showAlertDialog(mContext, getString(R.string.server_path) + "\n" + getString(R.string.for_example_server_path), new CheckIpConnection() {
+                    @Override
+                    public void onOkButtonClickListener(String serverPath, Context context, Dialog dialog) {
+                        AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.SERVER_PATH, serverPath, context);
+                        mLoginHelper.checkConnectionToServer(serverPath);
+                        dialog.dismiss();
+                    }
+                }, false);
+                return true;
+            case R.id.logout:
+                logoutDialog();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onSuccess(String mOldDataTag, CustomResponse customResponse) {
+        IpTestResponseModel ipTestResponseModel = (IpTestResponseModel) customResponse;
+        if (ipTestResponseModel.getCommon().getStatusCode().equals(Constants.SUCCESS)) {
+            AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.IS_VALID_IP_CONFIG, Constants.TRUE, mContext);
+            Intent intentObj = new Intent(mContext, LoginActivity.class);
+            startActivity(intentObj);
+            finish();
+        } else {
+            AppPreferencesManager.putString(Constants.LOGIN_SUCCESS, Constants.FALSE, mContext);
+            CommonMethods.showAlertDialog(mContext, getString(R.string.wrong_server_path) + "\n" + getString(R.string.for_example_server_path), new CheckIpConnection() {
+                @Override
+                public void onOkButtonClickListener(String serverPath, Context context, Dialog dialog) {
+                    AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.SERVER_PATH, serverPath, context);
+                    mLoginHelper.checkConnectionToServer(serverPath);
+                }
+            }, false);
+        }
+    }
+
+    @Override
+    public void onParseError(String mOldDataTag, String errorMessage) {
+        AppPreferencesManager.putString(Constants.LOGIN_SUCCESS, Constants.FALSE, mContext);
+        CommonMethods.showAlertDialog(mContext, getString(R.string.wrong_server_path) + "\n" + getString(R.string.for_example_server_path), new CheckIpConnection() {
+            @Override
+            public void onOkButtonClickListener(String serverPath, Context context, Dialog dialog) {
+                AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.SERVER_PATH, serverPath, context);
+                mLoginHelper.checkConnectionToServer(serverPath);
+            }
+        }, false);
+    }
+
+    @Override
+    public void onServerError(String mOldDataTag, String serverErrorMessage) {
+        AppPreferencesManager.putString(Constants.LOGIN_SUCCESS, Constants.FALSE, mContext);
+        CommonMethods.showAlertDialog(mContext, getString(R.string.wrong_server_path) + "\n" + getString(R.string.for_example_server_path), new CheckIpConnection() {
+            @Override
+            public void onOkButtonClickListener(String serverPath, Context context, Dialog dialog) {
+                AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.SERVER_PATH, serverPath, context);
+                mLoginHelper.checkConnectionToServer(serverPath);
+            }
+        }, false);
+    }
+
+    @Override
+    public void onNoConnectionError(String mOldDataTag, String serverErrorMessage) {
+        AppPreferencesManager.putString(Constants.LOGIN_SUCCESS, Constants.FALSE, mContext);
+        CommonMethods.showAlertDialog(mContext, getString(R.string.wrong_server_path) + "\n" + getString(R.string.for_example_server_path), new CheckIpConnection() {
+            @Override
+            public void onOkButtonClickListener(String serverPath, Context context, Dialog dialog) {
+                AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.SERVER_PATH, serverPath, context);
+                mLoginHelper.checkConnectionToServer(serverPath);
+            }
+        }, false);
+    }
+
+    public void setMenuVisibility(boolean isVisible) {
+        for (int i = 0; i < menu.size(); i++)
+            menu.getItem(i).setVisible(isVisible);
+    }
 }

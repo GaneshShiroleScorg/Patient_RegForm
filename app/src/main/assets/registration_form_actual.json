@@ -1,7 +1,6 @@
 {
-  "clinicLogoUrl": "http://www.antarnadcounselling.com/Images/antarnad-office.jpg",
-  "clinicName": "Antarnad Counselling Center",
-  "isNewUser" : false,
+  "isRegisteredUser": true,
+  "isClinicReg": true,
   "personalInfo": {
     "pages": [
       {
@@ -871,7 +870,7 @@
                 "Others"
               ],
               "showWhenSelect": "Others",
-              "matrix" : 3
+              "matrix": 3
             },
             {
               "type": "ratingbar",
@@ -1021,7 +1020,7 @@
                 "Others"
               ],
               "showWhenSelect": "Others",
-              "matrix" : 3
+              "matrix": 3
             },
             {
               "type": "ratingbar",
@@ -1039,7 +1038,7 @@
             }
           ]
         }
-  ]
+      ]
     }
   ]
 }
