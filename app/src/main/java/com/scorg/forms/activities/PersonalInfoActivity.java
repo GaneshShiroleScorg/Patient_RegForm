@@ -222,7 +222,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
     private void addProfileFragment(boolean isEditable, boolean isNew) {
 
         if (isEditable) {
-            FormFragment formFragment = FormFragment.newInstance(PERSONAL_INFO_FORM, isNew ? newFormsModel.getPersonalInfo().getPages() : formsModel.getPersonalInfo().getPages(), getResources().getString(R.string.personal_info)/*, isEditable*/, isNew, "");
+            FormFragment formFragment = FormFragment.newInstance(PERSONAL_INFO_FORM, isNew ? newFormsModel.getPersonalInfo() : formsModel.getPersonalInfo(), isNew, "");
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.container, formFragment, getResources().getString(R.string.personal_info) + PERSONAL_INFO_FORM);
             transaction.commit();
@@ -279,7 +279,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
     }
 
     @Override
-    public void submitClick(int formNumber, boolean isNew) {
+    public void submitClick(int formNumber, boolean isNew, String jsonString) {
         /*bottomTabLayout.setVisibility(GONE);
         showProgress(GONE);*/
         addProfileFragment(false, isNew);

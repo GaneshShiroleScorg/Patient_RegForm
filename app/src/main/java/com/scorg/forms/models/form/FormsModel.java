@@ -16,16 +16,13 @@ public class FormsModel implements Parcelable {
     @SerializedName("isClinicReg")
     @Expose
     private boolean isClinicReg;
-
     @SerializedName("personalInfo")
     @Expose
-    private PersonalInfo personalInfo;
-
+    private Form personalInfo;
     @SerializedName("forms")
     @Expose
     private ArrayList<Form> forms = new ArrayList<Form>();
     public final static Parcelable.Creator<FormsModel> CREATOR = new Creator<FormsModel>() {
-
 
         @SuppressWarnings({
                 "unchecked"
@@ -43,18 +40,18 @@ public class FormsModel implements Parcelable {
     protected FormsModel(Parcel in) {
         this.isRegisteredUser = ((boolean) in.readValue((String.class.getClassLoader())));
         this.isClinicReg = ((boolean) in.readValue((String.class.getClassLoader())));
-        this.personalInfo = ((PersonalInfo) in.readValue((PersonalInfo.class.getClassLoader())));
+        this.personalInfo = ((Form) in.readValue((Form.class.getClassLoader())));
         in.readList(this.forms, (Form.class.getClassLoader()));
     }
 
     public FormsModel() {
     }
 
-    public PersonalInfo getPersonalInfo() {
+    public Form getPersonalInfo() {
         return personalInfo;
     }
 
-    public void setPersonalInfo(PersonalInfo personalInfo) {
+    public void setPersonalInfo(Form personalInfo) {
         this.personalInfo = personalInfo;
     }
 

@@ -1,6 +1,7 @@
 package com.scorg.forms.fragments;
 
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
@@ -37,7 +38,9 @@ import com.scorg.forms.models.form.Page;
 import com.scorg.forms.util.CommonMethods;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 
 import static com.scorg.forms.fragments.FormFragment.FORM_NAME;
 import static com.scorg.forms.fragments.FormFragment.FORM_NUMBER;
@@ -48,14 +51,13 @@ public class FeedbackPageFragment extends Fragment {
     private ArrayList<Field> fields;
     private int formNumber;
     private String mReceivedFormName;
-    private boolean isEditable = true;
     private DatePickerDialog datePickerDialog;
 
     public FeedbackPageFragment() {
         // Required empty public constructor
     }
 
-    public static FeedbackPageFragment newInstance(int formNumber, int position, Page page, boolean isEditable, String mReceivedFormName) {
+    public static FeedbackPageFragment newInstance(int formNumber, int position, Page page, String mReceivedFormName) {
         FeedbackPageFragment fragment = new FeedbackPageFragment();
 
         Bundle args = new Bundle();
@@ -90,6 +92,7 @@ public class FeedbackPageFragment extends Fragment {
         return rootView;
     }
 
+    @SuppressLint("SetTextI18n")
     private void addField(final View fieldsContainer, final ArrayList<Field> fields, final Field field, final int fieldsIndex, final LayoutInflater inflater, int indexToAddView) {
 
         String questionNo = String.valueOf(fieldsIndex + 1) + ". ";
@@ -114,10 +117,9 @@ public class FeedbackPageFragment extends Fragment {
                         android.R.layout.simple_dropdown_item_1line, field.getDataList());
                 textBox.setAdapter(adapter);
 
-                textBox.setEnabled(isEditable);
-
                 // set pre value
                 textBox.setText(field.getValue());
+                final String preValue = field.getValue();
 
                 if (field.getLength() > 0) {
                     InputFilter[] fArray = new InputFilter[1];
@@ -156,11 +158,12 @@ public class FeedbackPageFragment extends Fragment {
                         textBox.setBackgroundResource(R.drawable.edittext_selector);
                         // set latest value
                         field.setValue(String.valueOf(editable).trim());
+
+                        field.setUpdated(!preValue.equals(field.getValue()));
                     }
                 });
 
                 ImageView plusButton = fieldLayout.findViewById(R.id.plusButton);
-                plusButton.setEnabled(isEditable);
 
                 plusButton.setVisibility(View.VISIBLE);
                 plusButton.setOnClickListener(new View.OnClickListener() {
@@ -202,7 +205,6 @@ public class FeedbackPageFragment extends Fragment {
 
                 final EditText textBox = fieldLayout.findViewById(R.id.editText);
                 textBox.setId(CommonMethods.generateViewId());
-                textBox.setEnabled(isEditable);
 
                 field.setFieldId(textBox.getId());
 
@@ -212,6 +214,7 @@ public class FeedbackPageFragment extends Fragment {
 
                 // set pre value
                 textBox.setText(field.getValue());
+                final String preValue = field.getValue();
 
                 if (field.getLength() > 0) {
                     InputFilter[] fArray = new InputFilter[1];
@@ -236,6 +239,8 @@ public class FeedbackPageFragment extends Fragment {
                         textBox.setBackgroundResource(R.drawable.edittext_selector);
                         // set latest value
                         field.setValue(String.valueOf(editable).trim());
+
+                        field.setUpdated(!preValue.equals(field.getValue()));
                     }
                 });
 
@@ -290,6 +295,22 @@ public class FeedbackPageFragment extends Fragment {
 
                 final EditText ratingReasonTextBox = fieldLayout.findViewById(R.id.ratingReasonTextBox);
 
+                ratingReasonTextBox.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        // set latest value
+                        field.setTextValue(String.valueOf(editable).trim());
+                    }
+                });
+
                 if (!field.getHint().equals(""))
                     ratingReasonTextBox.setHint(field.getHint());
 
@@ -311,6 +332,7 @@ public class FeedbackPageFragment extends Fragment {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void addDropDown(String questionNo, View fieldsContainer, final Field field, LayoutInflater inflater, int indexToAddView, boolean isMixed) {
 
         View fieldLayout = inflater.inflate(R.layout.feedback_dropdown_layout, (LinearLayout) fieldsContainer, false);
@@ -345,10 +367,10 @@ public class FeedbackPageFragment extends Fragment {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(dropDown.getContext(), R.layout.dropdown_item, dataList);
         dropDown.setAdapter(adapter);
 
-        dropDown.setEnabled(isEditable);
-
         // set pre value
         dropDown.setSelection(dataList.indexOf(field.getValue()));
+        final String preValue = field.getValue();
+        final String preOtherValue = field.getTextValue();
 
         dropDown.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
@@ -381,6 +403,8 @@ public class FeedbackPageFragment extends Fragment {
                     dropDown.setBackgroundResource(R.drawable.dropdown_selector);
 
                 } else field.setValue("");
+
+                field.setUpdated(!preValue.equals(field.getValue()));
             }
 
             @Override
@@ -411,6 +435,8 @@ public class FeedbackPageFragment extends Fragment {
                 @Override
                 public void afterTextChanged(Editable s) {
                     field.setTextValue(String.valueOf(s));
+
+                    field.setUpdated(!preOtherValue.equals(field.getTextValue()));
                 }
             });
         }
@@ -449,6 +475,7 @@ public class FeedbackPageFragment extends Fragment {
                             if (!datePickerDialog.isAdded()) {
                                 datePickerDialog.show(getChildFragmentManager(), getResources().getString(R.string.select_date));
                                 datePickerDialog.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
+                                    @SuppressLint("SetTextI18n")
                                     @Override
                                     public void onDateSet(DatePickerDialog dialog, int year, int monthOfYear, int dayOfMonth) {
                                         if (field.getName().equalsIgnoreCase("age") || field.getName().toLowerCase().contains("age"))
@@ -491,6 +518,7 @@ public class FeedbackPageFragment extends Fragment {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void addCheckbox(String questionNo, View fieldsContainer, final Field field, LayoutInflater inflater, int indexToAddView, boolean isMixed) {
         View fieldLayout = inflater.inflate(R.layout.feedback_checkbox_layout, (LinearLayout) fieldsContainer, false);
         TextView labelView = fieldLayout.findViewById(R.id.labelView);
@@ -511,6 +539,9 @@ public class FeedbackPageFragment extends Fragment {
 
         ArrayList<String> dataList = field.getDataList();
         final ArrayList<String> values = field.getValues();
+        final ArrayList<String> preValues = new ArrayList<>(values);
+
+        final String preOtherValue = field.getTextValue();
 
         boolean isOthersThere = false;
 
@@ -528,8 +559,6 @@ public class FeedbackPageFragment extends Fragment {
                     TableRow.LayoutParams.WRAP_CONTENT
             ));
             checkBox.setId(CommonMethods.generateViewId());
-
-            checkBox.setEnabled(isEditable);
 
             // set pre value
             for (String value : values)
@@ -564,6 +593,10 @@ public class FeedbackPageFragment extends Fragment {
                     } else {
                         values.remove(valueText);
                     }
+
+                    Collections.sort(preValues);
+                    Collections.sort(values);
+                    field.setUpdated(!Arrays.equals(preValues.toArray(),values.toArray()));
                 }
             });
 
@@ -604,6 +637,8 @@ public class FeedbackPageFragment extends Fragment {
                 @Override
                 public void afterTextChanged(Editable s) {
                     field.setTextValue(String.valueOf(s));
+
+                    field.setUpdated(!preOtherValue.equals(field.getTextValue()));
                 }
             });
         }
@@ -615,6 +650,7 @@ public class FeedbackPageFragment extends Fragment {
 
     // Add Radio Button
 
+    @SuppressLint("SetTextI18n")
     private void addRadioButton(String questionNo, final View fieldsContainer, final Field field, final LayoutInflater inflater, int indexToAddView, boolean isMixed) {
         View fieldLayout = inflater.inflate(R.layout.feedback_radiobutton_layout, (LinearLayout) fieldsContainer, false);
         TextView labelView = fieldLayout.findViewById(R.id.labelView);
@@ -635,6 +671,9 @@ public class FeedbackPageFragment extends Fragment {
 
         ArrayList<String> dataList = field.getDataList();
 
+        final String preValue = field.getValue();
+        final String preOtherValue = field.getTextValue();
+
         boolean isOthersThere = false;
 
         for (int dataIndex = 0; dataIndex < dataList.size(); dataIndex++) {
@@ -646,8 +685,6 @@ public class FeedbackPageFragment extends Fragment {
             RadioButton radioButton = (RadioButton) inflater.inflate(R.layout.radiobutton, radioGroup, false);
             radioButton.setId(CommonMethods.generateViewId());
             radioButton.setText(data);
-
-            radioButton.setEnabled(isEditable);
 
             // set pre value
             if (field.getValue().equals(radioButton.getText().toString()))
@@ -676,6 +713,8 @@ public class FeedbackPageFragment extends Fragment {
 
                 field.setValue(valueText);
                 radioGroupError.setText("");
+
+                field.setUpdated(!preValue.equals(field.getValue()));
             }
         });
 
@@ -703,6 +742,8 @@ public class FeedbackPageFragment extends Fragment {
                 @Override
                 public void afterTextChanged(Editable s) {
                     field.setTextValue(String.valueOf(s));
+
+                    field.setUpdated(!preOtherValue.equals(field.getTextValue()));
                 }
             });
         }

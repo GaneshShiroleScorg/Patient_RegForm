@@ -17,7 +17,7 @@ import com.scorg.forms.fragments.FeedbackFormFragment;
 import com.scorg.forms.fragments.FormFragment;
 import com.scorg.forms.models.form.Form;
 
-public class FormsActivity extends AppCompatActivity implements FormFragment.ButtonClickListener {
+public class FormsActivity extends AppCompatActivity implements FormFragment.ButtonClickListener, FeedbackFormFragment.ButtonClickListener {
 
     private static final String TAG = "Form";
 
@@ -36,10 +36,10 @@ public class FormsActivity extends AppCompatActivity implements FormFragment.But
         int formIndex = getIntent().getIntExtra(FORM_INDEX, 0);
 
         if (form.getFormName().toLowerCase().contains("feedback")) {
-            FeedbackFormFragment feedbackFormFragment = FeedbackFormFragment.newInstance(formIndex, form.getPages(), form.getFormName()/*, true*/, false, form.getDate());
+            FeedbackFormFragment feedbackFormFragment = FeedbackFormFragment.newInstance(formIndex, form, false, form.getDate());
             addFormFragment(feedbackFormFragment, form.getFormName(), formIndex);
         } else {
-            FormFragment formFragment = FormFragment.newInstance(formIndex, form.getPages(), form.getFormName()/*, true*/, false, form.getDate());
+            FormFragment formFragment = FormFragment.newInstance(formIndex, form, false, form.getDate());
             addFormFragment(formFragment, form.getFormName(), formIndex);
         }
 
@@ -99,12 +99,7 @@ public class FormsActivity extends AppCompatActivity implements FormFragment.But
     }
 
     @Override
-    public void submitClick(int formNumber, boolean isNew) {
-
-    }
-
-    @Override
-    public void editClick(int formNumber, boolean isNew) {
+    public void submitClick(int formNumber, boolean isNew, String jsonString) {
 
     }
 }

@@ -1,6 +1,7 @@
 package com.scorg.forms.fragments;
 
 
+import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -15,15 +16,24 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.scorg.forms.R;
 import com.scorg.forms.customui.CustomAutoCompleteEditText;
 import com.scorg.forms.customui.CustomEditText;
 import com.scorg.forms.customui.CustomViewPager;
 import com.scorg.forms.models.form.Field;
+import com.scorg.forms.models.form.Form;
 import com.scorg.forms.models.form.Page;
+import com.scorg.forms.models.form.Section;
+import com.scorg.forms.models.request.FieldRequest;
+import com.scorg.forms.models.request.FormRequest;
+import com.scorg.forms.util.CommonMethods;
 import com.scorg.forms.util.Valid;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import static com.scorg.forms.activities.FormsActivity.FORM;
 
 public class FeedbackFormFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
@@ -32,13 +42,9 @@ public class FeedbackFormFragment extends Fragment {
     private static final String TAG = "FeedbackForm";
     private static final String PAGES = "pages";
     public static final String FORM_NAME = "form_name";
-    public static final String IS_EDITABLE = "is_editable";
     public static final String IS_NEW = "is_new";
 
-    ArrayList<Page> pages;
-    private String formName;
     private int formNumber;
-    private boolean isEditable = true;
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private CustomViewPager mViewPager;
@@ -48,18 +54,19 @@ public class FeedbackFormFragment extends Fragment {
     private Button submitButton;
     private String mReceivedFormName;
     private boolean isValid;
+    private Form form;
+    private ButtonClickListener mListener;
 
     public FeedbackFormFragment() {
         // Required empty public constructor
     }
 
-    public static FeedbackFormFragment newInstance(int formNumber, ArrayList<Page> pages, String formName, boolean isNew, String date) {
+    public static FeedbackFormFragment newInstance(int formNumber, Form form, boolean isNew, String date) {
         FeedbackFormFragment fragment = new FeedbackFormFragment();
         Bundle args = new Bundle();
-        args.putParcelableArrayList(PAGES, pages);
+        args.putParcelable(FORM, form);
         args.putInt(FORM_NUMBER, formNumber);
         args.putBoolean(IS_NEW, isNew);
-        args.putString(FORM_NAME, formName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,7 +75,7 @@ public class FeedbackFormFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            pages = getArguments().getParcelableArrayList(PAGES);
+            form = getArguments().getParcelable(FORM);
             formNumber = getArguments().getInt(FORM_NUMBER);
             mReceivedFormName = getArguments().getString(FORM_NAME);
         }
@@ -92,17 +99,12 @@ public class FeedbackFormFragment extends Fragment {
 
         Drawable leftDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_edit);
 
-        if (isEditable) {
-            submitButton.setText(getResources().getString(R.string.submit));
-            submitButton.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-        } else {
-            submitButton.setText(getResources().getString(R.string.edit));
-            submitButton.setCompoundDrawablesWithIntrinsicBounds(leftDrawable, null, null, null);
-        }
+        submitButton.setText(getResources().getString(R.string.submit));
+        submitButton.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
 
         mViewPager = (CustomViewPager) rootView.findViewById(R.id.container);
         mViewPager.setId(formNumber + 2000);
-        setupViewPager(pages);
+        setupViewPager(form.getPages());
 
 
         nextButton.setOnClickListener(new View.OnClickListener() {
@@ -115,6 +117,8 @@ public class FeedbackFormFragment extends Fragment {
                     mViewPager.setCurrentItem(nextPosition);
                     handleButtons(nextPosition);
                 }
+
+                mListener.nextClick(formNumber);
             }
         });
 
@@ -124,6 +128,8 @@ public class FeedbackFormFragment extends Fragment {
                 int prePosition = mViewPager.getCurrentItem() - 1;
                 mViewPager.setCurrentItem(prePosition);
                 handleButtons(prePosition);
+
+                mListener.backClick(formNumber);
             }
         });
 
@@ -132,8 +138,82 @@ public class FeedbackFormFragment extends Fragment {
             public void onClick(View v) {
                 pageValidation(mViewPager.getCurrentItem(), true);
                 if (isValid) {
-                   // api call
+                    // api call
+                    FormRequest formRequest = new FormRequest();
+                    List<FieldRequest> fields = formRequest.getFields();
+
+                    for (Page page : form.getPages()) {
+                        for (Field field : page.getFields()) {
+                            addFields(fields, field);
+                        }
+
+                        for (Section section : page.getSection()) {
+                            for (Field field : section.getFields()) {
+                                addFields(fields, field);
+                            }
+                        }
+                    }
+
+                    Gson gson = new Gson();
+                    String jsonString = gson.toJson(formRequest);
+                    CommonMethods.log(TAG, jsonString);
+
+                    if (!formRequest.getFields().isEmpty())
+                        mListener.submitClick(formNumber, true, jsonString);
+                    else CommonMethods.showToast(getContext(), getString(R.string.nothing_updated));
+
                 }
+            }
+
+            private void addFields(List<FieldRequest> fields, Field field) {
+
+                if (field.isUpdated()) {
+                    FieldRequest fieldRequest = new FieldRequest();
+
+                    fieldRequest.setKey(field.getName());
+
+                    switch (field.getType()) {
+
+                        case PageFragment.TYPE.RADIOBUTTON_WITH_TEXT:
+                        case PageFragment.TYPE.DROPDOWN_WITH_TEXT:
+                            fieldRequest.setRating(null);
+                            fieldRequest.setValue(field.getValue());
+                            fieldRequest.setTextValue(field.getTextValue());
+                            fieldRequest.setValues(null);
+                            break;
+
+                        case PageFragment.TYPE.CHECKBOX_WITH_TEXT:
+                            fieldRequest.setRating(null);
+                            fieldRequest.setValue(null);
+                            fieldRequest.setTextValue(field.getTextValue());
+                            fieldRequest.setValues(field.getValues());
+                            break;
+
+                        case PageFragment.TYPE.RATINGBAR:
+                            fieldRequest.setRating(field.getRating());
+                            fieldRequest.setValue(null);
+                            fieldRequest.setTextValue(field.getTextValue());
+                            fieldRequest.setValues(null);
+                            break;
+                        case PageFragment.TYPE.CHECKBOX:
+                            fieldRequest.setRating(null);
+                            fieldRequest.setValue(null);
+                            fieldRequest.setTextValue(null);
+                            fieldRequest.setValues(field.getValues());
+                            break;
+                        default:
+                            fieldRequest.setRating(null);
+                            fieldRequest.setValue(field.getValue());
+                            fieldRequest.setTextValue(null);
+                            fieldRequest.setValues(null);
+                            break;
+                    }
+
+                    fields.add(fieldRequest);
+                }
+
+                for (Field fieldMore : field.getTextBoxGroup())
+                    addFields(fields, fieldMore);
             }
         });
 
@@ -147,20 +227,20 @@ public class FeedbackFormFragment extends Fragment {
         if (isShowError)
             parentView = mSectionsPagerAdapter.getItem(selectedTabPosition).getView();
 
-        Page page = pages.get(selectedTabPosition);
+        Page page = form.getPages().get(selectedTabPosition);
 
         isValid = true;
-            for (int fieldsIndex = 0; fieldsIndex < page.getFields().size(); fieldsIndex++) {
-                Field field = page.getFields().get(fieldsIndex);
+        for (int fieldsIndex = 0; fieldsIndex < page.getFields().size(); fieldsIndex++) {
+            Field field = page.getFields().get(fieldsIndex);
 
-                fieldValidation(field, parentView, isShowError);
+            fieldValidation(field, parentView, isShowError);
 
-                ArrayList<Field> moreFields = field.getTextBoxGroup();
+            ArrayList<Field> moreFields = field.getTextBoxGroup();
 
-                for (int moreFieldIndex = 0; moreFieldIndex < moreFields.size(); moreFieldIndex++) {
-                    Field moreField = moreFields.get(moreFieldIndex);
-                    fieldValidation(moreField, parentView, isShowError);
-                }
+            for (int moreFieldIndex = 0; moreFieldIndex < moreFields.size(); moreFieldIndex++) {
+                Field moreField = moreFields.get(moreFieldIndex);
+                fieldValidation(moreField, parentView, isShowError);
+            }
         }
     }
 
@@ -310,8 +390,7 @@ public class FeedbackFormFragment extends Fragment {
         ArrayList<FeedbackPageFragment> pageFragments = new ArrayList<>();
 
         for (int position = 0; position < pages.size(); position++) {
-
-            FeedbackPageFragment pageFragment = FeedbackPageFragment.newInstance(formNumber, position, pages.get(position), isEditable, mReceivedFormName);
+            FeedbackPageFragment pageFragment = FeedbackPageFragment.newInstance(formNumber, position, pages.get(position), mReceivedFormName);
             pageFragments.add(pageFragment);
         }
 
@@ -363,13 +442,37 @@ public class FeedbackFormFragment extends Fragment {
 
         @Override
         public int getCount() {
-            return pages.size();
+            return form.getPages().size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return pages.get(position).getPageName();
+            return form.getPages().get(position).getPageName();
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof ButtonClickListener) {
+            mListener = (ButtonClickListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement ButtonClickListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    // Listener
+    public interface ButtonClickListener {
+        void backClick(int formNumber);
+        void nextClick(int formNumber);
+        void submitClick(int formNumber, boolean isNew, String jsonString);
     }
 
 }

@@ -52,5 +52,6 @@
     <string name="server_path">Enter the server path</string>
     <string name="wrong_server_path">Re-enter correct server path</string>
     <string name="change_ip">Change IP</string>
+    <string name="nothing_updated">Nothing to update.</string>
 
 </resources>

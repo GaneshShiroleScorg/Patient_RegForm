@@ -49,7 +49,9 @@ import com.scorg.forms.util.CommonMethods;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Locale;
 
 import droidninja.filepicker.FilePickerBuilder;
@@ -59,7 +61,6 @@ import permissions.dispatcher.RuntimePermissions;
 
 import static com.scorg.forms.fragments.FormFragment.FORM_NAME;
 import static com.scorg.forms.fragments.FormFragment.FORM_NUMBER;
-import static com.scorg.forms.fragments.FormFragment.IS_EDITABLE;
 import static com.scorg.forms.fragments.ProfilePageFragment.PERSONAL_INFO_FORM;
 import static com.scorg.forms.fragments.UndertakingFragment.MAX_ATTACHMENT_COUNT;
 
@@ -71,7 +72,6 @@ import static com.scorg.forms.fragments.UndertakingFragment.MAX_ATTACHMENT_COUNT
 public class PageFragment extends Fragment {
 
     private DatePickerDialog datePickerDialog;
-    private boolean isEditable = true;
     private TextView mTitleTextView;
     private LinearLayout mSectionsContainer;
     private LayoutInflater mInflater;
@@ -79,7 +79,7 @@ public class PageFragment extends Fragment {
     private String mReceivedFormName;
 
     private ImageView profilePhoto;
-    private TextView editButton;
+    private TextView profilePhotoEditButton;
 
     interface INPUT_TYPE {
         String NAME = "name";
@@ -120,12 +120,11 @@ public class PageFragment extends Fragment {
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static PageFragment newInstance(int formNumber, int pageNumber, Page page, boolean isEditable, String mReceivedFormName) {
+    public static PageFragment newInstance(int formNumber, int pageNumber, Page page, String mReceivedFormName) {
         PageFragment fragment = new PageFragment();
         Bundle args = new Bundle();
         args.putInt(FORM_NUMBER, formNumber);
         args.putInt(PAGE_NUMBER, pageNumber);
-        args.putBoolean(IS_EDITABLE, isEditable);
         args.putParcelable(PAGE, page);
         args.putString(FORM_NAME, mReceivedFormName);
         fragment.setArguments(args);
@@ -139,7 +138,6 @@ public class PageFragment extends Fragment {
             page = getArguments().getParcelable(PAGE);
             pageNumber = getArguments().getInt(PAGE_NUMBER);
             formNumber = getArguments().getInt(FORM_NUMBER);
-            isEditable = getArguments().getBoolean(IS_EDITABLE);
 
             Calendar c = Calendar.getInstance();
             SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
@@ -172,15 +170,12 @@ public class PageFragment extends Fragment {
         for (int sectionIndex = 0; sectionIndex < page.getSection().size(); sectionIndex++) {
             View sectionLayout = mInflater.inflate(R.layout.section_layout, mSectionsContainer, false);
 
-
             if (page.getSection().get(sectionIndex).getProfilePhoto() != null) {
                 View profilePhotoLayout = sectionLayout.findViewById(R.id.profilePhotoLayout);
                 profilePhoto = sectionLayout.findViewById(R.id.profilePhoto);
-                editButton = sectionLayout.findViewById(R.id.editButton);
+                profilePhotoEditButton = sectionLayout.findViewById(R.id.editButton);
 
-                editButton.setEnabled(isEditable);
-
-                editButton.setOnClickListener(new View.OnClickListener() {
+                profilePhotoEditButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         PageFragmentPermissionsDispatcher.onPickPhotoWithCheck(PageFragment.this);
@@ -188,7 +183,7 @@ public class PageFragment extends Fragment {
                 });
 
                 Drawable leftDrawable = AppCompatResources.getDrawable(getContext(), R.drawable.ic_photo_camera);
-                editButton.setCompoundDrawablesWithIntrinsicBounds(leftDrawable, null, null, null);
+                profilePhotoEditButton.setCompoundDrawablesWithIntrinsicBounds(leftDrawable, null, null, null);
 
                 TextView mobileText = sectionLayout.findViewById(R.id.mobileText);
                 mobileText.setText(AppPreferencesManager.getString(AppPreferencesManager.PREFERENCES_KEY.MOBILE, getContext()));
@@ -261,10 +256,9 @@ public class PageFragment extends Fragment {
                         android.R.layout.simple_dropdown_item_1line, field.getDataList());
                 textBox.setAdapter(adapter);
 
-                textBox.setEnabled(isEditable);
-
                 // set pre value
                 textBox.setText(field.getValue());
+                final String preValue = field.getValue();
 
                 if (field.getLength() > 0) {
                     InputFilter[] fArray = new InputFilter[1];
@@ -303,11 +297,12 @@ public class PageFragment extends Fragment {
                         textBox.setBackgroundResource(R.drawable.edittext_selector);
                         // set latest value
                         field.setValue(String.valueOf(editable).trim());
+
+                        field.setUpdated(!preValue.equals(field.getValue()));
                     }
                 });
 
                 ImageView plusButton = fieldLayout.findViewById(R.id.plusButton);
-                plusButton.setEnabled(isEditable);
 
                 plusButton.setVisibility(View.VISIBLE);
                 plusButton.setOnClickListener(new View.OnClickListener() {
@@ -350,7 +345,6 @@ public class PageFragment extends Fragment {
                 final EditText textBox = fieldLayout.findViewById(R.id.editText);
                 LinearLayout.LayoutParams textBoxParams = (LinearLayout.LayoutParams) textBox.getLayoutParams();
                 textBox.setId(CommonMethods.generateViewId());
-                textBox.setEnabled(isEditable);
 
                 if (!field.getHint().equals(""))
                     textBox.setHint(field.getHint());
@@ -363,6 +357,7 @@ public class PageFragment extends Fragment {
 
                 // set pre value
                 textBox.setText(field.getValue());
+                final String preValue = field.getValue();
 
                 if (field.getLength() > 0) {
                     InputFilter[] fArray = new InputFilter[1];
@@ -449,6 +444,8 @@ public class PageFragment extends Fragment {
                         textBox.setBackgroundResource(R.drawable.edittext_selector);
                         // set latest value
                         field.setValue(String.valueOf(editable).trim());
+
+                        field.setUpdated(!preValue.equals(field.getValue()));
                     }
                 });
 
@@ -472,13 +469,13 @@ public class PageFragment extends Fragment {
 
                 ArrayList<String> dataList = field.getDataList();
 
+                final String preValue = field.getValue();
+
                 for (int dataIndex = 0; dataIndex < dataList.size(); dataIndex++) {
                     String data = dataList.get(dataIndex);
                     RadioButton radioButton = (RadioButton) inflater.inflate(R.layout.radiobutton, radioGroup, false);
                     radioButton.setId(CommonMethods.generateViewId());
                     radioButton.setText(data);
-
-                    radioButton.setEnabled(isEditable);
 
                     // set pre value
                     if (field.getValue().equals(radioButton.getText().toString()))
@@ -496,6 +493,8 @@ public class PageFragment extends Fragment {
                         RadioButton radioButton = group.findViewById(checkedId);
                         field.setValue(radioButton.getText().toString());
                         radioGroupError.setText("");
+
+                        field.setUpdated(!preValue.equals(field.getValue()));
                     }
                 });
 
@@ -518,12 +517,11 @@ public class PageFragment extends Fragment {
 
                 ArrayList<String> dataList = field.getDataList();
                 final ArrayList<String> values = field.getValues();
+                final ArrayList<String> preValues = new ArrayList<>(values);
 
                 for (int dataIndex = 0; dataIndex < dataList.size(); dataIndex++) {
                     String data = dataList.get(dataIndex);
                     final CheckBox checkBox = (CheckBox) inflater.inflate(R.layout.checkbox, checkBoxGroup, false);
-
-                    checkBox.setEnabled(isEditable);
 
                     // set pre value
                     for (String value : values)
@@ -546,6 +544,10 @@ public class PageFragment extends Fragment {
                             } else {
                                 values.remove(checkBox.getText().toString());
                             }
+
+                            Collections.sort(preValues);
+                            Collections.sort(values);
+                            field.setUpdated(!Arrays.equals(preValues.toArray(),values.toArray()));
                         }
                     });
                     checkBoxGroup.addView(checkBox);
@@ -580,8 +582,6 @@ public class PageFragment extends Fragment {
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(dropDown.getContext(), R.layout.dropdown_item, dataList);
                 dropDown.setAdapter(adapter);
 
-                dropDown.setEnabled(isEditable);
-
                 dropDown.setOnTouchListener(new View.OnTouchListener() {
                     public boolean onTouch(View v, MotionEvent event) {
                         if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -591,8 +591,10 @@ public class PageFragment extends Fragment {
                     }
                 });
 
+
                 // set pre value
                 dropDown.setSelection(dataList.indexOf(field.getValue()));
+                final String preValue = field.getValue();
 
                 dropDown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
@@ -605,6 +607,8 @@ public class PageFragment extends Fragment {
                             dropDown.setBackgroundResource(R.drawable.dropdown_selector);
 
                         } else field.setValue("");
+
+                        field.setUpdated(!preValue.equals(field.getValue()));
                     }
 
                     @Override
@@ -624,6 +628,8 @@ public class PageFragment extends Fragment {
                 TextView labelView = fieldLayout.findViewById(R.id.labelView);
                 labelView.setText(field.isMandatory() ? "*" + field.getName() : field.getName());
 
+                final float preValue = field.getRating();
+
                 // Add Rating Bar
 
                 RatingBar ratingBar = fieldLayout.findViewById(R.id.ratingBar);
@@ -635,6 +641,22 @@ public class PageFragment extends Fragment {
                 if (!field.getHint().equals(""))
                     ratingReasonTextBox.setHint(field.getHint());
 
+                ratingReasonTextBox.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        // set latest value
+                        field.setTextValue(String.valueOf(editable).trim());
+                    }
+                });
+
                 ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
                     @Override
                     public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
@@ -642,6 +664,8 @@ public class PageFragment extends Fragment {
                         if (rating < 3f && rating != 0f)
                             ratingReasonTextBox.setVisibility(View.VISIBLE);
                         else ratingReasonTextBox.setVisibility(View.GONE);
+
+                        field.setUpdated(preValue != field.getRating());
                     }
                 });
 

@@ -53,7 +53,7 @@ public class Field implements Parcelable, Cloneable {
 
     @SerializedName("textValue")
     @Expose
-    private String textValue;
+    private String textValue = "";
 
     @SerializedName("showWhenSelect")
     @Expose
@@ -71,8 +71,14 @@ public class Field implements Parcelable, Cloneable {
     @Expose
     private int matrix;
 
+    @SerializedName("key")
+    @Expose
+    private String key = "";
+
     private int fieldId;
     private int errorViewId;
+
+    private boolean isUpdated = false;
 
     public final static Parcelable.Creator<Field> CREATOR = new Creator<Field>() {
 
@@ -109,9 +115,11 @@ public class Field implements Parcelable, Cloneable {
         this.hint = ((String) in.readValue((String.class.getClassLoader())));
         this.unit = ((String) in.readValue((String.class.getClassLoader())));
         this.matrix = ((int) in.readValue((int.class.getClassLoader())));
-
+        this.key = ((String) in.readValue((String.class.getClassLoader())));
         this.fieldId = ((int) in.readValue((int.class.getClassLoader())));
         this.errorViewId = ((int) in.readValue((int.class.getClassLoader())));
+
+        this.isUpdated = ((boolean) in.readValue((boolean.class.getClassLoader())));
     }
 
     public Field() {
@@ -261,6 +269,14 @@ public class Field implements Parcelable, Cloneable {
         this.unit = unit;
     }
 
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
     public int getFieldId() {
         return fieldId;
     }
@@ -275,6 +291,14 @@ public class Field implements Parcelable, Cloneable {
 
     public void setErrorViewId(int errorViewId) {
         this.errorViewId = errorViewId;
+    }
+
+    public boolean isUpdated() {
+        return isUpdated;
+    }
+
+    public void setUpdated(boolean updated) {
+        isUpdated = updated;
     }
 
     public void writeToParcel(Parcel dest, int flags) {
@@ -296,8 +320,10 @@ public class Field implements Parcelable, Cloneable {
         dest.writeValue(hint);
         dest.writeValue(unit);
         dest.writeValue(matrix);
+        dest.writeValue(key);
         dest.writeValue(fieldId);
         dest.writeValue(errorViewId);
+        dest.writeValue(isUpdated);
     }
 
     public int describeContents() {
