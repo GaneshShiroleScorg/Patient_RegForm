@@ -17,6 +17,7 @@
             android:id="@+id/textView_dialog_heading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textIsSelectable="true"
             android:layout_marginTop="@dimen/view_margin"
             android:gravity="center_vertical|center_horizontal"
             android:textSize="@dimen/field_text_size"

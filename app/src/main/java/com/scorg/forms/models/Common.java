@@ -5,30 +5,26 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.scorg.forms.interfaces.CustomResponse;
 
-public class Common implements Parcelable, CustomResponse {
+public class Common implements Parcelable {
 
-    /*@SerializedName("success")
+    @SerializedName("success")
     @Expose
-    private Boolean success;*/
+    private boolean success;
     @SerializedName("statusCode")
     @Expose
     private Integer statusCode;
     @SerializedName("statusMessage")
     @Expose
     private String statusMessage;
-    public final static Creator<Common> CREATOR = new Creator<Common>() {
+    public final static Parcelable.Creator<Common> CREATOR = new Creator<Common>() {
+
 
         @SuppressWarnings({
                 "unchecked"
         })
         public Common createFromParcel(Parcel in) {
-            Common instance = new Common();
-//            instance.success = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
-            instance.statusCode = ((Integer) in.readValue((Integer.class.getClassLoader())));
-            instance.statusMessage = ((String) in.readValue((String.class.getClassLoader())));
-            return instance;
+            return new Common(in);
         }
 
         public Common[] newArray(int size) {
@@ -37,13 +33,22 @@ public class Common implements Parcelable, CustomResponse {
 
     };
 
-   /* public Boolean isSuccess() {
+    protected Common(Parcel in) {
+        this.success = ((boolean) in.readValue((boolean.class.getClassLoader())));
+        this.statusCode = ((int) in.readValue((int.class.getClassLoader())));
+        this.statusMessage = ((String) in.readValue((String.class.getClassLoader())));
+    }
+
+    public Common() {
+    }
+
+    public boolean isSuccess() {
         return success;
     }
 
-    public void setSuccess(Boolean success) {
+    public void setSuccess(boolean success) {
         this.success = success;
-    }*/
+    }
 
     public Integer getStatusCode() {
         return statusCode;
@@ -62,7 +67,7 @@ public class Common implements Parcelable, CustomResponse {
     }
 
     public void writeToParcel(Parcel dest, int flags) {
-//        dest.writeValue(success);
+        dest.writeValue(success);
         dest.writeValue(statusCode);
         dest.writeValue(statusMessage);
     }

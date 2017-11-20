@@ -43,7 +43,6 @@ public class CommonMethods {
     private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
     private static final String TAG = "CommonMethods";
 
-    private static boolean alreadyRegisteredUser = false;
     private static CheckIpConnection mCheckIpConnection;
 
     public static int getAge(int year, int month, int day) {
@@ -163,10 +162,6 @@ public class CommonMethods {
         }
     }
 
-    public static void setAlreadyRegisteredUser(boolean alreadyRegisteredUser) {
-        CommonMethods.alreadyRegisteredUser = alreadyRegisteredUser;
-    }
-
     public static void log(String tag, String message) {
         Log.e(tag, "PatientRegApp" + message);
     }
@@ -206,7 +201,7 @@ public class CommonMethods {
                 EditText etServerPath = dialog.findViewById(R.id.et_server_path);
 
                 if (isValidIP(etServerPath.getText().toString())) {
-                    String mServerPath = Config.HTTP + etServerPath.getText().toString() + Config.API;
+                    String mServerPath = etServerPath.getText().toString();
                     Log.e(TAG, "SERVER PATH===" + mServerPath);
                     mCheckIpConnection.onOkButtonClickListener(mServerPath, mContext, dialog);
                 } else {

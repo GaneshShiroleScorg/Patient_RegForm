@@ -16,16 +16,12 @@ import android.widget.TextView;
 
 import com.scorg.forms.R;
 import com.scorg.forms.activities.PersonalInfoActivity;
-import com.scorg.forms.preference.AppPreferencesManager;
-import com.scorg.forms.util.CommonMethods;
 import com.scorg.forms.util.Valid;
 
 public class NewRegistrationFragment extends Fragment {
 
     private OnRegistrationListener mListener;
 
-    // hard coded
-    private String registeredMobile = "8208127880";
     private EditText mobileText;
     private Button getInfoButton;
 
@@ -94,23 +90,8 @@ public class NewRegistrationFragment extends Fragment {
 
         String mobile = mobileText.getText().toString().trim();
 
-        if (Valid.validateMobileNo(mobile, getContext(), true)) {
-
-            AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.MOBILE, mobile, getContext());
-
-            if (mobile.equals(registeredMobile)) {
-                CommonMethods.setAlreadyRegisteredUser(true);
-                mListener.onClickGetInfo(mobile);
-            } else {
-                CommonMethods.hideKeyboard(getActivity());
-
-                CommonMethods.setAlreadyRegisteredUser(false); // this means user is newly registered.
-
-                // Register directly if new mobile number, No need to show registration button
-                mListener.onClickRegister();
-
-            }
-        }
+        if (Valid.validateMobileNo(mobile, getContext(), true))
+            mListener.onClickGetInfo(mobile);
     }
 
     @Override
@@ -144,8 +125,6 @@ public class NewRegistrationFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnRegistrationListener {
-        // TODO: Update argument type and name
-        void onClickRegister();
         void onClickGetInfo(String mobileText);
     }
 }

@@ -159,7 +159,7 @@ public class FeedbackFormFragment extends Fragment {
                     CommonMethods.log(TAG, jsonString);
 
                     if (!formRequest.getFields().isEmpty())
-                        mListener.submitClick(formNumber, true, jsonString);
+                        mListener.submitClick(formNumber, jsonString);
                     else CommonMethods.showToast(getContext(), getString(R.string.nothing_updated));
 
                 }
@@ -472,7 +472,7 @@ public class FeedbackFormFragment extends Fragment {
     public interface ButtonClickListener {
         void backClick(int formNumber);
         void nextClick(int formNumber);
-        void submitClick(int formNumber, boolean isNew, String jsonString);
+        void submitClick(int formNumber, String jsonString);
     }
 
 }

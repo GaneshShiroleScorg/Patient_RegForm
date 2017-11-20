@@ -31,6 +31,7 @@ import com.scorg.forms.interfaces.ConnectionListener;
 import com.scorg.forms.interfaces.Connector;
 import com.scorg.forms.interfaces.CustomResponse;
 import com.scorg.forms.models.Common;
+import com.scorg.forms.models.PatientData;
 import com.scorg.forms.models.login.ActiveStatusModel;
 import com.scorg.forms.models.login.IpTestResponseModel;
 import com.scorg.forms.models.login.LoginModel;
@@ -447,6 +448,11 @@ public class RequestManager extends ConnectRequest implements Connector, Request
                     case Constants.LOGOUT: //This is for get archived list
                         ActiveStatusModel activeStatusLogout = new Gson().fromJson(data, ActiveStatusModel.class);
                         this.mConnectionListener.onResponse(ConnectionListener.RESPONSE_OK, activeStatusLogout, mOldDataTag);
+                        break;
+
+                    case Constants.GET_REGISTRATION_FORM: //This is for get archived list
+                        PatientData patientData = new Gson().fromJson(data, PatientData.class);
+                        this.mConnectionListener.onResponse(ConnectionListener.RESPONSE_OK, patientData, mOldDataTag);
                         break;
 
                     default:

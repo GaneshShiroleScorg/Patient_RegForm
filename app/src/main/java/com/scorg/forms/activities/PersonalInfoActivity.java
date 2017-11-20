@@ -23,7 +23,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.gson.Gson;
 import com.scorg.forms.R;
 import com.scorg.forms.customui.CustomProgressDialog;
 import com.scorg.forms.database.AppDBHelper;
@@ -31,11 +30,13 @@ import com.scorg.forms.fragments.FormFragment;
 import com.scorg.forms.fragments.NewRegistrationFragment;
 import com.scorg.forms.fragments.ProfilePageFragment;
 import com.scorg.forms.helpers.LoginHelper;
+import com.scorg.forms.helpers.PatientHelper;
 import com.scorg.forms.interfaces.CheckIpConnection;
 import com.scorg.forms.interfaces.CustomResponse;
 import com.scorg.forms.interfaces.HelperResponse;
+import com.scorg.forms.models.PatientData;
 import com.scorg.forms.models.form.Form;
-import com.scorg.forms.models.form.FormsModel;
+import com.scorg.forms.models.form.FormsData;
 import com.scorg.forms.models.login.IpTestResponseModel;
 import com.scorg.forms.preference.AppPreferencesManager;
 import com.scorg.forms.singleton.Device;
@@ -58,8 +59,6 @@ import static com.scorg.forms.util.Constants.PHONE;
 
 public class PersonalInfoActivity extends AppCompatActivity implements FormFragment.ButtonClickListener, NewRegistrationFragment.OnRegistrationListener, ProfilePageFragment.ButtonClickListener, HelperResponse {
 
-    private FormsModel formsModel;
-    private FormsModel newFormsModel;
     private RelativeLayout bottomTabLayout;
 
     // show
@@ -72,6 +71,10 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
     private String clinicLogo = "";
     private String clinicName = "";
     private Menu menu;
+    private FormsData formsData;
+    private PatientHelper mPatientHelper;
+
+    private String mobileText;
 
     @SuppressWarnings("CheckResult")
     @Override
@@ -82,6 +85,9 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         setSupportActionBar(toolbar);
 
         mContext = PersonalInfoActivity.this;
+        mPatientHelper = new PatientHelper(mContext);
+        mPatientHelper.getPatientInfo("");
+
         mLoginHelper = new LoginHelper(mContext);
 
         if (Device.getInstance(mContext).getDeviceType().equals(PHONE)) {
@@ -102,18 +108,14 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
 
         bottomTabLayout = findViewById(R.id.bottomTabLayout);
 
-
-//        CommonMethods.setEditTextLineColor(mobileText, getResources().getColor(android.R.color.white));
-
-        Gson gson = new Gson();
-        formsModel = gson.fromJson(loadJSONFromAsset("registration_form_actual.json"), FormsModel.class);
-        newFormsModel = gson.fromJson(loadJSONFromAsset("new_registration_form_actual.json"), FormsModel.class);
-
         addRegisterFragment();
-//        addUndertakingFragment();
+
+    }
+
+    @SuppressLint("CheckResult")
+    private void generateForm() {
 
         // Form Tab
-
         formTabLayout = findViewById(R.id.formTabLayout);
 
         int iconSize = getResources().getDimensionPixelSize(R.dimen.icon_size);
@@ -125,9 +127,9 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         requestOptions.error(R.drawable.ic_assignment);
         requestOptions.placeholder(R.drawable.ic_assignment);
 
-        for (int formIndex = 0; formIndex < formsModel.getForms().size(); formIndex++) {
+        for (int formIndex = 0; formIndex < formsData.getForms().size(); formIndex++) {
 
-            Form form = formsModel.getForms().get(formIndex);
+            Form form = formsData.getForms().get(formIndex);
 
             View tabView = getLayoutInflater().inflate(R.layout.custom_tab_form, null);
 
@@ -148,7 +150,7 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         formTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                openForm(tab, formsModel.getForms().get(tab.getPosition()));
+                openForm(tab, formsData.getForms().get(tab.getPosition()));
             }
 
             @Override
@@ -157,10 +159,13 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-                openForm(tab, formsModel.getForms().get(tab.getPosition()));
+                openForm(tab, formsData.getForms().get(tab.getPosition()));
             }
         });
 
+        if (formsData.isRegisteredUser())
+            addProfileFragment();
+        else addFormFragment();
     }
 
     private void logoutDialog() {
@@ -219,23 +224,23 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         CommonMethods.hideKeyboard(mContext);
     }
 
-    private void addProfileFragment(boolean isEditable, boolean isNew) {
+    private void addFormFragment() {
+        FormFragment formFragment = FormFragment.newInstance(PERSONAL_INFO_FORM, formsData.getPersonalInfo(), !formsData.isRegisteredUser(), "");
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.container, formFragment, getResources().getString(R.string.personal_info) + PERSONAL_INFO_FORM);
+        transaction.commit();
 
-        if (isEditable) {
-            FormFragment formFragment = FormFragment.newInstance(PERSONAL_INFO_FORM, isNew ? newFormsModel.getPersonalInfo() : formsModel.getPersonalInfo(), isNew, "");
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.container, formFragment, getResources().getString(R.string.personal_info) + PERSONAL_INFO_FORM);
-            transaction.commit();
-        } else {
+        CommonMethods.hideKeyboard(mContext);
+    }
 
-            bottomTabLayout.setVisibility(GONE);
-            showProgress(GONE);
+    private void addProfileFragment() {
+        bottomTabLayout.setVisibility(GONE);
+        showProgress(GONE);
 
-            ProfilePageFragment profilePageFragment = ProfilePageFragment.newInstance(PERSONAL_INFO_FORM, isNew ? newFormsModel : formsModel, isNew);
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.container, profilePageFragment, getResources().getString(R.string.personal_info) + PERSONAL_INFO_FORM);
-            transaction.commit();
-        }
+        ProfilePageFragment profilePageFragment = ProfilePageFragment.newInstance(PERSONAL_INFO_FORM, formsData, !formsData.isRegisteredUser());
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.container, profilePageFragment, getResources().getString(R.string.personal_info) + PERSONAL_INFO_FORM);
+        transaction.commit();
 
         CommonMethods.hideKeyboard(mContext);
     }
@@ -279,21 +284,18 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
     }
 
     @Override
-    public void submitClick(int formNumber, boolean isNew, String jsonString) {
-        /*bottomTabLayout.setVisibility(GONE);
-        showProgress(GONE);*/
-        addProfileFragment(false, isNew);
+    public void submitClick(int formNumber, String jsonString) {
+        addProfileFragment();
         setTabLayoutDisable(false, true);
 
     }
 
     private void setTabLayoutDisable(boolean isDisable, boolean showFormTabLayout) {
 
-        if (showFormTabLayout) {
+        if (showFormTabLayout)
             formTabLayout.setVisibility(VISIBLE);
-        } else {
+        else
             formTabLayout.setVisibility(View.GONE);
-        }
 
         LinearLayout tabStrip = ((LinearLayout) formTabLayout.getChildAt(0));
         tabStrip.setAlpha(isDisable ? .3f : 1f);
@@ -304,13 +306,13 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
     }
 
     @Override
-    public void editClick(int formNumber, boolean isNew) {
+    public void editClick(int formNumber) {
         showProgress(VISIBLE);
         setTabLayoutDisable(true, false);
-        addProfileFragment(true, isNew);
+        addFormFragment();
     }
 
-    @Override
+    /*@Override
     public void onClickRegister() {
 
         //----Set logo and clinic Name in home window---
@@ -325,14 +327,17 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
         //-------
 
         showProgress(VISIBLE);
-        addProfileFragment(true, true);
+        addProfileFragment();
         setTabLayoutDisable(true, false);
-    }
+    }*/
 
     @Override
     public void onClickGetInfo(String mobileText) {
 
-        //----Set logo and clinic Name in home window---
+        this.mobileText = mobileText;
+        mPatientHelper.getPatientInfo(mobileText);
+
+        /*//----Set logo and clinic Name in home window---
         int iconSize = getResources().getDimensionPixelSize(R.dimen.icon_size);
 
         TextView headerName = findViewById(R.id.titleTextView);
@@ -343,8 +348,8 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
                 .into(headerLogo);
         //-------
 
-        addProfileFragment(false, false);
-        setTabLayoutDisable(false, true);
+        addProfileFragment();
+        setTabLayoutDisable(false, true);*/
 
     }
 
@@ -409,13 +414,37 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
 
     @Override
     public void onSuccess(String mOldDataTag, CustomResponse customResponse) {
-        IpTestResponseModel ipTestResponseModel = (IpTestResponseModel) customResponse;
-        if (ipTestResponseModel.getCommon().getStatusCode().equals(Constants.SUCCESS)) {
-            AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.IS_VALID_IP_CONFIG, Constants.TRUE, mContext);
-            Intent intentObj = new Intent(mContext, LoginActivity.class);
-            startActivity(intentObj);
-            finish();
-        } else {
+
+        if (mOldDataTag.equals(Constants.TASK_CHECK_SERVER_CONNECTION)) {
+            IpTestResponseModel ipTestResponseModel = (IpTestResponseModel) customResponse;
+            if (ipTestResponseModel.getCommon().getStatusCode().equals(Constants.SUCCESS)) {
+                AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.IS_VALID_IP_CONFIG, Constants.TRUE, mContext);
+                Intent intentObj = new Intent(mContext, LoginActivity.class);
+                startActivity(intentObj);
+                finish();
+            } else {
+                AppPreferencesManager.putString(Constants.LOGIN_SUCCESS, Constants.FALSE, mContext);
+                CommonMethods.showAlertDialog(mContext, getString(R.string.wrong_server_path) + "\n" + getString(R.string.for_example_server_path), new CheckIpConnection() {
+                    @Override
+                    public void onOkButtonClickListener(String serverPath, Context context, Dialog dialog) {
+                        AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.SERVER_PATH, serverPath, context);
+                        mLoginHelper.checkConnectionToServer(serverPath);
+                    }
+                }, false);
+            }
+        } else if (mOldDataTag.equals(Constants.GET_REGISTRATION_FORM)) {
+            PatientData patientData = (PatientData) customResponse;
+            if (patientData.getCommon().getStatusCode().equals(Constants.SUCCESS)) {
+                AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.MOBILE, mobileText, mContext);
+                formsData = patientData.getData();
+                generateForm();
+            }
+        }
+    }
+
+    @Override
+    public void onParseError(String mOldDataTag, String errorMessage) {
+        if (mOldDataTag.equals(Constants.TASK_CHECK_SERVER_CONNECTION)) {
             AppPreferencesManager.putString(Constants.LOGIN_SUCCESS, Constants.FALSE, mContext);
             CommonMethods.showAlertDialog(mContext, getString(R.string.wrong_server_path) + "\n" + getString(R.string.for_example_server_path), new CheckIpConnection() {
                 @Override
@@ -428,39 +457,31 @@ public class PersonalInfoActivity extends AppCompatActivity implements FormFragm
     }
 
     @Override
-    public void onParseError(String mOldDataTag, String errorMessage) {
-        AppPreferencesManager.putString(Constants.LOGIN_SUCCESS, Constants.FALSE, mContext);
-        CommonMethods.showAlertDialog(mContext, getString(R.string.wrong_server_path) + "\n" + getString(R.string.for_example_server_path), new CheckIpConnection() {
-            @Override
-            public void onOkButtonClickListener(String serverPath, Context context, Dialog dialog) {
-                AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.SERVER_PATH, serverPath, context);
-                mLoginHelper.checkConnectionToServer(serverPath);
-            }
-        }, false);
-    }
-
-    @Override
     public void onServerError(String mOldDataTag, String serverErrorMessage) {
-        AppPreferencesManager.putString(Constants.LOGIN_SUCCESS, Constants.FALSE, mContext);
-        CommonMethods.showAlertDialog(mContext, getString(R.string.wrong_server_path) + "\n" + getString(R.string.for_example_server_path), new CheckIpConnection() {
-            @Override
-            public void onOkButtonClickListener(String serverPath, Context context, Dialog dialog) {
-                AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.SERVER_PATH, serverPath, context);
-                mLoginHelper.checkConnectionToServer(serverPath);
-            }
-        }, false);
+        if (mOldDataTag.equals(Constants.TASK_CHECK_SERVER_CONNECTION)) {
+            AppPreferencesManager.putString(Constants.LOGIN_SUCCESS, Constants.FALSE, mContext);
+            CommonMethods.showAlertDialog(mContext, getString(R.string.wrong_server_path) + "\n" + getString(R.string.for_example_server_path), new CheckIpConnection() {
+                @Override
+                public void onOkButtonClickListener(String serverPath, Context context, Dialog dialog) {
+                    AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.SERVER_PATH, serverPath, context);
+                    mLoginHelper.checkConnectionToServer(serverPath);
+                }
+            }, false);
+        }
     }
 
     @Override
     public void onNoConnectionError(String mOldDataTag, String serverErrorMessage) {
-        AppPreferencesManager.putString(Constants.LOGIN_SUCCESS, Constants.FALSE, mContext);
-        CommonMethods.showAlertDialog(mContext, getString(R.string.wrong_server_path) + "\n" + getString(R.string.for_example_server_path), new CheckIpConnection() {
-            @Override
-            public void onOkButtonClickListener(String serverPath, Context context, Dialog dialog) {
-                AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.SERVER_PATH, serverPath, context);
-                mLoginHelper.checkConnectionToServer(serverPath);
-            }
-        }, false);
+        if (mOldDataTag.equals(Constants.TASK_CHECK_SERVER_CONNECTION)) {
+            AppPreferencesManager.putString(Constants.LOGIN_SUCCESS, Constants.FALSE, mContext);
+            CommonMethods.showAlertDialog(mContext, getString(R.string.wrong_server_path) + "\n" + getString(R.string.for_example_server_path), new CheckIpConnection() {
+                @Override
+                public void onOkButtonClickListener(String serverPath, Context context, Dialog dialog) {
+                    AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.SERVER_PATH, serverPath, context);
+                    mLoginHelper.checkConnectionToServer(serverPath);
+                }
+            }, false);
+        }
     }
 
     public void setMenuVisibility(boolean isVisible) {

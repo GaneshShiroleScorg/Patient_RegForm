@@ -81,6 +81,8 @@ public class Constants {
     public static final String ACTIVE_STATUS = Constants.BLANK + 7;
     public static final String LOGOUT = Constants.BLANK + 8;
 
+    public static final String GET_REGISTRATION_FORM = Constants.BLANK + 9;
+
     public static final String DATA = "DATA";
     public static final Integer SUCCESS = 200;
 

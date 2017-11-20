@@ -75,7 +75,6 @@ public class PageFragment extends Fragment {
     private TextView mTitleTextView;
     private LinearLayout mSectionsContainer;
     private LayoutInflater mInflater;
-    private String mReceivedDate;
     private String mReceivedFormName;
 
     private ImageView profilePhoto;
@@ -107,8 +106,8 @@ public class PageFragment extends Fragment {
      * The fragment argument representing the section number for this
      * fragment.
      */
-    private static final String PAGE_NUMBER = "section_number";
-    private static final String PAGE = "page";
+    public static final String PAGE_NUMBER = "section_number";
+    public static final String PAGE = "page";
     private int pageNumber;
     private int formNumber;
     private Page page;
@@ -138,11 +137,6 @@ public class PageFragment extends Fragment {
             page = getArguments().getParcelable(PAGE);
             pageNumber = getArguments().getInt(PAGE_NUMBER);
             formNumber = getArguments().getInt(FORM_NUMBER);
-
-            Calendar c = Calendar.getInstance();
-            SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
-            mReceivedDate = df.format(c.getTime());
-
             mReceivedFormName = getArguments().getString(FORM_NAME);
         }
     }
@@ -218,18 +212,6 @@ public class PageFragment extends Fragment {
             }
             mSectionsContainer.addView(sectionLayout);
         }
-
-        //------ in case of undertaking comes----
-        // dont show header if it is undertaking content fragment.
-        if (page.getUndertakingContent() != null) {
-
-            UndertakingFragment newRegistrationFragment = UndertakingFragment.newInstance(mReceivedDate, page.getUndertakingContent(), page.getUndertakingImageUrl(), page.getName());
-            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-            transaction.replace(R.id.pageLayout, newRegistrationFragment, getResources().getString(R.string.undertaking));
-            transaction.commit();
-
-        }
-        //----------
     }
 
     private void addField(final View fieldsContainer, final int sectionIndex, final ArrayList<Field> fields, final Field field, final int fieldsIndex, final LayoutInflater inflater, int indexToAddView) {

@@ -1,6 +1,5 @@
 package com.scorg.forms.activities;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,32 +9,26 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.scorg.forms.R;
 import com.scorg.forms.customui.CustomButton;
 import com.scorg.forms.customui.CustomEditText;
 import com.scorg.forms.helpers.LoginHelper;
-import com.scorg.forms.interfaces.CheckIpConnection;
 import com.scorg.forms.interfaces.CustomResponse;
 import com.scorg.forms.interfaces.HelperResponse;
 import com.scorg.forms.models.login.DocDetail;
 import com.scorg.forms.models.login.LoginModel;
 import com.scorg.forms.preference.AppPreferencesManager;
 import com.scorg.forms.util.CommonMethods;
-import com.scorg.forms.util.Config;
 import com.scorg.forms.util.Constants;
 import com.scorg.forms.util.Valid;
 
@@ -90,28 +83,11 @@ public class LoginActivity extends AppCompatActivity implements HelperResponse {
 
     private void go() {
 
-        // hardcoded
-        ArrayList<String> location =new ArrayList<String>();//Creating arraylist
-        location.add("Pune");//Adding object in arraylist
-        location.add("Mumbai");
-        location.add("Delhi");
-        location.add("Ahmednagar");
-
-        // hardcoded
-        ArrayList<String> clinic =new ArrayList<String>();//Creating arraylist
-        clinic.add("Apollo");//Adding object in arraylist
-        clinic.add("Sahyadri");
-        clinic.add("Sasun");
-        clinic.add("Sanjivani");
-
         String email = mEmailEditText.getText().toString();
         String password = mPasswordEditText.getText().toString();
         if (validate(email, password)) {
-            /*LoginHelper loginHelper = new LoginHelper(mContext);
-            loginHelper.doLogin(email, password);*/
-
-            // hardcoded
-            showLocationDialog(clinic, location);
+            LoginHelper loginHelper = new LoginHelper(mContext);
+            loginHelper.doLogin(email, password);
         }
     }
 
@@ -153,10 +129,6 @@ public class LoginActivity extends AppCompatActivity implements HelperResponse {
                 AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.LOGIN_STATUS, Constants.YES, mContext);
                 AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.PASSWORD, mEmailEditText.getText().toString(), mContext);
 
-                Intent intentObj = new Intent(mContext, PersonalInfoActivity.class);
-                startActivity(intentObj);
-                finish();
-
             } else {
                 CommonMethods.showToast(mContext, receivedModel.getCommon().getStatusMessage());
             }
@@ -170,7 +142,25 @@ public class LoginActivity extends AppCompatActivity implements HelperResponse {
 
     @Override
     public void onServerError(String mOldDataTag, String serverErrorMessage) {
+
         CommonMethods.showToast(mContext, serverErrorMessage);
+
+        // hardcoded
+        ArrayList<String> location =new ArrayList<String>();//Creating arraylist
+        location.add("Pune");//Adding object in arraylist
+        location.add("Mumbai");
+        location.add("Delhi");
+        location.add("Ahmednagar");
+
+        // hardcoded
+        ArrayList<String> clinic =new ArrayList<String>();//Creating arraylist
+        clinic.add("Apollo");//Adding object in arraylist
+        clinic.add("Sahyadri");
+        clinic.add("Sasun");
+        clinic.add("Sanjivani");
+
+        // hardcoded
+        showLocationDialog(clinic, location);
     }
 
     @Override
@@ -199,6 +189,7 @@ public class LoginActivity extends AppCompatActivity implements HelperResponse {
 
     //this alert is shown for input of serverpath
     public void showLocationDialog(final ArrayList<String> clinicList, final ArrayList<String> locationList) {
+
         final Dialog dialog = new Dialog(LoginActivity.this);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);

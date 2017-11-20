@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
-public class FormsModel implements Parcelable {
+public class FormsData implements Parcelable {
 
     @SerializedName("isRegisteredUser")
     @Expose
@@ -22,29 +22,29 @@ public class FormsModel implements Parcelable {
     @SerializedName("forms")
     @Expose
     private ArrayList<Form> forms = new ArrayList<Form>();
-    public final static Parcelable.Creator<FormsModel> CREATOR = new Creator<FormsModel>() {
+    public final static Parcelable.Creator<FormsData> CREATOR = new Creator<FormsData>() {
 
         @SuppressWarnings({
                 "unchecked"
         })
-        public FormsModel createFromParcel(Parcel in) {
-            return new FormsModel(in);
+        public FormsData createFromParcel(Parcel in) {
+            return new FormsData(in);
         }
 
-        public FormsModel[] newArray(int size) {
-            return (new FormsModel[size]);
+        public FormsData[] newArray(int size) {
+            return (new FormsData[size]);
         }
 
     };
 
-    protected FormsModel(Parcel in) {
+    protected FormsData(Parcel in) {
         this.isRegisteredUser = ((boolean) in.readValue((String.class.getClassLoader())));
         this.isClinicReg = ((boolean) in.readValue((String.class.getClassLoader())));
         this.personalInfo = ((Form) in.readValue((Form.class.getClassLoader())));
         in.readList(this.forms, (Form.class.getClassLoader()));
     }
 
-    public FormsModel() {
+    public FormsData() {
     }
 
     public Form getPersonalInfo() {

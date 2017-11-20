@@ -23,39 +23,54 @@ import com.github.gcacace.signaturepad.views.SignaturePad;
 import com.scorg.forms.R;
 import com.scorg.forms.customui.CustomButton;
 import com.scorg.forms.customui.CustomTextView;
+import com.scorg.forms.models.form.Page;
+import com.scorg.forms.util.CommonMethods;
+import com.scorg.forms.util.ImageUtil;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 import droidninja.filepicker.FilePickerBuilder;
 import droidninja.filepicker.FilePickerConst;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 
+import static com.scorg.forms.fragments.FormFragment.FORM_NAME;
+import static com.scorg.forms.fragments.FormFragment.FORM_NUMBER;
+import static com.scorg.forms.fragments.PageFragment.PAGE;
+import static com.scorg.forms.fragments.PageFragment.PAGE_NUMBER;
+
 @RuntimePermissions
 @SuppressWarnings("CheckResult")
 public class UndertakingFragment extends Fragment {
 
     private static final String NAME = "name";
-
-    private static final String FORM_RECEIVED_DATE = "FORM_RECEIVED_DATE";
-    private static final String CONTENT = "CONTENT";
-    private static final String IMAGE_URL = "IMAGE_URL";
+    private static final String TAG = "Undertaking";
     public static final int MAX_ATTACHMENT_COUNT = 1;
-    private String mReceivedDate;
+
     private AppCompatImageView mProfilePhoto;
+    private String mReceivedDate;
+    private Page page;
+    private int pageNumber;
+    private int formNumber;
+    private String mReceivedFormName;
 //    private OnSubmitListener mListener;
 
     public UndertakingFragment() {
         // Required empty public constructor
     }
 
-    public static UndertakingFragment newInstance(String formReceivedDate, String content, String imageUrl, String name) {
+    public static UndertakingFragment newInstance(int formNumber, int pageNumber, Page page, String mReceivedFormName) {
+
         UndertakingFragment fragment = new UndertakingFragment();
         Bundle args = new Bundle();
-        args.putString(FORM_RECEIVED_DATE, formReceivedDate);
-        args.putString(CONTENT, content);
-        args.putString(IMAGE_URL, imageUrl);
-        args.putString(NAME, name);
+        args.putInt(FORM_NUMBER, formNumber);
+        args.putInt(PAGE_NUMBER, pageNumber);
+        args.putParcelable(PAGE, page);
+        args.putString(FORM_NAME, mReceivedFormName);
+        fragment.setArguments(args);
         fragment.setArguments(args);
         return fragment;
     }
@@ -99,10 +114,19 @@ public class UndertakingFragment extends Fragment {
 
         Bundle arguments = getArguments();
         if (arguments != null) {
-            mReceivedDate = arguments.getString(FORM_RECEIVED_DATE);
+
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+            mReceivedDate = df.format(c.getTime());
+
+            page = getArguments().getParcelable(PAGE);
+            pageNumber = getArguments().getInt(PAGE_NUMBER);
+            formNumber = getArguments().getInt(FORM_NUMBER);
+            mReceivedFormName = getArguments().getString(FORM_NAME);
+
             mDateTextView.setText(getString(R.string.date) + mReceivedDate);
 
-            mContentTextView.setText(Html.fromHtml(arguments.getString(CONTENT)));
+            mContentTextView.setText(Html.fromHtml(page.getUndertakingContent()));
 
             mTitleTextView.setPaintFlags(mTitleTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             mTitleTextView.setText(getString(R.string.undertaking));
@@ -120,7 +144,7 @@ public class UndertakingFragment extends Fragment {
 //            requestOptions.placeholder(R.drawable.ic_assignment);
 
             Glide.with(getActivity())
-                    .load(arguments.getString(IMAGE_URL))
+                    .load(arguments.getString(page.getUndertakingImageUrl()))
                     .apply(requestOptions)
                     .thumbnail(.1f)
                     .into(mProfilePhoto);
@@ -137,6 +161,26 @@ public class UndertakingFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 UndertakingFragmentPermissionsDispatcher.onPickPhotoWithCheck(UndertakingFragment.this);
+            }
+        });
+
+        mSignature_pad.setOnSignedListener(new SignaturePad.OnSignedListener() {
+            @Override
+            public void onStartSigning() {
+                CommonMethods.log(TAG, "Signing");
+            }
+
+            @Override
+            public void onSigned() {
+                String convertBase64 = ImageUtil.convert(mSignature_pad.getSignatureBitmap());
+                CommonMethods.log(TAG, "Signed " + convertBase64);
+                page.setSignatureData(convertBase64);
+            }
+
+            @Override
+            public void onClear() {
+                page.setSignatureData("");
+                CommonMethods.log(TAG, "Clear Signed");
             }
         });
 
@@ -183,4 +227,5 @@ public class UndertakingFragment extends Fragment {
             }
         }
     }
+
 }

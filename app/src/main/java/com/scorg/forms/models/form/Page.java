@@ -31,6 +31,9 @@ public class Page implements Parcelable {
     @SerializedName("undertakingImageUrl")
     @Expose
     private String undertakingImageUrl;
+    @SerializedName("signatureData")
+    @Expose
+    private String signatureData;
 
     public final static Parcelable.Creator<Page> CREATOR = new Creator<Page>() {
 
@@ -56,6 +59,7 @@ public class Page implements Parcelable {
         this.name = ((String) in.readValue((String.class.getClassLoader())));
         this.undertakingContent = ((String) in.readValue((String.class.getClassLoader())));
         this.undertakingImageUrl = ((String) in.readValue((String.class.getClassLoader())));
+        this.signatureData = ((String) in.readValue((String.class.getClassLoader())));
     }
 
     public Page() {
@@ -117,6 +121,14 @@ public class Page implements Parcelable {
         this.undertakingImageUrl = undertakingImageUrl;
     }
 
+    public String getSignatureData() {
+        return signatureData;
+    }
+
+    public void setSignatureData(String signatureData) {
+        this.signatureData = signatureData;
+    }
+
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(pageIcon);
         dest.writeValue(pageName);
@@ -125,7 +137,7 @@ public class Page implements Parcelable {
         dest.writeValue(name);
         dest.writeValue(undertakingContent);
         dest.writeValue(undertakingImageUrl);
-
+        dest.writeValue(signatureData);
     }
 
     public int describeContents() {

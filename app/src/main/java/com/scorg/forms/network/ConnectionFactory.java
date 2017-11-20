@@ -65,7 +65,7 @@ public class ConnectionFactory extends ConnectRequest {
     }
 
     public void setUrl(String url) {
-        this.mURL = AppPreferencesManager.getString(AppPreferencesManager.PREFERENCES_KEY.SERVER_PATH, mContext) + url;
+        this.mURL = Config.HTTP + AppPreferencesManager.getString(AppPreferencesManager.PREFERENCES_KEY.SERVER_PATH, mContext) + "/" + url;
         CommonMethods.log(TAG, "mURL: " + this.mURL);
     }
 

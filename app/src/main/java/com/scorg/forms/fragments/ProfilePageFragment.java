@@ -21,7 +21,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.scorg.forms.R;
 import com.scorg.forms.models.form.Field;
 import com.scorg.forms.models.form.Form;
-import com.scorg.forms.models.form.FormsModel;
+import com.scorg.forms.models.form.FormsData;
 import com.scorg.forms.models.form.Page;
 import com.scorg.forms.preference.AppPreferencesManager;
 import com.scorg.forms.util.CommonMethods;
@@ -68,7 +68,7 @@ public class ProfilePageFragment extends Fragment {
     //    private int pageNumber;
     private int formNumber;
     private boolean isNew;
-    private FormsModel formsModel;
+    private FormsData formsData;
 
     public ProfilePageFragment() {
     }
@@ -77,11 +77,11 @@ public class ProfilePageFragment extends Fragment {
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static ProfilePageFragment newInstance(int formNumber, FormsModel formsModel, boolean isNew) {
+    public static ProfilePageFragment newInstance(int formNumber, FormsData formsData, boolean isNew) {
         ProfilePageFragment fragment = new ProfilePageFragment();
         Bundle args = new Bundle();
         args.putInt(FORM_NUMBER, formNumber);
-        args.putParcelable(PERSONAL_INFO, formsModel);
+        args.putParcelable(PERSONAL_INFO, formsData);
         args.putBoolean(IS_NEW, isNew);
         fragment.setArguments(args);
         return fragment;
@@ -91,7 +91,7 @@ public class ProfilePageFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            formsModel = getArguments().getParcelable(PERSONAL_INFO);
+            formsData = getArguments().getParcelable(PERSONAL_INFO);
 //            pageNumber = getArguments().getInt(PAGE_NUMBER);
             formNumber = getArguments().getInt(FORM_NUMBER);
             isNew = getArguments().getBoolean(IS_NEW);
@@ -115,7 +115,7 @@ public class ProfilePageFragment extends Fragment {
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.editClick(20, isNew);
+                mListener.editClick(20);
             }
         });
 
@@ -132,9 +132,9 @@ public class ProfilePageFragment extends Fragment {
         requestOptions.error(R.drawable.ic_assignment);
         requestOptions.placeholder(R.drawable.ic_assignment);
 
-        for (int formIndex = 0; formIndex < formsModel.getForms().size(); formIndex++) {
+        for (int formIndex = 0; formIndex < formsData.getForms().size(); formIndex++) {
 
-            Form form = formsModel.getForms().get(formIndex);
+            Form form = formsData.getForms().get(formIndex);
 
             View tabView = getLayoutInflater().inflate(R.layout.custom_tab_personal_form, null);
 
@@ -155,7 +155,7 @@ public class ProfilePageFragment extends Fragment {
         formTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                mListener.openForm(tab, formsModel.getForms().get(tab.getPosition()));
+                mListener.openForm(tab, formsData.getForms().get(tab.getPosition()));
             }
 
             @Override
@@ -164,7 +164,7 @@ public class ProfilePageFragment extends Fragment {
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-                mListener.openForm(tab, formsModel.getForms().get(tab.getPosition()));
+                mListener.openForm(tab, formsData.getForms().get(tab.getPosition()));
             }
         });
 
@@ -177,9 +177,9 @@ public class ProfilePageFragment extends Fragment {
 
         View sectionLayout = inflater.inflate(R.layout.profile_section_layout, sectionsContainer, false);
         
-        for (int pageIndex = 0; pageIndex < formsModel.getPersonalInfo().getPages().size(); pageIndex++) {
+        for (int pageIndex = 0; pageIndex < formsData.getPersonalInfo().getPages().size(); pageIndex++) {
 
-            Page page = formsModel.getPersonalInfo().getPages().get(pageIndex);
+            Page page = formsData.getPersonalInfo().getPages().get(pageIndex);
 
             for (int sectionIndex = 0; sectionIndex < page.getSection().size(); sectionIndex++) {
 
@@ -388,7 +388,7 @@ public class ProfilePageFragment extends Fragment {
 
     // Listener
     public interface ButtonClickListener {
-        void editClick(int formNumber, boolean isNew);
+        void editClick(int formNumber);
         void openForm(TabLayout.Tab tab, Form form);
     }
 }

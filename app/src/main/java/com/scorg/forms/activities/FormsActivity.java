@@ -99,7 +99,7 @@ public class FormsActivity extends AppCompatActivity implements FormFragment.But
     }
 
     @Override
-    public void submitClick(int formNumber, boolean isNew, String jsonString) {
+    public void submitClick(int formNumber, String jsonString) {
 
     }
 }

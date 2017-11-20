@@ -36,8 +36,11 @@ import com.scorg.forms.models.request.FormRequest;
 import com.scorg.forms.util.CommonMethods;
 import com.scorg.forms.util.Valid;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import static com.scorg.forms.activities.FormsActivity.FORM;
 
@@ -174,7 +177,7 @@ public class FormFragment extends Fragment {
                     CommonMethods.log(TAG, jsonString);
 
                     if (!formRequest.getFields().isEmpty())
-                        mListener.submitClick(formNumber, isNew, jsonString);
+                        mListener.submitClick(formNumber, jsonString);
                     else CommonMethods.showToast(getContext(), getString(R.string.nothing_updated));
                 }
                 // hide keyboard
@@ -253,12 +256,17 @@ public class FormFragment extends Fragment {
         // Set View Pager Paging Disable.
         mViewPager.setPagingEnabled(false);
 
-        ArrayList<PageFragment> pageFragments = new ArrayList<>();
+        ArrayList<Fragment> pageFragments = new ArrayList<>();
 
         for (int position = 0; position < pages.size(); position++) {
 
-            PageFragment pageFragment = PageFragment.newInstance(formNumber, position, pages.get(position), mReceivedFormName);
-            pageFragments.add(pageFragment);
+            if (pages.get(position).getUndertakingContent() != null) {
+                UndertakingFragment undertakingFragment = UndertakingFragment.newInstance(formNumber, position, pages.get(position), mReceivedFormName);
+                pageFragments.add(undertakingFragment);
+            } else {
+                PageFragment pageFragment = PageFragment.newInstance(formNumber, position, pages.get(position), mReceivedFormName);
+                pageFragments.add(pageFragment);
+            }
 
             View tabView = getActivity().getLayoutInflater().inflate(R.layout.custom_tab, null);
 
@@ -398,9 +406,9 @@ public class FormFragment extends Fragment {
     }
 
     private class SectionsPagerAdapter extends FragmentPagerAdapter {
-        private final ArrayList<PageFragment> pageFragments;
+        private final ArrayList<Fragment> pageFragments;
 
-        public SectionsPagerAdapter(ArrayList<PageFragment> pageFragments, FragmentManager fm) {
+        public SectionsPagerAdapter(ArrayList<Fragment> pageFragments, FragmentManager fm) {
             super(fm);
             this.pageFragments = pageFragments;
         }
@@ -444,7 +452,7 @@ public class FormFragment extends Fragment {
     public interface ButtonClickListener {
         void backClick(int formNumber);
         void nextClick(int formNumber);
-        void submitClick(int formNumber, boolean isNew, String jsonString);
+        void submitClick(int formNumber, String jsonString);
     }
 
     private void fieldValidation(Field field, View roolView, boolean isShowError) {

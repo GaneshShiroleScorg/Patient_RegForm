@@ -31,8 +31,8 @@ public class SplashScreenActivity extends AppCompatActivity implements HelperRes
         mLoginHelper = new LoginHelper(mContext);
 
         // hardcoded
-        AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.SERVER_PATH, "192.168.0.182:3003", mContext);
-        AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.IS_VALID_IP_CONFIG, Constants.TRUE, mContext);
+//        AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.SERVER_PATH, "192.168.0.182:4004", mContext);
+//        AppPreferencesManager.putString(AppPreferencesManager.PREFERENCES_KEY.IS_VALID_IP_CONFIG, Constants.TRUE, mContext);
 
         doNext();
 
